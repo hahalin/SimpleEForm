@@ -203,6 +203,19 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201806090919193_InitialCreate.cs" />
+    <Compile Include="Migrations\201806090919193_InitialCreate.Designer.cs">
+      <DependentUpon>201806090919193_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201806100410389_AddUserdepNoField.cs" />
+    <Compile Include="Migrations\201806100410389_AddUserdepNoField.Designer.cs">
+      <DependentUpon>201806100410389_AddUserdepNoField.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201806100433258_AddDefaultAdmin.cs" />
+    <Compile Include="Migrations\201806100433258_AddDefaultAdmin.Designer.cs">
+      <DependentUpon>201806100433258_AddDefaultAdmin.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
@@ -286,6 +299,7 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\font-awesome.css" />
     <Content Include="Content\font-awesome.min.css" />
+    <Content Include="Content\ionicons.min.css" />
     <Content Include="Content\tether\tether-theme-arrows-dark.css" />
     <Content Include="Content\tether\tether-theme-arrows-dark.min.css" />
     <Content Include="Content\tether\tether-theme-arrows.css" />
@@ -294,6 +308,8 @@
     <Content Include="Content\tether\tether-theme-basic.min.css" />
     <Content Include="Content\tether\tether.css" />
     <Content Include="Content\tether\tether.min.css" />
+    <Content Include="Content\toastr.css" />
+    <Content Include="Content\toastr.min.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\fontawesome-webfont.svg" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
@@ -455,6 +471,8 @@
     <Content Include="admin-lte\css\adminlte.css.map" />
     <Content Include="admin-lte\plugins\input-mask\phone-codes\phone-be.json" />
     <Content Include="admin-lte\plugins\input-mask\phone-codes\phone-codes.json" />
+    <Content Include="Content\toastr.less" />
+    <Content Include="Content\toastr.scss" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.3.1.js" />
     <Content Include="Scripts\jquery-3.3.1.min.js" />
@@ -502,6 +520,8 @@
     <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
+    <Content Include="Views\Shared\_ALeftMenu.cshtml" />
+    <Content Include="Views\Shared\_ANavRightMenu.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -521,6 +541,17 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201806090919193_InitialCreate.resx">
+      <DependentUpon>201806090919193_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201806100410389_AddUserdepNoField.resx">
+      <DependentUpon>201806100410389_AddUserdepNoField.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201806100433258_AddDefaultAdmin.resx">
+      <DependentUpon>201806100433258_AddDefaultAdmin.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

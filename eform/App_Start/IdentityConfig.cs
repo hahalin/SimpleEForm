@@ -42,6 +42,10 @@ namespace eform
 
         public static ApplicationUserManager Create(IdentityFactoryOptions<ApplicationUserManager> options, IOwinContext context) 
         {
+            //https://patrickdesjardins.com/blog/how-to-debug-entity-framework-migration-seeding
+            //if (System.Diagnostics.Debugger.IsAttached == false)
+            //    System.Diagnostics.Debugger.Launch();
+
             var manager = new ApplicationUserManager(new UserStore<ApplicationUser>(context.Get<ApplicationDbContext>()));
             // 設定使用者名稱的驗證邏輯
             manager.UserValidator = new UserValidator<ApplicationUser>(manager)
@@ -67,17 +71,17 @@ namespace eform
 
             // 註冊雙因素驗證提供者。此應用程式使用手機和電子郵件接收驗證碼以驗證使用者
             // 您可以撰寫專屬提供者，並將它外掛到這裡。
-            manager.RegisterTwoFactorProvider("電話代碼", new PhoneNumberTokenProvider<ApplicationUser>
-            {
-                MessageFormat = "您的安全碼為 {0}"
-            });
-            manager.RegisterTwoFactorProvider("電子郵件代碼", new EmailTokenProvider<ApplicationUser>
-            {
-                Subject = "安全碼",
-                BodyFormat = "您的安全碼為 {0}"
-            });
-            manager.EmailService = new EmailService();
-            manager.SmsService = new SmsService();
+            //manager.RegisterTwoFactorProvider("電話代碼", new PhoneNumberTokenProvider<ApplicationUser>
+            //{
+            //    MessageFormat = "您的安全碼為 {0}"
+            //});
+            //manager.RegisterTwoFactorProvider("電子郵件代碼", new EmailTokenProvider<ApplicationUser>
+            //{
+            //    Subject = "安全碼",
+            //    BodyFormat = "您的安全碼為 {0}"
+            //});
+            //manager.EmailService = new EmailService();
+            //manager.SmsService = new SmsService();
             var dataProtectionProvider = options.DataProtectionProvider;
             if (dataProtectionProvider != null)
             {

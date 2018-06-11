@@ -17,6 +17,7 @@ namespace eform.Models
             return userIdentity;
         }
         public string workNo { get; set; }
+        public string depNo { get; set; }
     }
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
