@@ -40,64 +40,71 @@
         <!-- /.search form -->
         <!-- Sidebar Menu -->
         <ul class="sidebar-menu" data-widget="tree">
-            <li class="header">功能選單</li>
-
-            <li class="active">
-                <a href="@Url.Action("Index", "Home", null)"><i class="fa fa-home"></i><span>首頁公告</span></a>
-            </li>
-            <li class="treeview">
-                <a href="#">
-                    <i class="fa fa-pencil-square-o"></i> <span>申請表單</span> <i class="fa fa-angle-left pull-right"></i>
-                </a>
-                <ul class="treeview-menu">
-                    <li>
-                        <a href="@Url.Action("Index", "Home", null)">
-                            <i class="fa fa-circle-o"></i>加班申請單
-                        </a>
-                    </li>
-                </ul>
-            </li>
-
-            <li class="treeview">
-                <a href="#">
-                    <i class="fa fa-list-ol"></i> <span>主管管理區</span> <i class="fa fa-angle-left pull-right"></i>
-                </a>
-                <ul class="treeview-menu">
-                    <li>
-                        <a href="@Url.Action("Index", "Home", null)">
-                            <i class="fa fa-circle-o"></i>簽核表單
-                        </a>
-                    </li>
-                    <li>
-                        <a href="@Url.Action("Index", "Home", null)">
-                            <i class="fa fa-circle-o"></i>表單一覽
-                        </a>
-                    </li>
-                </ul>
-            </li>
-
-            <li class="treeview">
-                <a href="#">
-                    <i class="fa fa-gears"></i> <span>系統管理</span> <i class="fa fa-angle-left pull-right"></i>
-                </a>
-                <ul class="treeview-menu">
-                    <li>
-                        <a href="@Url.Action("Index", "Home", null)">
-                            <i class="fa fa-circle-o"></i>部門
-                        </a>
-                    </li>
-                    <li>
-                        <a href="@Url.Action("Index", "Home", null)">
-                            <i class="fa fa-circle-o"></i>員工
-                        </a>
-                    </li>
-                </ul>
-
-            </li>
-
             @if (Request.IsAuthenticated)
             {
-                using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "" }))
+                <li class="header">功能選單</li>
+                <li class="active">
+                    <a href="@Url.Action("Index", "Home", null)"><i class="fa fa-home"></i><span>首頁公告</span></a>
+                </li>
+                <li class="treeview">
+                    <a href="#">
+                        <i class="fa fa-pencil-square-o"></i> <span>申請表單</span> <i class="fa fa-angle-left pull-right"></i>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li>
+                            <a href="@Url.Action("Index", "Home", null)">
+                                <i class="fa fa-circle-o"></i>加班申請單
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="treeview">
+                    <a href="#">
+                        <i class="fa fa-list-ol"></i> <span>主管管理區</span> <i class="fa fa-angle-left pull-right"></i>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li>
+                            <a href="@Url.Action("Index", "Home", null)">
+                                <i class="fa fa-circle-o"></i>簽核表單
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Index", "Home", null)">
+                                <i class="fa fa-circle-o"></i>表單一覽
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="treeview">
+                    <a href="#">
+                        <i class="fa fa-gears"></i> <span>系統管理</span> <i class="fa fa-angle-left pull-right"></i>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li>
+                            <a href="@Url.Action("Index", "Role", null)">
+                                <i class="fa fa-circle-o"></i>Role
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Index", "Dep", null)">
+                                <i class="fa fa-circle-o"></i>部門
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Index", "Employee", null)">
+                                <i class="fa fa-circle-o"></i>員工
+                            </a>
+                        </li>
+                        <li>
+                            <a href='@Url.Action("Register", "Account")'><i class="fa fa-user-plus"></i><span>註冊</span></a>
+                        </li>
+                    </ul>
+
+                </li>
+
+                using(Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "" }))
                 {
                     @Html.AntiForgeryToken()
                 }
@@ -110,14 +117,13 @@
             else
             {
                 //https://stackoverflow.com/questions/21413596/razor-if-else-inside-a-for-loop-the-for-block-is-missing-a-closing-charac
-
-                    @:<li><a href='@Url.Action("Login","Account")'><i class="fa fa-sign-in"></i> <span>登入</span></a></li>
-                    @:<li><a href='@Url.Action("Register","Account")'><i class="fa fa-user-plus"></i><span>註冊</span></a><li>
-            }
-            @*<li>@Html.ActionLink("Register", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
-            <li>@Html.ActionLink("Login", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>*@
+                @:
+                <li><a href='@Url.Action("Login", "Account")'><i class="fa fa-sign-in"></i> <span>登入</span></a></li>
+                }
         </ul>
+
+        }
         <!-- /.sidebar-menu -->
-        </section>
+    </section>
     <!-- /.sidebar -->
-    </aside>
+</aside>

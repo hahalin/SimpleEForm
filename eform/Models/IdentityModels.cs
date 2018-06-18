@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
+using System.Collections.Generic;
 
 namespace eform.Models
 {
@@ -17,19 +18,51 @@ namespace eform.Models
             return userIdentity;
         }
         public string workNo { get; set; }
-        public string depNo { get; set; }
+        public string cName { get; set; }
+        public ICollection<jobPo>poList { get; set; }
     }
+
+    public class ApplicationRole : IdentityRole
+    {
+        public ApplicationRole() : base() { }
+        public ApplicationRole(string name) : base(name) { }
+        public string Description { get; set; }
+        public bool isDefault { get; set; } = false;
+    }
+
+    //public class ApplicationRoleManager : RoleManager<IdentityRole>
+    //{
+    //    public ApplicationRoleManager(IRoleStore<IdentityRole, string> roleStore)
+    //        : base(roleStore)
+    //    {
+    //    }
+
+    //    public static ApplicationRoleManager Create(
+    //        IdentityFactoryOptions<ApplicationRoleManager> options, IOwinContext context)
+    //    {
+    //        return new ApplicationRoleManager(
+    //            new RoleStore<IdentityRole>(context.Get<ApplicationDbContext>()));
+    //    }
+    //}
+
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext()
             : base("DefaultConnection", throwIfV1Schema: false)
         {
-        }
+            
+            Database.SetInitializer(new CustomMigration.eFormDBInitializer());
 
+            //Database.SetInitializer(
+            //);
+        }
         public static ApplicationDbContext Create()
         {
             return new ApplicationDbContext();
         }
+
+        public DbSet<dep> deps { get; set; }
+        public DbSet<jobPo> jobPos { get; set; }
     }
 }

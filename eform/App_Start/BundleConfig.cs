@@ -37,8 +37,10 @@ namespace eform
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/site.css",
-                      "~/admin-lte/css/AdminLTE.css",
-                      "~/admin-lte/css/skins/skin-blue.css"
+                      "~/Content/ionicons.min.css",
+                      "~/Content/font-awesome-4.7.0/css/font-awesome.min.css",
+                      "~/admin-lte/css/AdminLTE.css"
+                      ,"~/admin-lte/css/skins/skin-blue.css"
             ));
 
 

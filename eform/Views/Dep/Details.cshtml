@@ -1,0 +1,43 @@
+﻿
+@model eform.Models.dep
+@using eform.Models;
+
+
+@{
+    IEnumerable<jobPo> jobpoList = Model.depJobPos;
+
+    ViewBag.Title = "Details";
+}
+
+<h2>部門: @Model.depNm-職稱管理 </h2>
+
+<p>
+    @Html.ActionLink("部門管理", "Index", "Dep",  new { @class = "btn btn-default" })
+    @Html.ActionLink("新增職稱", "CreatePo", "Dep", new { id = Model.depNo },new{@class="btn btn-primary"})
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.depJobPos.FirstOrDefault<jobPo>().poNm)
+        </th>
+        <th></th>
+    </tr>
+
+    @if(Model.depJobPos !=null)
+    {
+        foreach (var item in Model.depJobPos)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.poNm)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.poNo }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.poNo }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.poNo })
+                </td>
+            </tr>
+        }
+    }
+
+</table>

@@ -151,7 +151,7 @@ namespace eform.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.workNo};
+                var user = new ApplicationUser { UserName = model.workNo,workNo=model.workNo};
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {

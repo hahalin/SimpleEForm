@@ -91,6 +91,15 @@ namespace eform.Models
         public string ConfirmPassword { get; set; }
     }
 
+    public class vwRole
+    {
+        [Display(Name = "Role")]
+        [Required]
+        public string Name { get; set; }
+        [Display(Name = "描述")]
+        public string description { get; set; }
+    }
+
     public class ResetPasswordViewModel
     {
         [Required]

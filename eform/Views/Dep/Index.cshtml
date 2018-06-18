@@ -1,0 +1,40 @@
+﻿@model IEnumerable<eform.Models.dep>
+
+@{
+    ViewBag.Title = "部們管理";
+}
+
+<h2>部門管理</h2>
+
+
+<div class="box">
+    <div class="box-header">
+        @Html.ActionLink("新增部門", "Create")
+    </div>
+    <div class="box-body">
+        <table class="table table-hover">
+            <tbody>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.depNm)
+                    </th>
+                    <th></th>
+                </tr>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.depNm)
+                        </td>
+                        <td>
+                            @Html.ActionLink("職稱管理", "Details", new { id = item.depNo }) |
+                            @Html.ActionLink("Edit", "Edit", new { id = item.depNo },new { @class = "btn btn-default"}) |
+                            @Html.ActionLink("Delete", "Delete", new { id = item.depNo }, new { @class = "btn btn-danger" })
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+    </div>
+</div>
