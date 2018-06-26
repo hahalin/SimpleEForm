@@ -4,50 +4,68 @@
     ViewBag.Title = "Index";
 }
 
-<h2>Index</h2>
+<h3>員工管理</h3>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
+@*<script type="text/javascript">
+        //var someArray = [<%foreach(var s in ViewBag.testList){%>'<%=s%>',<%}%>];
+        var yourJavaScriptArray = @Html.Raw(Json.Encode(ViewBag.testList));
+        console.log(yourJavaScriptArray);
+    </script>*@
 
-<script type="text/javascript">
-    //var someArray = [<%foreach(var s in ViewBag.testList){%>'<%=s%>',<%}%>];
-    var yourJavaScriptArray = @Html.Raw(Json.Encode(ViewBag.testList));
-    console.log(yourJavaScriptArray);
-</script>
+<div class="row">
+    <div class="col-md-8">
+        <div class="box">
+            <div class="box-header">
+                <a class="btn btn-primary" href="@Url.Action("Create")"><i class="fa fa-plus"></i>新增員工</a>
+                @*@Html.ActionLink("新增部門", "Create", new {}, new { @class = "btn btn-primary" })*@
+            </div>
+            <div class="box-body">
+                <table class="table">
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.workNo)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.UserCName)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Title)
+                        </th>
+                        <th></th>
+                    </tr>
 
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.workNo)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.UserCName)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Title)
-        </th>
-        <th></th>
-    </tr>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.HiddenFor(modelItem => item.Id)
+                                @Html.DisplayFor(modelItem => item.workNo)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.UserCName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Title)
+                            </td>
+                            <td>
+                                <a class="btn btn-info" href="@Url.Action("Edit",new { id = item.Id })">
+                                    <i class="fa fa-group"></i>
+                                    編輯
+                                </a>
+                                @*<a class="btn btn-success" href="@Url.Action("Details",new { id = item.depNo })">
+                                    <i class="fa fa-group"></i>
+                                    職稱管理
+                                </a>*@
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.HiddenFor(modelItem=>item.Id)
-            @Html.DisplayFor(modelItem => item.workNo)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.UserCName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Title)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
-            @Html.ActionLink("Details", "Details", new { id=item.Id }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.Id })
-        </td>
-    </tr>
-}
+                                @*@Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                                @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                                @Html.ActionLink("Delete", "Delete", new { id = item.Id })*@
+                            </td>
+                        </tr>
+                    }
 
-</table>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

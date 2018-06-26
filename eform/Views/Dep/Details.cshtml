@@ -1,7 +1,5 @@
-﻿
-@model eform.Models.dep
+﻿@model eform.Models.dep
 @using eform.Models;
-
 
 @{
     IEnumerable<jobPo> jobpoList = Model.depJobPos;
@@ -9,35 +7,48 @@
     ViewBag.Title = "Details";
 }
 
-<h2>部門: @Model.depNm-職稱管理 </h2>
+<h3> @Model.depNm-職稱管理 </h3>
 
 <p>
-    @Html.ActionLink("部門管理", "Index", "Dep",  new { @class = "btn btn-default" })
-    @Html.ActionLink("新增職稱", "CreatePo", "Dep", new { id = Model.depNo },new{@class="btn btn-primary"})
+    <a class="btn btn-primary" href="@Url.Action("Index")"><i class="fa fa-arrow-left"></i>部門管理</a>
+    <a class="btn btn-default" href="@Url.Action("CreatePo",new { id = ViewBag.id })"><i class="fa fa-user-plus"></i>新增職稱</a>
 </p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.depJobPos.FirstOrDefault<jobPo>().poNm)
-        </th>
-        <th></th>
-    </tr>
+<div class="row">
+    <div class="col-md-6">
+        <div class="box">
+            <table class="table">
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.depJobPos.FirstOrDefault<jobPo>().poNm)
+                    </th>
+                    <th></th>
+                </tr>
 
-    @if(Model.depJobPos !=null)
-    {
-        foreach (var item in Model.depJobPos)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.poNm)
-                </td>
-                <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.poNo }) |
-                    @Html.ActionLink("Details", "Details", new { id = item.poNo }) |
-                    @Html.ActionLink("Delete", "Delete", new { id = item.poNo })
-                </td>
-            </tr>
-        }
-    }
 
-</table>
+                @if (Model.depJobPos != null)
+                {
+                    foreach (var item in Model.depJobPos)
+                    {
+                           <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.poNm)
+                                </td>
+                                <td>
+                                    <a class="btn btn-success" href="@Url.Action("EditPo",new { id = item.poNo })">
+                                        <i class="fa fa-group"></i>
+                                        編輯
+                                    </a>
+                                    <a class="btn btn-danger" href="@Url.Action("DeletePo",new { id = item.poNo })">
+                                        <i class="fa fa-minus"></i>
+                                        刪除
+                                    </a>
+                                </td>
+                            </tr>
+                    }
+                }
+            </table>
+        </div>
+    </div>
+</div>
+
+

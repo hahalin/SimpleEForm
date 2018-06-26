@@ -30,7 +30,7 @@ namespace eform.Controllers
                 model.Add(new vwRole
                 {
                     Name=role.Name,
-                    description=role.Description
+                    Description=role.Description
                 });
             }
             return View(model);

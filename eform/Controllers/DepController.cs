@@ -63,6 +63,7 @@ namespace eform.Controllers
             var db = new ApplicationDbContext();
             var dep = db.deps.Where(x => x.depNo == id).SingleOrDefault<dep>();
             dep.depJobPos = db.jobPos.Where(x => x.depNo == id).ToList<jobPo>();
+            ViewBag.id = id;
             var model = dep;
             return View(model);
         }
@@ -88,7 +89,7 @@ namespace eform.Controllers
                 {
                     db.jobPos.Add(model);
                     db.SaveChanges();
-                    return RedirectToAction("Details","Dep",new { id = model.depNo });
+                    return RedirectToAction("Details","Dep",new {id = model.depNo});
                 }
             }
             catch (Exception ex)

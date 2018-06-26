@@ -7,13 +7,13 @@ namespace eform.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.2.0-61023")]
-    public sealed partial class AddDefaultAdmin : IMigrationMetadata
+    public sealed partial class init : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(AddDefaultAdmin));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(init));
         
         string IMigrationMetadata.Id
         {
-            get { return "201806100433258_AddDefaultAdmin"; }
+            get { return "201806180409474_init"; }
         }
         
         string IMigrationMetadata.Source

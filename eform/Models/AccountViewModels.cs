@@ -93,11 +93,13 @@ namespace eform.Models
 
     public class vwRole
     {
+        public string Id { get; set; }
         [Display(Name = "Role")]
         [Required]
         public string Name { get; set; }
         [Display(Name = "描述")]
-        public string description { get; set; }
+        public string Description { get; set; }
+        public bool selected { get; set; } = false;
     }
 
     public class ResetPasswordViewModel

@@ -1,0 +1,145 @@
+﻿@model IEnumerable<eform.Models.vwEmployee>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h3>表單管理</h3>
+
+@*<script type="text/javascript">
+        //var someArray = [<%foreach(var s in ViewBag.testList){%>'<%=s%>',<%}%>];
+        var yourJavaScriptArray = @Html.Raw(Json.Encode(ViewBag.testList));
+        console.log(yourJavaScriptArray);
+    </script>*@
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="box">
+            <div class="box-header">
+                <div class="form-group">
+                    <label>表單類型</label>
+                    <select>
+                        <option>加班單</option>
+                    </select>
+                    <label>申請日期區間</label>
+                    <select>
+                        <option>_______</option>
+                    </select>
+                    ~
+                    <select>
+                        <option>_______</option>
+                    </select>
+                    <a class="btn btn-primary" href="@Url.Action("Create")"><i class="fa fa-search"></i>查詢</a>
+                </div>
+
+                @*@Html.ActionLink("新增部門", "Create", new {}, new { @class = "btn btn-primary" })*@
+            </div>
+            <div class="box-body">
+                <table class="table .table-striped">
+                    <tr>
+                        <th>
+                            單據類型
+                        </th>
+                        <th>
+                            單號
+                        </th>
+                        <th>
+                            申請人
+                        </th>
+                        <th>
+                            申請日期
+                        </th>
+                        <th>
+                            標題
+                        </th>
+                        <th>
+                            簽核狀態
+                        </th>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            加班單
+                        </td>
+                        <td>
+                            AA20180624001
+                        </td>
+                        <td>
+                            2018-06-24
+                        </td>
+                        <td>
+                            員工甲
+                        </td>
+                        <td>
+                            維修機台A加班
+                        </td>
+                        <td>
+                            <span class="Label label-default">申請中</span>
+                        </td>
+                        <td>
+                            <a class="btn btn-default" href="@Url.Action("Edit")">
+                                <i class="fa fa-list-alt"></i>
+                                檢視明細
+                            </a>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            加班單
+                        </td>
+                        <td>
+                            AA20180624001
+                        </td>
+                        <td>
+                            2018-06-24
+                        </td>
+                        <td>
+                            員工甲
+                        </td>
+                        <td>
+                            維修機台A加班
+                        </td>
+                        <td>
+                            <span class="Label label-default">申請中</span>
+                        </td>
+                        <td>
+                            <a class="btn btn-default" href="@Url.Action("Edit")">
+                                <i class="fa fa-list-alt"></i>
+                                檢視明細
+                            </a>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            加班單
+                        </td>
+                        <td>
+                            AA20180624001
+                        </td>
+                        <td>
+                            2018-06-24
+                        </td>
+                        <td>
+                            員工甲
+                        </td>
+                        <td>
+                            維修機台A加班
+                        </td>
+                        <td>
+                            <span class="Label label-info">簽核中</span>
+                        </td>
+                        <td>
+                            <a class="btn btn-default" href="@Url.Action("Edit")">
+                                <i class="fa fa-list-alt"></i>
+                                檢視明細
+                            </a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+

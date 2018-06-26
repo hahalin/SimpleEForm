@@ -85,7 +85,9 @@ desired effect
             @Html.Partial("_ALeftMenu")
             <!-- Main content -->
             <div class="body-content">
-                @RenderBody()
+                <div class="container">
+                    @RenderBody()
+                </div>
             </div>
             <!-- /.content -->
         </div>

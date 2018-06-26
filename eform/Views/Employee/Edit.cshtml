@@ -1,0 +1,209 @@
+﻿@model eform.Models.vwEmployee
+@using Newtonsoft.Json;
+@using eform.Models;
+@{
+    ViewBag.Title = "員工資料管理";
+}
+
+<h3>員工資料編輯</h3>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="box">
+            <div class="box-header">
+                <a class="btn btn-info" href="@Url.Action("Index")"><i class="fa fa-list"></i>員工清單</a>
+            </div>
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-horizontal">
+                    <h4></h4>
+                    <hr />
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    @Html.HiddenFor(model => model.Id)
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.workNo, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.workNo, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.workNo, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.UserCName, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.UserCName, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.UserCName, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <input type="hidden" name="hPoList" id="hPoList" />
+                        <div class="col-md-10" id="divPoList">
+                            <button id="btnSelPo" type="button" data-toggle="modal" data-target="#WinSelPo">
+                                <i class="fa fa-search-plus"></i>加入職稱
+                            </button>
+                            <br/>
+                            <ul class="list-group col-md-8" id="ulPoList">
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-md-2">系統權限</label>
+                        <div class="col-md-10">
+                            @foreach (vwRole role in ViewBag.Roles)
+                            {
+                                if (role.selected)
+                                {
+                                    <input type="checkbox" checked value="@role.Name" name="roles" />
+                                }
+                                else
+                                {
+                                    <input type="checkbox" value="@role.Name" name="roles" />
+                                }
+                                @role.Description
+                                <br />
+                            }
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            <input type="submit" value="儲存" class="btn btn-primary">
+                        </div>
+                    </div>
+                </div>
+            }
+
+
+            <div class="modal fade" id="WinSelPo" tabindex="-1" role="dialog" aria-labelledby="WinSelPoLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            部門-職稱選擇
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-horizontal">
+                                <div class="form-group">
+                                    <label class="control-label col-md-2">部門</label>
+                                    <div class="col-md-5">
+                                        <select id="cboDepList"></select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2">職稱</label>
+                                    <div class="col-md-5">
+                                        <select id="cboPoList"></select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="text-center">
+                                <button type="button" class="btn btn-primary" id="btnAddPo"><i class="fa fa-plus"></i>加入</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-undo"></i>取消</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @section Scripts {
+                @Scripts.Render("~/bundles/jqueryval")
+
+                <script type="text/javascript">
+                    var depList = @Html.Raw(JsonConvert.SerializeObject(ViewBag.allDep));
+                    var poList = @Html.Raw(JsonConvert.SerializeObject(ViewBag.allPo));
+                    var currentPoList=@Html.Raw(JsonConvert.SerializeObject(ViewBag.currentPoList));
+                    function updatePoListUI()
+                    {
+                        $("#ulPoList li").remove();
+                        $.each(currentPoList, function (idx, obj) {
+                            $("#ulPoList").append(
+                                '<li class="list-group-item" id="' + obj.poNo + '">'
+                                + '<button type="button" class="text-danger"><i class="fa fa-minus"></i></button>'
+                                + obj.depNm + "-" + obj.poNm
+                                + '</li>'
+                            );
+                        });
+
+                        $('#ulPoList li button').on('click', function () {
+                            var id = $(this).parent('li').attr('id');
+                            $(this).parent('li').remove();
+                            currentPoList = currentPoList.filter(item => item.poNo !== id)
+                        });
+                        var poListValue = currentPoList.map(function (item) {
+                            return item['poNo'];
+                        });
+                        $('#hPoList').val(poListValue.toString());
+                    }
+                    $(function () {
+
+                            updatePoListUI();
+
+                            var cboDepList = $('#cboDepList');
+                            var cboPoList = $('#cboPoList');
+                            $(cboDepList).append(
+                                $('<option></option>').val(0).html("選擇部門")
+                            );
+                            $(cboPoList).append(
+                                $('<option></option>').val(0).html("選擇職稱")
+                            );
+                            $.each(depList, function (val, obj) {
+                                $(cboDepList).append(
+                                    $('<option></option>').val(obj.k).html(obj.v)
+                                );
+                            });
+
+                            $(cboDepList).on("change", function (e) {
+                                var depV = this.value;
+                                $('#cboPoList option').remove();
+                                $(cboPoList).append(
+                                    $('<option></option>').val(0).html("選擇職稱")
+                                );
+                                if (depV != "0")
+                                {
+                                    $.each(poList, function (val, obj) {
+                                        if (obj.depNo == depV)
+                                        {
+                                            $(cboPoList).append(
+                                                $('<option></option>').val(obj.poNo).html(obj.poNm)
+                                            );
+                                        }
+                                    });
+                                }
+                            });
+
+                            $('#btnSelPo').on('click', function () {
+                                $("#cboDepList").val(0);
+                                $("#cboDepList").change();
+                            });
+                            $('#btnAddPo').on('click', function () {
+                                var poExist = false;
+                                $.each(currentPoList, function (val, obj) {
+                                    if (obj.poNo.toString() == $('#cboPoList').val()) {
+                                        poExist = true;
+                                        return false;
+                                    }
+                                });
+
+                                if (!poExist) {
+                                    $.each(poList, function (val, obj) {
+                                        if (obj.poNo.toString() == $('#cboPoList').val()) {
+                                            currentPoList.push(obj);
+                                            return false;
+                                        }
+                                    });
+                                };
+                                $('#WinSelPo').modal('hide');
+                                updatePoListUI();
+                            });
+                            //console.log(poList);
+                    })
+                </script>
+
+            }
