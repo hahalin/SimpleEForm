@@ -19,7 +19,7 @@ namespace eform.Models
         }
         public string workNo { get; set; }
         public string cName { get; set; }
-        public ICollection<jobPo>poList { get; set; }
+        public ICollection<PoUser> poList { get; set; }
     }
 
     public class ApplicationRole : IdentityRole
@@ -64,5 +64,16 @@ namespace eform.Models
 
         public DbSet<dep> deps { get; set; }
         public DbSet<jobPo> jobPos { get; set; }
+
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            // configures one-to-many relationship
+            base.OnModelCreating(modelBuilder);
+            //modelBuilder.Entity<jobPo>()
+            //    .HasRequired<ApplicationUser>(u=>u.a)
+            //    .HasForeignKey<int>(s => s.CurrentGradeId);
+        }
     }
+
 }

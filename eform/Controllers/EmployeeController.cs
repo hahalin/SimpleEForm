@@ -34,21 +34,18 @@ namespace eform.Controllers
 
                 foreach (var po in usr.poList)
                 {
-                    dep depObj = context.deps.Where(x => x.depNo == po.depNo).FirstOrDefault<dep>();
+                    jobPo poObj = context.jobPos.Where(x => x.poNo == po.poNo).FirstOrDefault();
+                    dep depObj = poObj==null?null:context.deps.Where(x => x.depNo == poObj.depNo).FirstOrDefault<dep>();
                     if (depObj != null)
                     {
-                        jobPo poObj = context.jobPos.Where(x => x.poNo == po.poNo).FirstOrDefault<jobPo>();
-                        if (poObj != null)
+                        poNoList.Add(new vwPoNo
                         {
-                            poNoList.Add(new vwPoNo
-                            {
-                                poNo = poObj.poNo,
-                                poNm = poObj.poNm,
-                                depNo = poObj.depNo,
-                                depNm = depObj.depNm
-                            });
-                            usrTitle.Add(depObj.depNm + "-" + poObj.poNm);
-                        }
+                            poNo = poObj.poNo,
+                            poNm = poObj.poNm,
+                            depNo = poObj.depNo,
+                            depNm = depObj.depNm
+                        });
+                        usrTitle.Add(depObj.depNm + "-" + poObj.poNm);
                     }
                 }
 
@@ -86,52 +83,14 @@ namespace eform.Controllers
                 rePassword=""
             };
 
-            var roleStore = new RoleStore<ApplicationRole>(context);
-
-            var roleManager = new RoleManager<ApplicationRole>(roleStore);
-
-            List<vwRole> vwRoles = new List<vwRole>();
-
-            foreach (var role in roleManager.Roles)
-            {
-                vwRoles.Add(new vwRole
-                {
-                    Id = role.Id,
-                    Name = role.Name,
-                    Description = role.Description,
-                    selected = false
-                });
-            }
-            
-            ViewBag.Roles = vwRoles;
-
-            List<dynamic> AllDep = new List<dynamic>();
-            List<vwPoNo> AllPo = new List<vwPoNo>();
             List<vwPoNo> poNoList = new List<vwPoNo>();
-
-            foreach (var dep in context.deps)
-            {
-                dynamic depobj = new ExpandoObject();
-                depobj.k = dep.depNo;
-                depobj.v = dep.depNm;
-                AllDep.Add(depobj);
-            }
-
-            foreach (var po in context.jobPos)
-            {
-                AllPo.Add(new vwPoNo
-                {
-                    depNo = po.depNo,
-                    depNm = AllDep.Where(x => x.k == po.depNo).FirstOrDefault().v,
-                    poNo = po.poNo,
-                    poNm = po.poNm,
-                });
-            }
-
             ViewBag.currentPoList = poNoList;
-            ViewBag.allDep = AllDep;
-            ViewBag.allPo = AllPo;
-            return View(model);
+
+            setViewBagRoles(context, null);
+            setViewBagPo(context);
+
+            ViewBag.Title = "員工資料新增";
+            return View("Edit",model);
         }
 
         // POST: Employee/Create
@@ -148,51 +107,6 @@ namespace eform.Controllers
                 cName = collection["UserCName"].ToString()
             };
 
-            List<vwPoNo> poNoList = new List<vwPoNo>();
-
-            List<vwRole> vwRoles = new List<vwRole>();
-
-            var roleStore = new RoleStore<ApplicationRole>(context);
-
-            var roleManager = new RoleManager<ApplicationRole>(roleStore);
-
-            foreach (var role in roleManager.Roles)
-            {
-                vwRoles.Add(new vwRole
-                {
-                    Id = role.Id,
-                    Name = role.Name,
-                    Description = role.Description,
-                    selected = false
-                });
-            }
-
-            List<dynamic> AllDep = new List<dynamic>();
-            List<vwPoNo> AllPo = new List<vwPoNo>();
-            foreach (var dep in context.deps)
-            {
-                dynamic depobj = new ExpandoObject();
-                depobj.k = dep.depNo;
-                depobj.v = dep.depNm;
-                AllDep.Add(depobj);
-            }
-
-            //foreach (var po in context.jobPos)
-            //{
-            //    AllPo.Add(new vwPoNo
-            //    {
-            //        depNo = po.depNo,
-            //        depNm = AllDep.Where(x => x.k == po.depNo).FirstOrDefault().v,
-            //        poNo = po.poNo,
-            //        poNm = po.poNm,
-            //    });
-            //}
-
-            ViewBag.Roles = vwRoles;
-            ViewBag.allDep = AllDep;
-            ViewBag.allPo = AllPo;
-            ViewBag.currentPoList = poNoList;
-
             try
             {
                 var r = manager.Create(user, collection["Password"].ToString());
@@ -208,13 +122,14 @@ namespace eform.Controllers
             catch(Exception ex)
             {
                 ModelState.AddModelError("", ex.Message);
+
+                List<vwPoNo> poNoList = new List<vwPoNo>();
+                ViewBag.currentPoList = poNoList;
+                setViewBagRoles(context, null);
+                setViewBagPo(context);
                 return View();
             }
-        }
-        
-        void setViewBagRoles(ApplicationDbContext context)
-        {
-            
+
         }
 
         // GET: Employee/Edit/5
@@ -232,23 +147,22 @@ namespace eform.Controllers
 
             foreach (var po in user.poList)
             {
-                dep depObj = context.deps.Where(x => x.depNo == po.depNo).FirstOrDefault<dep>();
+                jobPo poObj = context.jobPos.Where(x => x.poNo == po.poNo).FirstOrDefault();
+                dep depObj = poObj == null ? null : context.deps.Where(x => x.depNo == poObj.depNo).FirstOrDefault<dep>();
                 if (depObj != null)
                 {
-                    jobPo poObj = context.jobPos.Where(x => x.poNo == po.poNo).FirstOrDefault<jobPo>();
-                    if (poObj != null)
+                    poNoList.Add(new vwPoNo
                     {
-                        poNoList.Add(new vwPoNo
-                        {
-                            poNo = poObj.poNo,
-                            poNm = poObj.poNm,
-                            depNo = poObj.depNo,
-                            depNm = depObj.depNm
-                        });
-                        usrTitle.Add(depObj.depNm + "-" + poObj.poNm);
-                    }
+                        poNo = poObj.poNo,
+                        poNm = poObj.poNm,
+                        depNo = poObj.depNo,
+                        depNm = depObj.depNm
+                    });
+                    usrTitle.Add(depObj.depNm + "-" + poObj.poNm);
                 }
             }
+
+            ViewBag.currentPoList = poNoList;
 
             vwEmployee model = new vwEmployee
             {
@@ -258,49 +172,13 @@ namespace eform.Controllers
                 Title = string.Join(",", usrTitle.ToArray())
             };
 
-            var roleStore = new RoleStore<ApplicationRole>(context);
+            setViewBagRoles(context, user);
 
-            var roleManager = new RoleManager<ApplicationRole>(roleStore);
+            setViewBagPo(context);
 
-            List<vwRole> vwRoles = new List<vwRole>();
+            
 
-            foreach (var role in roleManager.Roles)
-            {
-                vwRoles.Add(new vwRole
-                {
-                    Id = role.Id,
-                    Name = role.Name,
-                    Description = role.Description,
-                    selected = user.Roles.Where(x => x.RoleId == role.Id).Count() > 0
-                });
-            }
-
-            ViewBag.Roles = vwRoles;
-
-            List<dynamic> AllDep = new List<dynamic>();
-            List<vwPoNo> AllPo = new List<vwPoNo>();
-            foreach (var dep in context.deps)
-            {
-                dynamic depobj = new ExpandoObject();
-                depobj.k = dep.depNo;
-                depobj.v = dep.depNm;
-                AllDep.Add(depobj);
-            }
-
-            foreach (var po in context.jobPos)
-            {
-                AllPo.Add(new vwPoNo
-                {
-                    depNo = po.depNo,
-                    depNm = AllDep.Where(x => x.k == po.depNo).FirstOrDefault().v,
-                    poNo = po.poNo,
-                    poNm = po.poNm,
-                });
-            }
-
-            ViewBag.currentPoList = poNoList;
-            ViewBag.allDep = AllDep;
-            ViewBag.allPo = AllPo;
+            ViewBag.Title = "員工資料編輯";
             return View(model);
         }
 
@@ -308,23 +186,73 @@ namespace eform.Controllers
         [HttpPost]
         public ActionResult Edit(string id, vwEmployee model)
         {
+            var context = new ApplicationDbContext();
+            ApplicationUser user = null;
             try
             {
+                if (string.IsNullOrEmpty((string)Request.Form["roles"]))
+                {
+                    ModelState.AddModelError("", "需指定權限");
+                }
+
                 if (ModelState.IsValid)
                 {
-                    var context = new ApplicationDbContext();
-                    var user = context.Users.Where(x => x.Id == id).FirstOrDefault();
+                    if (string.IsNullOrEmpty(id))
+                    {
+                        //create employee
+                    }
+                     user= context.Users.Where(x => x.Id == id).FirstOrDefault();
+                    context.Entry(user).Collection(x => x.poList).Load();
+
+                    if (!string.IsNullOrEmpty((string)Request.Form["hPoList"]))
+                    {
+                        List<string> poIdLst = ((string)Request.Form["hPoList"]).Split(',').ToList<string>();
+                        if (user.poList == null)
+                        {
+                            user.poList = new List<PoUser>();
+                        }
+                        foreach (string poId in poIdLst)
+                        {
+                            PoUser po = user.poList.Where(x => x.poNo == poId).FirstOrDefault();
+                            if (po == null)
+                            {
+                                user.poList.Add(new PoUser
+                                {
+                                    poNo=poId,
+                                    UserId=user.workNo
+                                });
+                            }
+                        }
+                    }
+
+                    var store = new UserStore<ApplicationUser>(context);
+                    var manager = new UserManager<ApplicationUser>(store);
+
+                    List<string> roleList = ((string)Request.Form["roles"]).Split(',').ToList<string>();
+                    foreach(string role in roleList)
+                    {
+                        if (!manager.IsInRole(user.Id,role))
+                        {
+                            manager.AddToRole(user.Id, role);
+                        }
+                    }
+
                     user.cName = model.UserCName;
                     context.SaveChanges();
                     return RedirectToAction("Index");
                 }
                 else
                 {
+                    setViewBagPo(context);
+                    setViewBagRoles(context, user);
                     return View();
                 }
             }
-            catch
+            catch(Exception ex)
             {
+                setViewBagPo(context);
+                setViewBagRoles(context, user);
+                ModelState.AddModelError("",ex.Message);
                 return View();
             }
         }
@@ -349,6 +277,54 @@ namespace eform.Controllers
             {
                 return View();
             }
+        }
+
+        void setViewBagPo(ApplicationDbContext context)
+        {
+            List<dynamic> AllDep = new List<dynamic>();
+            List<vwPoNo> AllPo = new List<vwPoNo>();
+            foreach (var dep in context.deps)
+            {
+                dynamic depobj = new ExpandoObject();
+                depobj.k = dep.depNo;
+                depobj.v = dep.depNm;
+                AllDep.Add(depobj);
+            }
+
+            foreach (var po in context.jobPos)
+            {
+                AllPo.Add(new vwPoNo
+                {
+                    depNo = po.depNo,
+                    depNm = AllDep.Where(x => x.k == po.depNo).FirstOrDefault().v,
+                    poNo = po.poNo,
+                    poNm = po.poNm,
+                });
+            }
+            ViewBag.allDep = AllDep;
+            ViewBag.allPo = AllPo;
+        }
+
+        void setViewBagRoles(ApplicationDbContext context,ApplicationUser user)
+        {
+            List<vwRole> vwRoles = new List<vwRole>();
+
+            var roleStore = new RoleStore<ApplicationRole>(context);
+
+            var roleManager = new RoleManager<ApplicationRole>(roleStore);
+
+            foreach (var role in roleManager.Roles)
+            {
+
+                vwRoles.Add(new vwRole
+                {
+                    Id = role.Id,
+                    Name = role.Name,
+                    Description = role.Description,
+                    selected = (user != null && user.Roles.Where(x => x.RoleId == role.Id).Count() > 0)
+                });
+            }
+            ViewBag.Roles = vwRoles;
         }
     }
 }

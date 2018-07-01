@@ -2,10 +2,9 @@
 @using Newtonsoft.Json;
 @using eform.Models;
 @{
-    ViewBag.Title = "員工資料管理";
 }
 
-<h3>員工資料編輯</h3>
+<h3>@ViewBag.Title</h3>
 
 <div class="row">
     <div class="col-md-8">
@@ -38,6 +37,13 @@
                             @Html.ValidationMessageFor(model => model.UserCName, "", new { @class = "text-danger" })
                         </div>
                     </div>
+                    @*<div class="form-group">
+                        @Html.LabelFor(model => model.Password, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+                        </div>
+                    </div>*@
 
                     <div class="form-group">
                         @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label col-md-2" })
@@ -74,8 +80,10 @@
                     <div class="form-group">
                         <div class="col-md-offset-2 col-md-10">
                             <input type="submit" value="儲存" class="btn btn-primary">
+                            <a class="btn btn-default" href="@Url.Action("Index")"><i class="fa fa-ban"></i>取消</a>
                         </div>
                     </div>
+                    <br />
                 </div>
             }
 
@@ -118,7 +126,11 @@
                 <script type="text/javascript">
                     var depList = @Html.Raw(JsonConvert.SerializeObject(ViewBag.allDep));
                     var poList = @Html.Raw(JsonConvert.SerializeObject(ViewBag.allPo));
-                    var currentPoList=@Html.Raw(JsonConvert.SerializeObject(ViewBag.currentPoList));
+                    var currentPoList =@Html.Raw(JsonConvert.SerializeObject(ViewBag.currentPoList));
+                    if (currentPoList == null)
+                    {
+                        currentPoList = [];
+                    }
                     function updatePoListUI()
                     {
                         $("#ulPoList li").remove();
@@ -136,9 +148,12 @@
                             $(this).parent('li').remove();
                             currentPoList = currentPoList.filter(item => item.poNo !== id)
                         });
-                        var poListValue = currentPoList.map(function (item) {
-                            return item['poNo'];
-                        });
+                        var poListValue = "";
+                        if (currentPoList != null) {
+                            poListValue=currentPoList.map(function (item) {
+                                return item['poNo'];
+                            });
+                        }
                         $('#hPoList').val(poListValue.toString());
                     }
                     $(function () {
@@ -159,6 +174,9 @@
                                 );
                             });
 
+                            $('#cboDepList').selectpicker();
+
+
                             $(cboDepList).on("change", function (e) {
                                 var depV = this.value;
                                 $('#cboPoList option').remove();
@@ -176,6 +194,9 @@
                                         }
                                     });
                                 }
+                                $('#cboPoList').selectpicker('destroy');
+                                $('#cboPoList').selectpicker('show');
+
                             });
 
                             $('#btnSelPo').on('click', function () {
@@ -184,6 +205,7 @@
                             });
                             $('#btnAddPo').on('click', function () {
                                 var poExist = false;
+                                
                                 $.each(currentPoList, function (val, obj) {
                                     if (obj.poNo.toString() == $('#cboPoList').val()) {
                                         poExist = true;

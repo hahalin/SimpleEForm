@@ -45,13 +45,30 @@
                                 @Html.DisplayFor(modelItem => item.UserCName)
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.Title)
+                                @{ 
+                                    List<string> titleArray = item.Title.Split(',').ToList<string>();
+                                }
+                                @if (titleArray.Count()>0)
+                                { 
+                                    <ul style="padding-left:1px;">
+                                        @foreach (string title in titleArray)
+                                        {
+                                            if (!string.IsNullOrEmpty(title))
+                                            { 
+                                                <li>@title</li>
+                                            }
+                                        }
+                                    </ul>
+                                }
                             </td>
                             <td>
                                 <a class="btn btn-info" href="@Url.Action("Edit",new { id = item.Id })">
                                     <i class="fa fa-group"></i>
                                     編輯
                                 </a>
+                                @if (User.IsInRole("Admin") && (User.Identity.Name != item.workNo))
+                                { 
+                                }
                                 @*<a class="btn btn-success" href="@Url.Action("Details",new { id = item.depNo })">
                                     <i class="fa fa-group"></i>
                                     職稱管理
@@ -62,7 +79,7 @@
                                 @Html.ActionLink("Delete", "Delete", new { id = item.Id })*@
                             </td>
                         </tr>
-                    }
+                                    }
 
                 </table>
             </div>

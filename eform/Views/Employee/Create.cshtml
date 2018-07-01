@@ -2,10 +2,10 @@
 @using Newtonsoft.Json;
 @using eform.Models;
 @{
-    ViewBag.Title = "員工資料新增";
+    
 }
 
-<h3>員工資料新增</h3>
+<h3>@ViewBag.Title</h3>
 
 <div class="row">
     <div class="col-md-8">
@@ -161,6 +161,8 @@
 
                             var cboDepList = $('#cboDepList');
                             var cboPoList = $('#cboPoList');
+
+
                             $(cboDepList).append(
                                 $('<option></option>').val(0).html("選擇部門")
                             );
@@ -172,6 +174,9 @@
                                     $('<option></option>').val(obj.k).html(obj.v)
                                 );
                             });
+
+                            $('#cboDepList').selectpicker();
+                            //$('#cboPoList').selectpicker('show');
 
                             $(cboDepList).on("change", function (e) {
                                 var depV = this.value;
@@ -190,6 +195,8 @@
                                         }
                                     });
                                 }
+                                $('#cboPoList').selectpicker('destroy');
+                                $('#cboPoList').selectpicker('show');
                             });
 
                             $('#btnSelPo').on('click', function () {

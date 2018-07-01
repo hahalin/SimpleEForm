@@ -18,14 +18,18 @@ namespace eform.Models
         [Required]
         [Display(Name = "姓名")]
         public string UserCName { get; set; }
+
         [Display(Name = "密碼")]
         [DataType(DataType.Password)]
         public string Password { get; set; }
+
         [Display(Name = "確認密碼")]
         [DataType(DataType.Password)]
         public string rePassword { get; set; }
+
         [Display(Name = "職稱")]
         public string Title { get; set; }
+
         public ICollection<vwPoNo> poList { get; set; }
     }
 
