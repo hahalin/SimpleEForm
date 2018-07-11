@@ -12,7 +12,6 @@ namespace eform.Models
     {
         [Key]
         public string depNo { get; set; }
-        //[Unique(ErrorMessage ="部門名稱重複", TargetModelType = typeof(dep), TargetPropertyName = "depNm")]
         [Display(Name ="部門名稱")]
         public string depNm { get; set; }
         public string parentDepNo { get; set;}

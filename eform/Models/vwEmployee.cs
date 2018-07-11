@@ -25,6 +25,7 @@ namespace eform.Models
 
         [Display(Name = "確認密碼")]
         [DataType(DataType.Password)]
+        [System.ComponentModel.DataAnnotations.Compare("Password", ErrorMessage = "密碼和確認密碼不相符。")]
         public string rePassword { get; set; }
 
         [Display(Name = "職稱")]

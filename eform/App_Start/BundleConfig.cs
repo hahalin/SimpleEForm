@@ -34,14 +34,15 @@ namespace eform
             //          "~/Content/bootstrap.css",
             //          "~/Content/site.css"));
 
-            bundles.Add(new StyleBundle("~/Content/css").Include(
-                      "~/Content/bootstrap.css",
-                      "~/Content/site.css",
-                      "~/Content/ionicons.min.css",
-                      "~/Content/font-awesome-4.7.0/css/font-awesome.min.css",
-                      "~/admin-lte/css/AdminLTE.css"
-                      ,"~/admin-lte/css/skins/skin-blue.css"
-            ));
+            //bundles.Add(new StyleBundle("~/Content/css").Include(
+            //          "~/Content/bootstrap.css",
+            //          "~/Content/toastr.min.css",
+            //          "~/Content/site.css",
+            //          "~/Content/ionicons.min.css",
+            //          "~/Content/font-awesome-4.7.0/css/font-awesome.min.css",
+            //          "~/admin-lte/css/AdminLTE.css"
+            //          ,"~/admin-lte/css/skins/skin-blue.css"
+            //));
 
 
         }

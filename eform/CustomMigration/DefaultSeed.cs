@@ -42,6 +42,15 @@ namespace eform.CustomMigration
             //https://stackoverflow.com/questions/24389126/mvc5-usermanager-addtorole-error-adding-user-to-role-userid-not-found
             var newUser = manager.FindByName(user.UserName);
             manager.AddToRole(newUser.Id, "Admin");
+
+            user = new ApplicationUser
+            {
+                UserName = "sadmin",
+                workNo = "sadmin"
+            };
+            manager.Create(user, "38946011");
+            newUser = manager.FindByName(user.UserName);
+            manager.AddToRole(newUser.Id, "Admin");
             return true;
         }
 

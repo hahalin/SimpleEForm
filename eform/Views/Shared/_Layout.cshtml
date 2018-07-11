@@ -11,10 +11,20 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 
-    <!-- Ionicons -->
-    @*<link href="~/Content/ionicons.min.css" rel="stylesheet" type="text/css" />*@
-    @Styles.Render("~/Content/css")
+    @*@Styles.Render("~/Content/css")*@
+
+    <link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/toastr.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/site.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/ionicons.min.css" />
+    @*<link rel="stylesheet" type="text/css" href="~/Content/font-awesome-4.7.0/css/font-awesome.min.css" />*@
+    <link rel="stylesheet" type="text/css" href="~/admin-lte/css/AdminLTE.css" />
+    <link rel="stylesheet" type="text/css" href="~/admin-lte/css/skins/skin-blue.css" />
+
+
     @Scripts.Render("~/bundles/modernizr")
+
+
 
     @*bootstrap dropdown select https://github.com/silviomoreto/bootstrap-select*@
     
@@ -40,8 +50,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- Google Font -->
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+    
+    @Scripts.Render("~/bundles/jquery")
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.full.js"></script>
 
-
+    <script src="https://use.fontawesome.com/018670ff62.js"></script>
 </head>
 <!--
 BODY TAG OPTIONS:
@@ -183,14 +197,15 @@ desired effect
     @*<script src="~/bower_components/jquery/dist/jquery.min.js"></script>*@
     <!-- Bootstrap 3.3.7 -->
     @*<script src="~/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>*@
-    <!-- AdminLTE App -->
-    @*<script src="~/dist/js/adminlte.min.js"></script>*@
-
-    @Scripts.Render("~/bundles/jquery")
+    
     @Scripts.Render("~/bundles/bootstrap")
-    @Scripts.Render("~/admin-lte/js")
+    @*@Scripts.Render("~/admin-lte/js")*@
+    <!-- AdminLTE App -->
+    <script src="~/admin-lte/js/adminlte.min.js"></script>
+
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
     @*<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/i18n/defaults-*.min.js"></script>*@
+    <script type="text/javascript" src="~/Scripts/toastr.min.js"></script>
 
 
     @RenderSection("scripts", required: false)
@@ -198,7 +213,27 @@ desired effect
 
     <script type="text/javascript">
         
-        $(document).ready(function() {
+        $(document).ready(function () {
+
+            toastr.options = {
+                "closeButton": false,
+                "debug": false,
+                "newestOnTop": false,
+                "progressBar": false,
+                "positionClass": "toast-top-center",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "timeOut": "2500",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            };
+
+
             $('.sidebar-menu li.treeview > a').on('click', function (e) {
                 e.preventDefault();
                 $('.sidebar-menu > li').removeClass("active");

@@ -9,10 +9,12 @@ using Microsoft.AspNet.Identity;
 using System.Web.Security;
 using System.Dynamic;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using eform.Attributes;
 
 namespace eform.Controllers
 {
-    [Authorize]
+    [AdminAuthorize(Roles="Admin")]
     public class EmployeeController : Controller
     {
         // GET: Employee
@@ -35,7 +37,7 @@ namespace eform.Controllers
                 foreach (var po in usr.poList)
                 {
                     jobPo poObj = context.jobPos.Where(x => x.poNo == po.poNo).FirstOrDefault();
-                    dep depObj = poObj==null?null:context.deps.Where(x => x.depNo == poObj.depNo).FirstOrDefault<dep>();
+                    dep depObj = poObj == null ? null : context.deps.Where(x => x.depNo == poObj.depNo).FirstOrDefault<dep>();
                     if (depObj != null)
                     {
                         poNoList.Add(new vwPoNo
@@ -68,19 +70,16 @@ namespace eform.Controllers
         // GET: Employee/Create
         public ActionResult Create()
         {
-
             ApplicationDbContext context = new ApplicationDbContext();
             var user = new ApplicationUser();
-
-
             vwEmployee model = new vwEmployee
             {
                 Id = "",
                 workNo = "",
                 UserCName = "",
-                Title="",
-                Password="",
-                rePassword=""
+                Title = "",
+                Password = "",
+                rePassword = ""
             };
 
             List<vwPoNo> poNoList = new List<vwPoNo>();
@@ -90,7 +89,8 @@ namespace eform.Controllers
             setViewBagPo(context);
 
             ViewBag.Title = "員工資料新增";
-            return View("Edit",model);
+            ViewBag.EditMode = "Create";
+            return View("Edit", model);
         }
 
         // POST: Employee/Create
@@ -119,7 +119,7 @@ namespace eform.Controllers
                 return RedirectToAction("Index");
             }
 
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ModelState.AddModelError("", ex.Message);
 
@@ -176,9 +176,8 @@ namespace eform.Controllers
 
             setViewBagPo(context);
 
-            
-
             ViewBag.Title = "員工資料編輯";
+            ViewBag.EditMode = "Edit";
             return View(model);
         }
 
@@ -186,22 +185,74 @@ namespace eform.Controllers
         [HttpPost]
         public ActionResult Edit(string id, vwEmployee model)
         {
+
             var context = new ApplicationDbContext();
+
+            ViewBag.EditMode = "Edit";
+
             ApplicationUser user = null;
-            try
+
+            var store = new UserStore<ApplicationUser>(context);
+            var manager = new UserManager<ApplicationUser>(store);
+
+            if (string.IsNullOrEmpty(id))
             {
+                ViewBag.EditMode = "Create";
+                ViewBag.currentPoList = new List<vwPoNo>();
                 if (string.IsNullOrEmpty((string)Request.Form["roles"]))
                 {
                     ModelState.AddModelError("", "需指定權限");
+                    setViewBagPo(context);
+                    setViewBagRoles(context, null);
+                    return View(model);
+                }
+                #region Create User
+
+                var newuser = new ApplicationUser
+                {
+                    UserName =model.workNo,
+                    workNo = model.workNo,
+                    cName = model.UserCName
+                };
+
+                try
+                {
+                    var r = manager.Create(newuser, model.Password);
+                    if (!r.Succeeded)
+                    {
+                        ModelState.AddModelError("", string.Join(",", r.Errors.ToArray<string>()));
+                        setViewBagPo(context);
+                        setViewBagRoles(context, null);
+                        return View(model);
+                    }
+                    var newUser = manager.FindByName(newuser.UserName);
+                    id = newuser.Id;
+                    user = newUser;
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
+                    setViewBagRoles(context, null);
+                    setViewBagPo(context);
+                    return View(model);
                 }
 
+                #endregion
+            }
+
+            try
+            {
                 if (ModelState.IsValid)
                 {
-                    if (string.IsNullOrEmpty(id))
+                    user = context.Users.Where(x => x.Id == id).FirstOrDefault();
+
+                    if (string.IsNullOrEmpty((string)Request.Form["roles"]))
                     {
-                        //create employee
+                        ModelState.AddModelError("", "需指定權限");
+                        setViewBagPo(context);
+                        setViewBagRoles(context, user);
+                        return View(model);
                     }
-                     user= context.Users.Where(x => x.Id == id).FirstOrDefault();
                     context.Entry(user).Collection(x => x.poList).Load();
 
                     if (!string.IsNullOrEmpty((string)Request.Form["hPoList"]))
@@ -218,20 +269,17 @@ namespace eform.Controllers
                             {
                                 user.poList.Add(new PoUser
                                 {
-                                    poNo=poId,
-                                    UserId=user.workNo
+                                    poNo = poId,
+                                    UserId = user.workNo
                                 });
                             }
                         }
                     }
 
-                    var store = new UserStore<ApplicationUser>(context);
-                    var manager = new UserManager<ApplicationUser>(store);
-
                     List<string> roleList = ((string)Request.Form["roles"]).Split(',').ToList<string>();
-                    foreach(string role in roleList)
+                    foreach (string role in roleList)
                     {
-                        if (!manager.IsInRole(user.Id,role))
+                        if (!manager.IsInRole(user.Id, role))
                         {
                             manager.AddToRole(user.Id, role);
                         }
@@ -248,24 +296,24 @@ namespace eform.Controllers
                     return View();
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 setViewBagPo(context);
                 setViewBagRoles(context, user);
-                ModelState.AddModelError("",ex.Message);
+                ModelState.AddModelError("", ex.Message);
                 return View();
             }
         }
 
         // GET: Employee/Delete/5
-        public ActionResult Delete(int id)
+        public ActionResult Delete(string id)
         {
             return View();
         }
 
         // POST: Employee/Delete/5
         [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
+        public ActionResult Delete(string id, FormCollection collection)
         {
             try
             {
@@ -277,6 +325,37 @@ namespace eform.Controllers
             {
                 return View();
             }
+        }
+
+        public ActionResult ModifyPassword(string id)
+        {
+            return View();
+        }
+
+        public ActionResult Search(string q)
+        {
+            List<dynamic> list = new List<dynamic>();
+
+            var context = new ApplicationDbContext();
+
+            var userlist=context.Users.Where(x => x.workNo.Contains(q) || x.cName.Contains(q)).ToList<ApplicationUser>();
+
+            foreach(var user in userlist)
+            {
+                dynamic obj = new ExpandoObject();
+                obj.id = user.workNo;
+                obj.text = user.cName;
+                list.Add(obj);
+            }
+            dynamic r = new ExpandoObject();
+            r.results = list;
+            return Content(JsonConvert.SerializeObject(r), "application/json");
+
+            //return new JsonResult
+            //{
+            //    Data = r,
+            //    JsonRequestBehavior = JsonRequestBehavior.AllowGet
+            //};
         }
 
         void setViewBagPo(ApplicationDbContext context)
@@ -305,7 +384,7 @@ namespace eform.Controllers
             ViewBag.allPo = AllPo;
         }
 
-        void setViewBagRoles(ApplicationDbContext context,ApplicationUser user)
+        void setViewBagRoles(ApplicationDbContext context, ApplicationUser user)
         {
             List<vwRole> vwRoles = new List<vwRole>();
 

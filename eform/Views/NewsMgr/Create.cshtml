@@ -1,0 +1,121 @@
+﻿@model eform.Models.news
+
+@{
+    ViewBag.Title = "";
+}
+
+<script src="~/Scripts/ckeditor/ckeditor.js"></script>
+@*<script src="~/Scripts/ckeditor/themes/default/theme.js"></script>*@
+
+<a class="btn btn-info" href="@Url.Action("Index")"><i class="fa fa-list"></i>公告清單</a>
+<div class="row">
+    <div class="col-md-8">
+        <div class="box">
+            <div class="box-header">
+                <div class="box-title">
+                    <h3><span class="label label-success">建立公告</span></h3>
+                </div>
+            </div>
+            <div class="box-body>">
+                @using (Html.BeginForm("Create","NewsMgr",FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-horizontal">
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(model => model.uid, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.HiddenFor(model => model.id, new { htmlAttributes = new { @class = "form-control" } })
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.ndate, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.ndate, new { htmlAttributes = new { @class = "form-control", type = "date" } })
+                                @Html.ValidationMessageFor(model => model.ndate, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.title, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.title, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.title, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.content, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.TextAreaFor(model => model.content, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.content, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        @*<div class="form-group">
+                                @Html.LabelFor(model => model.isActive, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    <div class="checkbox">
+                                        @Html.EditorFor(model => model.isActive)
+                                        @Html.ValidationMessageFor(model => model.isActive, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>*@
+
+                        @*<div class="form-group">
+                                @Html.LabelFor(model => model.createTime, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.createTime, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.createTime, "", new { @class = "text-danger" })
+                                </div>
+                            </div>*@
+
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-10">
+                                <input type="submit" value="儲存" class="btn btn-primary" />
+                                <a href="@Url.Action("Index")" class="btn btn-default">取消</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(function () {
+            var today = new Date();
+            var rightNow = (new Date()) - (new Date()).getTimezoneOffset() * 60000;
+            res = new Date(rightNow).toISOString();
+            //console.log(res);
+            $('#ndate').val(res.slice(0, 10));
+            CKEDITOR.config.font_names = '新細明體;標楷體;微軟正黑體;'+CKEDITOR.config.font_names ;
+                
+                
+            CKEDITOR.replace("content", {
+                height: 200,
+                //removeButtons: 'About,Source,ImageButton,Image,Flash,iframe,Underline,Strike,Subscript,Superscript,Anchor,Styles,Specialchar'
+                toolbar: [
+                    //{ name: 'document', groups: ['mode', 'document', 'doctools'], items: ['Source', '-', 'Save', 'NewPage', 'Preview', 'Print', '-', 'Templates'] },
+                    //{ name: 'clipboard', groups: ['clipboard', 'undo'], items: ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'] },
+                    //{ name: 'editing', groups: ['find', 'selection', 'spellchecker'], items: ['Find', 'Replace', '-', 'SelectAll', '-', 'Scayt'] },
+                    //{ name: 'forms', items: ['Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton', 'HiddenField'] },
+                    //'/',
+                    { name: 'basicstyles', groups: ['basicstyles', 'cleanup'], items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat'] },
+                    { name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align', 'bidi'], items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'] },
+                    { name: 'links', items: ['Link', 'Unlink'] },
+                    //{ name: 'insert', items: ['Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe'] },
+                    //'/',
+                    { name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize'] },
+                    { name: 'colors', items: ['TextColor', 'BGColor'] }
+                    //{ name: 'tools', items: ['Maximize', 'ShowBlocks'] },
+                    //{ name: 'others', items: ['-'] },
+                    //{ name: 'about', items: ['About'] }
+                ] 
+            });
+            
+        })
+    </script>
+}

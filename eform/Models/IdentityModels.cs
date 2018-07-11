@@ -45,35 +45,4 @@ namespace eform.Models
     //    }
     //}
 
-
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
-    {
-        public ApplicationDbContext()
-            : base("DefaultConnection", throwIfV1Schema: false)
-        {
-            
-            Database.SetInitializer(new CustomMigration.eFormDBInitializer());
-
-            //Database.SetInitializer(
-            //);
-        }
-        public static ApplicationDbContext Create()
-        {
-            return new ApplicationDbContext();
-        }
-
-        public DbSet<dep> deps { get; set; }
-        public DbSet<jobPo> jobPos { get; set; }
-
-
-        protected override void OnModelCreating(DbModelBuilder modelBuilder)
-        {
-            // configures one-to-many relationship
-            base.OnModelCreating(modelBuilder);
-            //modelBuilder.Entity<jobPo>()
-            //    .HasRequired<ApplicationUser>(u=>u.a)
-            //    .HasForeignKey<int>(s => s.CurrentGradeId);
-        }
-    }
-
 }

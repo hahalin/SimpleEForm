@@ -52,6 +52,13 @@ namespace eform.Controllers
             }
         }
 
+        public ActionResult AccessDenied()
+        {
+            ViewBag.PreviousUrl = System.Web.HttpContext.Current.Request.UrlReferrer;
+
+            return View();
+        }
+
         //
         // GET: /Account/Login
         [AllowAnonymous]

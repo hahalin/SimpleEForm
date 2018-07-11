@@ -12,7 +12,7 @@
             <div class="box-header">
                 <a class="btn btn-info" href="@Url.Action("Index")"><i class="fa fa-list"></i>員工清單</a>
             </div>
-            @using (Html.BeginForm())
+            @using (Html.BeginForm("Edit", "Employee", FormMethod.Post,new { name = "fmEmployee",id="fmEmployee" }))
             {
                 @Html.AntiForgeryToken()
 
@@ -26,7 +26,7 @@
                         @Html.LabelFor(model => model.workNo, htmlAttributes: new { @class = "control-label col-md-2" })
                         <div class="col-md-10">
                             @Html.EditorFor(model => model.workNo, new { htmlAttributes = new { @class = "form-control" } })
-                            @Html.ValidationMessageFor(model => model.workNo, "", new { @class = "text-danger" })
+                            @Html.ValidationMessageFor(model => model.workNo, "", new { @class = "text-danger"})
                         </div>
                     </div>
 
@@ -37,13 +37,23 @@
                             @Html.ValidationMessageFor(model => model.UserCName, "", new { @class = "text-danger" })
                         </div>
                     </div>
-                    @*<div class="form-group">
-                        @Html.LabelFor(model => model.Password, htmlAttributes: new { @class = "control-label col-md-2" })
-                        <div class="col-md-10">
-                            @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control" } })
-                            @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+                    @if (ViewBag.EditMode == "Create")
+                    {
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Password, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+                            </div>
                         </div>
-                    </div>*@
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.rePassword, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.rePassword, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.rePassword, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    }
 
                     <div class="form-group">
                         @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label col-md-2" })
@@ -52,12 +62,11 @@
                             <button id="btnSelPo" type="button" data-toggle="modal" data-target="#WinSelPo">
                                 <i class="fa fa-search-plus"></i>加入職稱
                             </button>
-                            <br/>
-                            <ul class="list-group col-md-8" id="ulPoList">
-                            </ul>
+                            <br />
+                            <ul class="list-group col-md-8" id="ulPoList"></ul>
                         </div>
                     </div>
-
+                    <!--polist-->
                     <div class="form-group">
                         <label class="control-label col-md-2">系統權限</label>
                         <div class="col-md-10">
@@ -79,7 +88,13 @@
 
                     <div class="form-group">
                         <div class="col-md-offset-2 col-md-10">
-                            <input type="submit" value="儲存" class="btn btn-primary">
+                            @if (ViewBag.EditMode == "Edit")
+                            {
+                                <a class="btn btn-warning" href="@Url.Action("ModifyPassword",new { id = Model.Id })">
+                                    <i class="fa fa-pencil"></i>
+                                    修改密碼
+                                </a>
+                            }                            <input type="submit" value="儲存" class="btn btn-primary" onclick="return doSubmit();">
                             <a class="btn btn-default" href="@Url.Action("Index")"><i class="fa fa-ban"></i>取消</a>
                         </div>
                     </div>
@@ -112,7 +127,7 @@
                         </div>
                         <div class="modal-footer">
                             <div class="text-center">
-                                <button type="button" class="btn btn-primary" id="btnAddPo"><i class="fa fa-plus"></i>加入</button>
+                                <button type="button" class="btn btn-primary" id="btnAddPo" ><i class="fa fa-plus"></i>加入</button>
                                 <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-undo"></i>取消</button>
                             </div>
                         </div>
@@ -156,9 +171,22 @@
                         }
                         $('#hPoList').val(poListValue.toString());
                     }
-                    $(function () {
 
-                            updatePoListUI();
+                    function doSubmit()
+                    {
+                        if ($('input[name="roles"]:checked').length == 0)
+                        {
+                            toastr["error"]("請設定系統權限", "Error");
+                            return false;
+                        }
+                        //$('#fmEmployee').submit();
+                        return true;
+                    }
+
+                    $(function () {
+                        $('form,input,select,textarea').attr("autocomplete", "off");
+                        $('#workNo').css('ime-mode','normal');
+                        updatePoListUI();
 
                             var cboDepList = $('#cboDepList');
                             var cboPoList = $('#cboPoList');
@@ -205,7 +233,7 @@
                             });
                             $('#btnAddPo').on('click', function () {
                                 var poExist = false;
-                                
+
                                 $.each(currentPoList, function (val, obj) {
                                     if (obj.poNo.toString() == $('#cboPoList').val()) {
                                         poExist = true;
