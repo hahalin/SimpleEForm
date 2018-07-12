@@ -1,0 +1,89 @@
+﻿@model eform.Models.ReqOverTime
+
+@{
+    ViewBag.Title = "CreateOverTimeForm";
+}
+
+<h2>加班單申請</h2>
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+
+@using (Html.BeginForm("CreateOverTimeForm","Form",FormMethod.Post,new { id = "fmMain" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>ReqOverTime</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.CreateDate, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.CreateDate, new { htmlAttributes = new { @class = "form-control", type = "date"} })
+                @Html.ValidationMessageFor(model => model.CreateDate, "", new { @class = "text-danger," })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.dtBegin, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.dtBegin, new { htmlAttributes = new { @class = "form-control", type = "datetime-local" } })
+                @Html.ValidationMessageFor(model => model.dtBegin, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.dtEnd, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.dtEnd, new { htmlAttributes = new { @class = "form-control", type = "datetime-local" } })
+                @Html.ValidationMessageFor(model => model.dtEnd, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.memo, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextAreaFor(model => model.memo, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.memo, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="送出" class="btn btn-default" onclick="return doSubmit();" />
+            </div>
+        </div>
+    </div>
+}
+
+
+@section Scripts {
+    <script type="text/javascript">
+        function doSubmit() {
+            debugger;
+            var dtend = new Date($('#dtEnd').val()).getTime();
+            var dtbegin = new Date($('#dtBegin').val()).getTime();
+            if ((dtend - dtbegin) < 0)
+            {
+                toastr["error"]("結束時間不得小於開始時間", "Error");
+                return false;
+            }
+            return true;
+        }
+        $(function () {
+            //$('#fmMain').onsubmit = function () { dosubmit() };
+            //document.getElementById("fmMain").onsubmit = function () { dosubmit(); }
+            $('#memo').css('width', '500px');
+            var today = new Date();
+            var rightNow = (new Date()) - (new Date()).getTimezoneOffset() * 60000;
+            res = new Date(rightNow).toISOString();
+            $('#CreateDate').val(res.slice(0, 10));
+            $('#dtBegin').val(res.slice(0, 16));
+            $('#dtEnd').val(res.slice(0, 16));
+        });
+    </script>
+}

@@ -240,6 +240,7 @@
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\news.cs" />
     <Compile Include="Models\OverTimeForm.cs" />
+    <Compile Include="Models\ReqOverTime.cs" />
     <Compile Include="Models\vwEmployee.cs" />
     <Compile Include="Models\vwPoNo.cs" />
     <Compile Include="Models\vwSelect2Model.cs" />
@@ -914,6 +915,7 @@
     <Content Include="Views\NewsMgr\Create.cshtml" />
     <Content Include="Views\NewsMgr\Edit.cshtml" />
     <Content Include="Views\Home\NewsDetail.cshtml" />
+    <Content Include="Views\Form\CreateOverTimeForm.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-
+using eform.Attributes;
 namespace eform.Controllers
 {
+    [AdminAuthorize(Roles ="Admin,Employee")]
     public class FormController : Controller
     {
         // GET: Form
@@ -21,8 +22,9 @@ namespace eform.Controllers
         }
 
         // GET: Form/Create
-        public ActionResult Create()
+        public ActionResult CreateOverTimeForm()
         {
+
             return View();
         }
 
