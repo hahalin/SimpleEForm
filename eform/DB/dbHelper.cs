@@ -43,6 +43,22 @@ namespace eform
             }
         }
 
+        public string sql2Str(string sql)
+        {
+            SqlConnection con = new SqlConnection(conStr);
+            con.Open();
+            SqlCommand cmd = new SqlCommand(sql, con);
+            try
+            {
+                return (string)cmd.ExecuteScalar();
+            }
+            catch (Exception ex)
+            {
+                return "";
+            }
+        }
+
+
         public void execSql(string sql)
         {
             SqlConnection con = new SqlConnection(conStr);

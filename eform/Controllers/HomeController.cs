@@ -13,7 +13,6 @@ namespace eform.Controllers
     {
         public ActionResult Index()
         {
-
             var context = new ApplicationDbContext();
             List<news> newslist = (from item in context.newsList.ToList<news>() orderby item.createTime descending select item).ToList<news>();
             ViewBag.newslist = newslist;

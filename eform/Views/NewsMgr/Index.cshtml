@@ -4,45 +4,58 @@
     ViewBag.Title = "Index";
 }
 
-<h2>Index</h2>
+<h2>公告管理</h2>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.ndate)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.title)
-        </th>
-        <th></th>
-    </tr>
+<div class="row">
+    <div class="col-md-8">
+        <div class="box">
+            <div class="box-header">
+                <div class="box-title">
+                    @*<h3><span class="label label-success">公告管理</span></h3>*@
+                    <a href="@Url.Action("Create")" class="btn btn-primary">新增公告</a>
+                </div>
+            </div>
+            <div class="box-body>">
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @{ 
-                string ndate = Convert.ToDateTime(item.ndate).ToString("yyyy-MM-dd");
-            }
-            
-            @ndate
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.title)
-        </td>
-        @*<td>
-            @{
-                string content = item.content.Replace("\"", "");
-            }
-            @Html.Raw(content)
-        </td>*@
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.id }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.id })
-        </td>
-    </tr>
-}
+                <table class="table">
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.ndate)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.title)
+                        </th>
+                        <th></th>
+                    </tr>
 
-</table>
+                    @foreach (var item in Model)
+                    {
+                    <tr>
+                        <td>
+                            @{
+                                    string ndate = Convert.ToDateTime(item.ndate).ToString("yyyy-MM-dd");
+                            }
+
+                            @ndate
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.title)
+                        </td>
+                        @*<td>
+                                @{
+                                    string content = item.content.Replace("\"", "");
+                                }
+                                @Html.Raw(content)
+                            </td>*@
+                        <td>
+                            <a href="@Url.Action("Edit",new {id=item.id })" class="btn btn-info">修改</a>
+                            <a href="@Url.Action("Delete",new {id=item.id })" class="btn btn-danger">刪除</a>
+                        </td>
+                    </tr>
+                                    }
+
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

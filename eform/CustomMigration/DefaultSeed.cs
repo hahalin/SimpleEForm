@@ -83,6 +83,10 @@ namespace eform.CustomMigration
                 var context=new Models.ApplicationDbContext();
                 importDefaultRole(context);
                 importDefaultAdmin(context);
+
+                dbHelper dbh = new dbHelper();
+                dbh.execSql("update deps set sort=1 where sort=null");
+
             }
             return true;
         }

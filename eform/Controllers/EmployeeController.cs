@@ -24,7 +24,7 @@ namespace eform.Controllers
             ApplicationDbContext context = new ApplicationDbContext();
             var store = new UserStore<ApplicationUser>(context);
             var manager = new UserManager<ApplicationUser>(store);
-            List<ApplicationUser> users = store.Users.ToList<ApplicationUser>();
+            List<ApplicationUser> users = store.Users.Where(x => x.status==1 && x.UserName.ToLower().Contains("sadmin") == false).ToList<ApplicationUser>();
             List<vwEmployee> model = new List<vwEmployee>();
 
             foreach (var usr in users)
@@ -58,6 +58,7 @@ namespace eform.Controllers
                         Id = usr.Id,
                         workNo = usr.workNo,
                         UserCName = usr.cName,
+                        UserEName=usr.eName,
                         Title = string.Join(",", usrTitle.ToArray())
                     });
                 }
@@ -77,6 +78,7 @@ namespace eform.Controllers
                 Id = "",
                 workNo = "",
                 UserCName = "",
+                UserEName="",
                 Title = "",
                 Password = "",
                 rePassword = ""
@@ -104,7 +106,9 @@ namespace eform.Controllers
             {
                 UserName = collection["workNo"].ToString(),
                 workNo = collection["workNo"].ToString(),
-                cName = collection["UserCName"].ToString()
+                cName = collection["UserCName"].ToString(),
+                eName= collection["UserEName"].ToString(),
+                status=1
             };
 
             try
@@ -169,6 +173,7 @@ namespace eform.Controllers
                 Id = user.Id,
                 workNo = user.workNo,
                 UserCName = user.cName,
+                UserEName = user.eName,
                 Title = string.Join(",", usrTitle.ToArray())
             };
 
@@ -212,7 +217,8 @@ namespace eform.Controllers
                 {
                     UserName =model.workNo,
                     workNo = model.workNo,
-                    cName = model.UserCName
+                    cName = model.UserCName,
+                    eName=model.UserEName
                 };
 
                 try
@@ -286,6 +292,7 @@ namespace eform.Controllers
                     }
 
                     user.cName = model.UserCName;
+                    user.eName = model.UserEName;
                     context.SaveChanges();
                     return RedirectToAction("Index");
                 }
@@ -308,7 +315,10 @@ namespace eform.Controllers
         // GET: Employee/Delete/5
         public ActionResult Delete(string id)
         {
-            return View();
+            dbHelper dbh = new dbHelper();
+            dbh.execSql("update dbo.AspNetUsers set status=0,workNo=workNo+'-remove' where Id='" + id + "'");
+            
+            return RedirectToAction("Index");
         }
 
         // POST: Employee/Delete/5
@@ -338,7 +348,7 @@ namespace eform.Controllers
 
             var context = new ApplicationDbContext();
 
-            var userlist=context.Users.Where(x => x.workNo.Contains(q) || x.cName.Contains(q)).ToList<ApplicationUser>();
+            var userlist=context.Users.Where(x =>x.status==1 && x.workNo.Contains(q) || x.cName.Contains(q)).ToList<ApplicationUser>();
 
             foreach(var user in userlist)
             {
@@ -357,6 +367,86 @@ namespace eform.Controllers
             //    JsonRequestBehavior = JsonRequestBehavior.AllowGet
             //};
         }
+
+        [AdminAuthorize(Roles="Admin")]
+        [HttpGet]
+        public ActionResult ChangePassword(string id)
+        {
+            var context = new ApplicationDbContext();
+            var store = new UserStore<ApplicationUser>(context);
+            ApplicationUserManager mgr = new ApplicationUserManager(store);
+            var user = mgr.FindById(id);
+            ViewBag.UserText=user.workNo+" "+user.cName;
+            ChangePasswordViewModel model = new ChangePasswordViewModel
+            {
+                id = id
+            };
+            return View(model);
+        }
+
+        [AdminAuthorize(Roles = "Admin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ChangePassword(ChangePasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+            else
+            {
+                string id = model.id;
+                var context = new ApplicationDbContext();
+                var store = new UserStore<ApplicationUser>(context);
+                ApplicationUserManager mgr = new ApplicationUserManager(store);
+                var user = mgr.FindById(id);
+                mgr.RemovePassword(id);
+                mgr.AddPassword(id, model.NewPassword);
+                TempData["changepwdsucess"] = "Y";
+                return RedirectToAction("Edit", new { id = id });
+            }
+        }
+
+        [AdminAuthorize(Roles = "Admin,Employee")]
+        [HttpGet]
+        public ActionResult ChangeMyPassword()
+        {
+            var context = new ApplicationDbContext();
+            var store = new UserStore<ApplicationUser>(context);
+            ApplicationUserManager mgr = new ApplicationUserManager(store);
+            string id = User.Identity.GetUserId();
+            var user = mgr.FindById(id);
+            ViewBag.UserText = user.workNo + " " + user.cName;
+            ChangePasswordViewModel model = new ChangePasswordViewModel
+            {
+                id = id
+            };
+            return View(model);
+        }
+
+        [AdminAuthorize(Roles = "Admin,Employee")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ChangeMyPassword(ChangePasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+            else
+            {
+                string id = model.id;
+                var context = new ApplicationDbContext();
+                var store = new UserStore<ApplicationUser>(context);
+                ApplicationUserManager mgr = new ApplicationUserManager(store);
+                var user = mgr.FindById(id);
+                mgr.RemovePassword(id);
+                mgr.AddPassword(id, model.NewPassword);
+                TempData["changepwdsucess"] = "Y";
+                return RedirectToAction("Index", "Home");
+            }
+        }
+
 
         void setViewBagPo(ApplicationDbContext context)
         {
@@ -405,5 +495,5 @@ namespace eform.Controllers
             }
             ViewBag.Roles = vwRoles;
         }
-    }
+    } 
 }

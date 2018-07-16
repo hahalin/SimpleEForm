@@ -3,45 +3,58 @@
     //ViewBag.Title = "Index";
     IEnumerable<news> newslist = ViewBag.newslist;
 }
-<div class="row">
-    <div class="col-xs-10 col-md-8">
-        <div class="box">
-            <div class="box-header">
-                <table class="table table-hover">
-                    <tbody>
-                        <tr>
-                        <tr>
-                            <th style="width:150px;">
-                                公告日期
-                            </th>
-                            <th>
-                                標題
-                            </th>
-                        </tr>
 
-                        @foreach (var item in newslist)
-                        {
+@if (User.Identity.IsAuthenticated)
+{
+    <div class="row">
+        <div class="col-xs-10 col-md-8">
+            <div class="box">
+                <div class="box-header">
+                    <table class="table table-hover">
+                        <tbody>
                             <tr>
-                                <td>
-                                    @{
-                                        string ndate = Convert.ToDateTime(item.ndate).ToString("yyyy-MM-dd");
-                                    }
-
-                                    @ndate
-                                </td>
-                                <td>
-                                    <a href="@Url.Action("NewsDetail", "Home", new { id = item.id })" class="text text-info">
-                                        @Html.DisplayFor(modelItem => item.title)
-                                    </a>
-                                </td>
+                            <tr>
+                                <th style="width:150px;">
+                                    公告日期
+                                </th>
+                                <th>
+                                    標題
+                                </th>
                             </tr>
+
+                            @foreach (var item in newslist)
+                        {
+                        <tr>
+                            <td>
+                                @{
+                                        string ndate = Convert.ToDateTime(item.ndate).ToString("yyyy-MM-dd");
+                                }
+
+                                @ndate
+                            </td>
+                            <td>
+                                <a href="@Url.Action("NewsDetail", "Home", new { id = item.id })" class="text text-info">
+                                    @Html.DisplayFor(modelItem => item.title)
+                                </a>
+                            </td>
+                        </tr>
                                         }
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
-</div>
- @section scripts {
-<!-- We would add slider scripts here -->
+}
+
+@section scripts {
+    <!-- We would add slider scripts here -->
+    <script type="text/javascript">
+         $(function () {
+                @if (TempData["changepwdsucess"]!=null && TempData["changepwdsucess"].ToString()=="Y")
+                {
+                    @:toastr["info"]("個人密碼修改完成!");
+                }
+         })
+    </script>
 }

@@ -13,6 +13,8 @@ namespace eform.Models
         public string depNo { get; set; }
         [Display(Name ="職稱")]
         public string poNm { get; set; }
+        [Display(Name = "部門表單簽核權限")]
+        public bool isFormSigner { get; set; } = false;
     }
 
     public class PoUser

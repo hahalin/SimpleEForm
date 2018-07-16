@@ -29,23 +29,11 @@ namespace eform.Migrations
                     })
                 .PrimaryKey(t => t.id);
             
-            CreateTable(
-                "dbo.OverTimeForms",
-                c => new
-                    {
-                        id = c.Int(nullable: false, identity: true),
-                        billNo = c.String(),
-                        billDate = c.DateTime(nullable: false),
-                        Title = c.String(),
-                        senderNo = c.String(),
-                    })
-                .PrimaryKey(t => t.id);
             
         }
         
         public override void Down()
         {
-            DropTable("dbo.OverTimeForms");
             DropTable("dbo.FlowDefSub");
             DropTable("dbo.FlowDefMain");
         }

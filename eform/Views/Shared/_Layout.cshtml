@@ -18,7 +18,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <link rel="stylesheet" type="text/css" href="~/Content/site.css" />
     <link rel="stylesheet" type="text/css" href="~/Content/ionicons.min.css" />
     @*<link rel="stylesheet" type="text/css" href="~/Content/font-awesome-4.7.0/css/font-awesome.min.css" />*@
-    <link rel="stylesheet" type="text/css" href="~/admin-lte/css/AdminLTE.css" />
+    <link rel="stylesheet" type="text/css" href="~/admin-lte/css/AdminLTE.min.css" />
     <link rel="stylesheet" type="text/css" href="~/admin-lte/css/skins/skin-blue.css" />
 
 
@@ -201,18 +201,14 @@ desired effect
     @Scripts.Render("~/bundles/bootstrap")
     @*@Scripts.Render("~/admin-lte/js")*@
     <!-- AdminLTE App -->
-    <script src="~/admin-lte/js/adminlte.min.js"></script>
-
+    <script src="~/admin-lte/js/adminlte.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
     @*<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/i18n/defaults-*.min.js"></script>*@
     <script type="text/javascript" src="~/Scripts/toastr.min.js"></script>
 
 
-    @RenderSection("scripts", required: false)
-
-
     <script type="text/javascript">
-        
+
         $(document).ready(function () {
 
             toastr.options = {
@@ -234,13 +230,21 @@ desired effect
             };
 
 
-            $('.sidebar-menu li.treeview > a').on('click', function (e) {
-                e.preventDefault();
-                $('.sidebar-menu > li').removeClass("active");
-                $(this).closest("li.treeview").addClass("active");
-            });
+            //$('.sidebar>.sidebar-menu >li.treeview  a').on('click', function (event) {
+            //    event.preventDefault();
+            //    $('.sidebar>.sidebar-menu >li').removeClass("active");
+            //    $(event.target).parent('li.treeview').addClass('active');
+            //    $(this).closest("li.treeview").addClass("active");
+            //});
         })
     </script>
+
+    <script src="~/Scripts/DateUtil.js"></script>
+
+    @RenderSection("scripts", required: false)
+
+
+    
     
 </body>
 </html>

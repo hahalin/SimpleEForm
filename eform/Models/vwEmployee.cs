@@ -19,6 +19,10 @@ namespace eform.Models
         [Display(Name = "姓名")]
         public string UserCName { get; set; }
 
+        [Required]
+        [Display(Name = "英文名")]
+        public string UserEName { get; set; }
+
         [Display(Name = "密碼")]
         [DataType(DataType.Password)]
         public string Password { get; set; }

@@ -79,18 +79,14 @@
     </div>
 </div>
 
-<div>
-    @Html.ActionLink("Back to List", "Index")
-</div>
-
 @section Scripts {
     <script type="text/javascript">
         $(function () {
             var today = new Date();
             var rightNow = (new Date()) - (new Date()).getTimezoneOffset() * 60000;
             res = new Date(rightNow).toISOString();
-            //console.log(res);
-            $('#ndate').val(res.slice(0, 10));
+            $('#ndate').val(getLocalDateStr());
+
             CKEDITOR.config.font_names = '新細明體;標楷體;微軟正黑體;'+CKEDITOR.config.font_names ;
                 
                 

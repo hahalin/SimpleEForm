@@ -15,6 +15,7 @@ namespace eform.Models
         [Display(Name = "表單名稱")]
         [Required]
         public string nm { get; set; }
+        public string enm { get; set; }
         public int seq { get; set; } = 1;
     }
 

@@ -206,6 +206,7 @@
     <Compile Include="Controllers\DepController.cs" />
     <Compile Include="Controllers\EmployeeController.cs" />
     <Compile Include="Controllers\FlowDefController.cs" />
+    <Compile Include="Controllers\FormMgrController.cs" />
     <Compile Include="Controllers\FormController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
@@ -229,21 +230,49 @@
     <Compile Include="Migrations\201807081526002_addFlowDef.Designer.cs">
       <DependentUpon>201807081526002_addFlowDef.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201807140016510_addEnglishName2User.cs" />
+    <Compile Include="Migrations\201807140016510_addEnglishName2User.Designer.cs">
+      <DependentUpon>201807140016510_addEnglishName2User.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201807140651178_addSort2Deps.cs" />
+    <Compile Include="Migrations\201807140651178_addSort2Deps.Designer.cs">
+      <DependentUpon>201807140651178_addSort2Deps.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201807140801594_addisFormSigner2jobpo.cs" />
+    <Compile Include="Migrations\201807140801594_addisFormSigner2jobpo.Designer.cs">
+      <DependentUpon>201807140801594_addisFormSigner2jobpo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201807141416056_addenm2flowdefmain.cs" />
+    <Compile Include="Migrations\201807141416056_addenm2flowdefmain.Designer.cs">
+      <DependentUpon>201807141416056_addenm2flowdefmain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201807150832547_addFlowMain-Sub-OverTimeForm.cs" />
+    <Compile Include="Migrations\201807150832547_addFlowMain-Sub-OverTimeForm.Designer.cs">
+      <DependentUpon>201807150832547_addFlowMain-Sub-OverTimeForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201807150846468_addStatus2Users.cs" />
+    <Compile Include="Migrations\201807150846468_addStatus2Users.Designer.cs">
+      <DependentUpon>201807150846468_addStatus2Users.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ApplicationDbContext.cs" />
     <Compile Include="Models\dep.cs" />
     <Compile Include="Models\FlowDefMain.cs" />
-    <Compile Include="Models\FormBase.cs" />
+    <Compile Include="Models\FlowMain.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\jobPo.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\news.cs" />
-    <Compile Include="Models\OverTimeForm.cs" />
     <Compile Include="Models\ReqOverTime.cs" />
+    <Compile Include="Models\vwFlowMain.cs" />
+    <Compile Include="Models\vwFlowRequest.cs" />
+    <Compile Include="Models\vwSignResult.cs" />
+    <Compile Include="Models\vwSignType.cs" />
     <Compile Include="Models\vwEmployee.cs" />
     <Compile Include="Models\vwPoNo.cs" />
-    <Compile Include="Models\vwSelect2Model.cs" />
+    <Compile Include="Models\vwFlowStatus.cs" />
+    <Compile Include="Models\vwReqOverTime.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -846,6 +875,7 @@
     <Content Include="Scripts\ckeditor\skins\v2\skin.js" />
     <Content Include="Scripts\ckeditor\skins\v2\templates.css" />
     <Content Include="Scripts\ckeditor\themes\default\theme.js" />
+    <Content Include="Scripts\DateUtil.js" />
     <Content Include="Scripts\jquery-3.3.1.js" />
     <Content Include="Scripts\jquery-3.3.1.min.js" />
     <Content Include="Scripts\jquery-3.3.1.slim.js" />
@@ -916,9 +946,13 @@
     <Content Include="Views\NewsMgr\Edit.cshtml" />
     <Content Include="Views\Home\NewsDetail.cshtml" />
     <Content Include="Views\Form\CreateOverTimeForm.cshtml" />
+    <Content Include="Views\Employee\ChangePassword.cshtml" />
+    <Content Include="Views\Employee\ChangeMyPassword.cshtml" />
+    <Content Include="Views\Form\Details.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\FlowMgr\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
@@ -945,6 +979,24 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201807081526002_addFlowDef.resx">
       <DependentUpon>201807081526002_addFlowDef.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201807140016510_addEnglishName2User.resx">
+      <DependentUpon>201807140016510_addEnglishName2User.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201807140651178_addSort2Deps.resx">
+      <DependentUpon>201807140651178_addSort2Deps.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201807140801594_addisFormSigner2jobpo.resx">
+      <DependentUpon>201807140801594_addisFormSigner2jobpo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201807141416056_addenm2flowdefmain.resx">
+      <DependentUpon>201807141416056_addenm2flowdefmain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201807150832547_addFlowMain-Sub-OverTimeForm.resx">
+      <DependentUpon>201807150832547_addFlowMain-Sub-OverTimeForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201807150846468_addStatus2Users.resx">
+      <DependentUpon>201807150846468_addStatus2Users.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

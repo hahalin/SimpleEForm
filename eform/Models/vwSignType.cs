@@ -5,9 +5,9 @@ using System.Web;
 
 namespace eform.Models
 {
-    public class vwSelect2Model
+    public class vwSignType
     {
-        public string id { get; set; }
-        public string text { get; set; }
+        public int id { get; set; }
+        public string nm { get; set; }
     }
 }

@@ -16,46 +16,85 @@ namespace eform.Controllers
         {
             var context = new ApplicationDbContext();
 
-            var model = context.deps;
+            var model = context.deps.OrderBy(x => x.sort).ToList<dep>();
 
             return View(model);
         }
 
         public ActionResult Create()
         {
+            ViewBag.Title = "新增部門";
+            ViewBag.Mode = "Create";
             return View();
         }
-
+        public ActionResult Edit(string id)
+        {
+            var db = new ApplicationDbContext();
+            var dep = db.deps.Where(x => x.depNo == id).SingleOrDefault<dep>();
+            ViewBag.Title = "編輯部門";
+            ViewBag.Mode = "Edit";
+            var model = dep;
+            return View("Create", model);
+        }
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(dep model)
         {
-            var db = new ApplicationDbContext();
-            if (db.deps.Where(x=>x.depNm==model.depNm).Count()>0)
+            var context = new ApplicationDbContext();
+
+            if (string.IsNullOrEmpty(model.depNo))
             {
-                ModelState.AddModelError("depNm", "部門名稱重複");
-            }
-            try
-            {
-                model.depNo = Guid.NewGuid().ToString();
-                if (ModelState.IsValid)
+                if (context.deps.Where(x => x.depNm == model.depNm).Count() > 0)
                 {
-                    db.deps.Add(model);
-                    db.SaveChanges();
-                    return RedirectToAction("Index");
+                    ModelState.AddModelError("depNm", "部門名稱重複");
+                }
+                try
+                {
+                    model.depNo = Guid.NewGuid().ToString();
+                    if (ModelState.IsValid)
+                    {
+                        context.deps.Add(model);
+                        context.SaveChanges();
+                        return RedirectToAction("Index");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
                 }
             }
-            catch (RetryLimitExceededException  dex )
+            else
             {
-                ModelState.AddModelError("", dex.Message);
-                //Log the error (uncomment dex variable name and add a line here to write a log.)
-                //ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
-           }
-            catch(Exception ex)
-            {
-                ModelState.AddModelError("", ex.Message);
+                if (context.deps.Where(x => x.depNm == model.depNm && x.depNo.Equals(model.depNo)==false).Count() > 0)
+                {
+                    ModelState.AddModelError("depNm", "部門名稱重複");
+                }
+                try
+                {
+                    if (ModelState.IsValid)
+                    {
+                        dep saveModel = context.deps.Where(x => x.depNo == model.depNo).FirstOrDefault();
+                        saveModel.sort = model.sort;
+                        saveModel.depNm = model.depNm;
+                        context.SaveChanges();
+                        return RedirectToAction("Index");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
+                }
             }
             return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult Delete(string hid)
+        {
+            dbHelper dbh = new dbHelper();
+            dbh.execSql("delete from deps where depNo='" + hid + "'");
+            dbh.execSql("delete from jobpoes where depNo not in (select depNo from deps)");
+            return RedirectToAction("Index");
         }
 
         public ActionResult Details(string id)
@@ -67,36 +106,77 @@ namespace eform.Controllers
             var model = dep;
             return View(model);
         }
+        
         public ActionResult CreatePo(string id)
         {
+            ViewBag.Title = "新增職稱";
+            ViewBag.Mode = "Create";
+            jobPo model = new jobPo();
+            model.depNo = id;
+            return View(model);
+        }
+
+        public ActionResult EditPo(string id)
+        {
+            ViewBag.Title = "編輯職稱";
+            ViewBag.Mode = "Edit";
             ViewBag.id = id;
-            return View();
+            var context = new ApplicationDbContext();
+            jobPo model = context.jobPos.Where(x => x.poNo == id).FirstOrDefault();
+            return View("CreatePo",model);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult CreatePo(jobPo model)
         {
-            var db = new ApplicationDbContext();
-            dep depObj = db.deps.Where(x => x.depNo == model.depNo).FirstOrDefault();
-            if (db.jobPos.Where(x => x.poNm == model.poNm && x.depNo==model.depNo).Count() > 0)
+            var context = new ApplicationDbContext();
+            if (string.IsNullOrEmpty(model.poNo))
             {
-                ModelState.AddModelError("poNm", "部門職稱名稱重複");
-            }
-            try
-            {
-                model.poNo = Guid.NewGuid().ToString();
-                if (ModelState.IsValid)
+                dep depObj = context.deps.Where(x => x.depNo == model.depNo).FirstOrDefault();
+                if (context.jobPos.Where(x => x.poNm == model.poNm && x.depNo == model.depNo).Count() > 0)
                 {
-                    db.jobPos.Add(model);
-                    db.SaveChanges();
-                    return RedirectToAction("Details","Dep",new {id = model.depNo});
+                    ModelState.AddModelError("poNm", "部門職稱名稱重複");
+                }
+                try
+                {
+                    model.poNo = Guid.NewGuid().ToString();
+                    if (ModelState.IsValid)
+                    {
+                        context.jobPos.Add(model);
+                        context.SaveChanges();
+                        return RedirectToAction("Details", "Dep", new { id = model.depNo });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
                 }
             }
-            catch (Exception ex)
+            else
             {
-                ModelState.AddModelError("", ex.Message);
+                dep depObj = context.deps.Where(x => x.depNo == model.depNo).FirstOrDefault();
+                if (context.jobPos.Where(x => x.poNm == model.poNm && x.depNo == model.depNo && x.poNo.Equals(model.poNo)==false).Count() > 0)
+                {
+                    ModelState.AddModelError("poNm", "部門職稱名稱重複");
+                }
+                try
+                {
+                    if (ModelState.IsValid)
+                    {
+                        jobPo saveModel = context.jobPos.Where(x => x.poNo == model.poNo).FirstOrDefault();
+                        saveModel.poNm = model.poNm;
+                        saveModel.isFormSigner = model.isFormSigner;
+                        context.SaveChanges();
+                        return RedirectToAction("Details", "Dep", new { id = model.depNo });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
+                }
             }
             return View(model);
         }
+
     }
 }

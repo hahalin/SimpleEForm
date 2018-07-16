@@ -12,7 +12,7 @@
             <div class="box-header">
                 <a class="btn btn-info" href="@Url.Action("Index")"><i class="fa fa-list"></i>員工清單</a>
             </div>
-            @using (Html.BeginForm("Edit", "Employee", FormMethod.Post,new { name = "fmEmployee",id="fmEmployee" }))
+            @using (Html.BeginForm("Edit", "Employee", FormMethod.Post, new { name = "fmEmployee", id = "fmEmployee" }))
             {
                 @Html.AntiForgeryToken()
 
@@ -26,7 +26,7 @@
                         @Html.LabelFor(model => model.workNo, htmlAttributes: new { @class = "control-label col-md-2" })
                         <div class="col-md-10">
                             @Html.EditorFor(model => model.workNo, new { htmlAttributes = new { @class = "form-control" } })
-                            @Html.ValidationMessageFor(model => model.workNo, "", new { @class = "text-danger"})
+                            @Html.ValidationMessageFor(model => model.workNo, "", new { @class = "text-danger" })
                         </div>
                     </div>
 
@@ -35,6 +35,13 @@
                         <div class="col-md-10">
                             @Html.EditorFor(model => model.UserCName, new { htmlAttributes = new { @class = "form-control" } })
                             @Html.ValidationMessageFor(model => model.UserCName, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.UserEName, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.UserEName, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.UserEName, "", new { @class = "text-danger" })
                         </div>
                     </div>
                     @if (ViewBag.EditMode == "Create")
@@ -90,11 +97,12 @@
                         <div class="col-md-offset-2 col-md-10">
                             @if (ViewBag.EditMode == "Edit")
                             {
-                                <a class="btn btn-warning" href="@Url.Action("ModifyPassword",new { id = Model.Id })">
+                                <a class="btn btn-warning" href="@Url.Action("ChangePassword",new { id = Model.Id })">
                                     <i class="fa fa-pencil"></i>
                                     修改密碼
                                 </a>
-                            }                            <input type="submit" value="儲存" class="btn btn-primary" onclick="return doSubmit();">
+                            }
+                            <input type="submit" value="儲存" class="btn btn-primary" onclick="return doSubmit();">
                             <a class="btn btn-default" href="@Url.Action("Index")"><i class="fa fa-ban"></i>取消</a>
                         </div>
                     </div>
@@ -127,7 +135,7 @@
                         </div>
                         <div class="modal-footer">
                             <div class="text-center">
-                                <button type="button" class="btn btn-primary" id="btnAddPo" ><i class="fa fa-plus"></i>加入</button>
+                                <button type="button" class="btn btn-primary" id="btnAddPo"><i class="fa fa-plus"></i>加入</button>
                                 <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-undo"></i>取消</button>
                             </div>
                         </div>
@@ -184,12 +192,24 @@
                     }
 
                     $(function () {
+
+                        var showmsg = "0";
+
+                        @if (TempData["changepwdsucess"]!=null && TempData["changepwdsucess"].ToString()=="Y")
+                        {
+                            @:showmsg ="1";
+                        }
+
+                        if (showmsg == "1")
+                        {
+                            toastr["info"]("密碼修改完成!");
+                        }
                         $('form,input,select,textarea').attr("autocomplete", "off");
                         $('#workNo').css('ime-mode','normal');
-                        updatePoListUI();
+updatePoListUI();
 
-                            var cboDepList = $('#cboDepList');
-                            var cboPoList = $('#cboPoList');
+var cboDepList = $('#cboDepList');
+var cboPoList = $('#cboPoList');
                             $(cboDepList).append(
                                 $('<option></option>').val(0).html("選擇部門")
                             );
@@ -200,7 +220,7 @@
                                 $(cboDepList).append(
                                     $('<option></option>').val(obj.k).html(obj.v)
                                 );
-                            });
+});
 
                             $('#cboDepList').selectpicker();
 
@@ -253,7 +273,7 @@
                                 updatePoListUI();
                             });
                             //console.log(poList);
-                    })
+                        })
                 </script>
 
             }

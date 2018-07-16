@@ -18,26 +18,31 @@
                     <tbody>
                         <tr>
                             <th>
+                                @Html.DisplayNameFor(model => model.sort)
+                            </th>
+                            <th>
                                 @Html.DisplayNameFor(model => model.depNm)
                             </th>
                             <th></th>
                         </tr>
                         @foreach (var item in Model)
-                {
+                        {
                             <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.sort)
+                                </td>
                                 <td>
                                     @Html.DisplayFor(modelItem => item.depNm)
                                 </td>
                                 <td>
-                                    <a class="btn btn-success" href="@Url.Action("Details",new { id = item.depNo })">
-                                        <i class="fa fa-group"></i>
-                                        職稱管理
+                                    <a class="btn btn-success" href="@Url.Action("Edit",new { id = item.depNo })">
+                                        <i class="fa fa-pencil"></i>
+                                        編輯
                                     </a>
-                                    @*@Html.ActionLink("編輯", "Edit", new { id = item.depNo },new { @class = "btn btn-info"})*@
-                                    @*@Html.ActionLink("Delete", "Delete", new { id = item.depNo }, new { @class = "btn btn-danger" })*@
+                                    <button class="btn btn-danger btn-delete" data-id="@item.depNo">刪除</button>
                                 </td>
                             </tr>
-                }
+                        }
                     </tbody>
 
                 </table>
@@ -45,3 +50,43 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" id="confirm-modal">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">確認是否刪除?</h4>
+            </div>
+            <div class="modal-footer">
+                @using (Html.BeginForm("Delete", "Dep", FormMethod.Post, new { id = "fmdelete" }))
+                {
+                    <input type="hidden" id="hid" name="hid" />
+                }
+                <button type="button" class="btn btn-primary" id="modal-btn-yes">確定</button>
+                <button type="button" class="btn btn-default" id="modal-btn-no">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(function () {
+
+            $('.btn-delete').click(function () {
+                $('#hid').val($(this).attr('data-id'));
+                $('#myModalLabel').val('確定刪除?');
+                $('#confirm-modal').modal('show');
+                $('#modal-btn-yes').prop('onclick', null).off('click');
+                $('#modal-btn-yes').on('click', function () {
+                    $('#fmdelete').submit();
+                })
+            })
+
+            $('#modal-btn-no').click(function () {
+                $('#confirm-modal').modal('hide');
+            })
+        })
+    </script>
+}

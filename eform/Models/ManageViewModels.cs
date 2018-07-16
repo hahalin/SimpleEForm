@@ -41,10 +41,12 @@ namespace eform.Models
 
     public class ChangePasswordViewModel
     {
-        [Required]
+        //[Required]
         [DataType(DataType.Password)]
         [Display(Name = "目前密碼")]
         public string OldPassword { get; set; }
+
+        public string id { get; set; }
 
         [Required]
         [StringLength(100, ErrorMessage = "{0} 的長度至少必須為 {2} 個字元。", MinimumLength = 6)]

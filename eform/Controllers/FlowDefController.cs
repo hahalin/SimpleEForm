@@ -55,7 +55,7 @@ namespace eform.Controllers
 
         void getUserList(ApplicationDbContext context)
         {
-            var userlist0 = context.Users.ToList().Where(x => x.UserName != "Admin" && x.UserName != "sadmin");
+            var userlist0 = context.Users.Where(x =>x.status==1 && x.UserName.ToLower().Contains("admin") == false).ToList();
             List<dynamic> userlist = new List<dynamic>();
             foreach (var user in userlist0)
             {

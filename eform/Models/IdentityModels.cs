@@ -19,6 +19,8 @@ namespace eform.Models
         }
         public string workNo { get; set; }
         public string cName { get; set; }
+        public string eName { get; set; }
+        public int status { get; set; } = 1;
         public ICollection<PoUser> poList { get; set; }
     }
 
