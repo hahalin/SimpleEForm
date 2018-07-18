@@ -7,6 +7,7 @@ using eform.Models;
 using eform.Attributes;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity;
+using System.IO;
 
 namespace eform.Controllers
 {
@@ -43,10 +44,23 @@ namespace eform.Controllers
         [ValidateInput(false)]
         public ActionResult Create(news model)
         {
+            string fileUrl = "";
+            if (Request.Files[0].ContentLength > 0)
+            {
+                string filename= HttpUtility.UrlEncode(Request.Files[0].FileName, System.Text.Encoding.UTF8);
+                var path = Path.Combine(Server.MapPath("~/upload"), filename);
+                Request.Files[0].SaveAs(path);
+                fileUrl = Url.Content("~/upload/") + filename;
+            }
+
             var context = new ApplicationDbContext();
             if (string.IsNullOrEmpty(model.id))
             {
                 model.id = Guid.NewGuid().ToString();
+                if (fileUrl!="")
+                {
+                    model.fileUrl = fileUrl;
+                }
                 context.newsList.Add(model);
             }
             else
@@ -56,7 +70,12 @@ namespace eform.Controllers
                 currentModel.createTime = DateTime.UtcNow.AddSeconds(28800);
                 currentModel.content = model.content;
                 currentModel.ndate = model.ndate;
+                if (fileUrl != "")
+                {
+                    currentModel.fileUrl = fileUrl;
+                }
             }
+
             try
             {
                 context.SaveChanges();
@@ -83,6 +102,15 @@ namespace eform.Controllers
             var context = new ApplicationDbContext();
             news model = context.newsList.Where(x => x.id == id).FirstOrDefault();
             return View("Create", model);
+        }
+
+        [HttpGet]
+        public ActionResult Delete(string id)
+        {
+            dbHelper dbh = new dbHelper();
+            dbh.execSql("delete from news where id='" + id + "'");
+
+            return RedirectToAction("Index");
         }
     }
     }

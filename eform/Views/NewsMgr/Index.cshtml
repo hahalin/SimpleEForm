@@ -25,37 +25,59 @@
                         <th>
                             @Html.DisplayNameFor(model => model.title)
                         </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.fileUrl)
+                        </th>
                         <th></th>
                     </tr>
 
-                    @foreach (var item in Model)
+                    @if (Model != null)
                     {
-                    <tr>
-                        <td>
-                            @{
-                                    string ndate = Convert.ToDateTime(item.ndate).ToString("yyyy-MM-dd");
-                            }
-
-                            @ndate
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.title)
-                        </td>
-                        @*<td>
-                                @{
-                                    string content = item.content.Replace("\"", "");
-                                }
-                                @Html.Raw(content)
-                            </td>*@
-                        <td>
-                            <a href="@Url.Action("Edit",new {id=item.id })" class="btn btn-info">修改</a>
-                            <a href="@Url.Action("Delete",new {id=item.id })" class="btn btn-danger">刪除</a>
-                        </td>
-                    </tr>
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @{
+                                        string ndate = Convert.ToDateTime(item.ndate).ToString("yyyy-MM-dd");
                                     }
 
+                                    @ndate
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.title)
+                                </td>
+                                <td>
+                                    @if(!string.IsNullOrEmpty(item.fileUrl))
+                                    { 
+                                        <a href="@item.fileUrl"><i class="fa fa-paperclip"></i>附檔</a>
+                                    }
+                                </td>
+                                <td>
+                                    <a href="@Url.Action("Edit", new { id = item.id })" class="btn btn-info">修改</a>
+                                    <a href="#" data-id="@item.id" class="btn btn-danger" onclick="checkDelete();">刪除</a>
+                                </td>
+                            </tr>
+                        }
+                    }
                 </table>
             </div>
         </div>
     </div>
 </div>
+
+@section Scripts
+{
+    <script type="text/javascript">
+        function checkDelete() {
+            event.preventDefault();
+            var id = $(event.target).attr('data-id');
+            var r = confirm("確定刪除?");
+            if (r == true)
+            {
+                var url = "@Url.Action("Delete", new {id="xxxx"})";
+                url = url.replace("xxxx", id);
+                document.location = url;
+            }
+        }
+    </script>
+}

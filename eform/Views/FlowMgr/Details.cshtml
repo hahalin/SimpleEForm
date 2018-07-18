@@ -9,35 +9,6 @@
 <div class="row">
     <div class="col-md-8">
         <div class="box">
-            <div class="box-comments">
-                <div class="form-horizontal" style="padding:30px;">
-                    @using (Html.BeginForm("SignIt", "FormMgr", FormMethod.Post, new { id = "fmMain" }))
-                    {
-                        <input type="hidden" name="id" value="@flowMain.id" />
-                        <div class="form-group">
-                            <label class="control-label col-md-2">簽核: </label>
-                            <div class="col-md-10">
-                                <input type="radio" name="signValue" value="1" checked="checked" />同意
-                                <input type="radio" name="signValue" value="2" />不同意
-                            </div>
-                        </div>
-                            <div class="form-group">
-                                <div class="form-group" style="">
-                                    <label class="control-label col-md-2">簽核意見: </label>
-                                    <div class="col-md-10">
-                                        <textarea rows="3" style="width:90%;" name="signMemo">
-                                    </textarea>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="text-center col-md-8">
-                                    <button type="submit" class="btn btn-primary">送出</button>
-                                </div>
-                            </div>
-                    }
-                </div>
-            </div>
             <div class="box-header">
                 <div class="box-title">
                     @*<h3><span class="label label-success">@ViewBag.Title</span></h3>*@
@@ -45,6 +16,29 @@
                 </div>
             </div>
             <div class="box-body>">
+
+                <div class="form-horizontal" style="padding:30px;">
+                    @Html.BeginForm("SignIt", "FormMgr", FormMethod.Post,new { id = "fmMain" })
+                    {
+                    <div class="form-group">
+                        <input type="radio" name="signValue" value="1" checked="checked" />同意
+                        <input type="radio" name="signValue" value="2" />不同意
+                    </div>
+                    <div class="form-group">
+                        <div class="form-group" style="border-bottom:1px solid gray;">
+                            <label class="control-label col-md-2">簽核意見: </label>
+                            <div class="col-md-10">
+                                <textarea rows="3" style="width:200px" name="signMemo">
+                                </textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary" value="送出"></button>
+                    </div>
+                        }
+                    </div>
+
                     <div class="form-horizontal" style="padding:30px;">
                         <div class="form-group" style="border-bottom:1px solid gray;">
                             <label class="control-label col-md-2">表單日期:</label>

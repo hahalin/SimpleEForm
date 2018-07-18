@@ -12,7 +12,7 @@ namespace eform.Controllers
     public class FormMgrController : Controller
     {
         // GET: FlowMgr
-        [AdminAuthorize(Roles ="Admin,Employee")]
+        [AdminAuthorize(Roles = "Admin,Employee")]
         public ActionResult Index()
         {
             var context = new ApplicationDbContext();
@@ -20,12 +20,13 @@ namespace eform.Controllers
             var user = context.Users.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
 
             var unSignMainList = from item in context.FlowMainList
-                                 where item.flowStatus == 1 select item.id;
+                                 where item.flowStatus == 1
+                                 select item.id;
 
             var mySignSubList = (from item in context.FlowSubList
-                                where item.workNo == user.workNo
-                                && unSignMainList.Contains(item.pid)
-                                select item.pid).ToList<string>();
+                                 where item.workNo == user.workNo
+                                 && unSignMainList.Contains(item.pid)
+                                 select item.pid).ToList<string>();
 
             var mySignMainList = context.FlowMainList.Where(x => mySignSubList.Contains(x.id)).ToList<FlowMain>();
 
@@ -46,9 +47,9 @@ namespace eform.Controllers
                 list.Add(vwItem);
             }
 
-            return View(mySignSubList);
+            return View(list);
         }
-
+        [AdminAuthorize(Roles = "Admin,Employee")]
         public ActionResult Details(string id)
         {
             var context = new ApplicationDbContext();
@@ -87,6 +88,72 @@ namespace eform.Controllers
                 };
             }
             ViewBag.SubModel = vwReqOverTimeObj;
+            return View(list);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [AdminAuthorize(Roles = "Admin,Employee")]
+        public ActionResult SignIt(FormCollection collection)
+        {
+            var context = new ApplicationDbContext();
+            string id = collection["hid"].ToString();
+            string signValue = collection["signValue"].ToString();
+            string signMemo = collection["signMemo"].ToString();
+            string workNo = context.Users.Where(x => x.UserName == User.Identity.Name).FirstOrDefault().workNo;
+
+            FlowSub fsub = context.FlowSubList.Where(x => x.pid == id && x.workNo == workNo).FirstOrDefault();
+            if (fsub !=null)
+            {
+                fsub.signDate = context.getLocalTiime();
+                fsub.signResult = Convert.ToInt16(signValue);
+                fsub.comment = signMemo;
+
+                if (fsub.signResult==1)
+                {
+                    dbHelper dbh = new dbHelper();
+                    dbh.execSql("update FlowMains set flowStatus=2 where id='" + id + "'");
+                }
+            }
+
+            return RedirectToAction("Query", "FlowMgr");
+        }
+
+        [AdminAuthorize(Roles = "Admin,Employee")]
+        public ActionResult Query()
+        {
+            var context = new ApplicationDbContext();
+
+            var user = context.Users.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
+
+            var unSignMainList = from item in context.FlowMainList
+                                 where item.flowStatus != 1
+                                 select item.id;
+
+            var mySignSubList = (from item in context.FlowSubList
+                                 where item.workNo == user.workNo
+                                 && unSignMainList.Contains(item.pid)
+                                 select item.pid).ToList<string>();
+
+            var mySignMainList = context.FlowMainList.Where(x => mySignSubList.Contains(x.id)).ToList<FlowMain>();
+
+            List<vwFlowMain> list = new List<vwFlowMain>();
+
+            foreach (FlowMain item in mySignMainList)
+            {
+                var Status = context.flowStatusList().Where(x => x.id == item.flowStatus).FirstOrDefault();
+                var sender = context.Users.Where(x => x.workNo.Equals(item.senderNo)).FirstOrDefault();
+                vwFlowMain vwItem = new vwFlowMain
+                {
+                    id = item.id,
+                    sender = sender.workNo + " " + sender.cName,
+                    billDate = item.billDate,
+                    flowName = item.flowName,
+                    flowStatus = Status == null ? "簽核中" : Status.nm
+                };
+                list.Add(vwItem);
+            }
+
             return View(list);
         }
     }

@@ -254,6 +254,10 @@
     <Compile Include="Migrations\201807150846468_addStatus2Users.Designer.cs">
       <DependentUpon>201807150846468_addStatus2Users.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201807181430120_addfileUrl2News.cs" />
+    <Compile Include="Migrations\201807181430120_addfileUrl2News.Designer.cs">
+      <DependentUpon>201807181430120_addfileUrl2News.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ApplicationDbContext.cs" />
@@ -951,10 +955,13 @@
     <Content Include="Views\Form\Details.cshtml" />
     <Content Include="Views\FormMgr\Index.cshtml" />
     <Content Include="Views\FormMgr\Details.cshtml" />
+    <Content Include="Views\FlowMgr\Details.cshtml" />
+    <Content Include="Views\FlowMgr\Index.cshtml" />
+    <Content Include="Views\FormMgr\Query.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\FlowMgr\" />
+    <Folder Include="upload\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
@@ -999,6 +1006,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201807150846468_addStatus2Users.resx">
       <DependentUpon>201807150846468_addStatus2Users.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201807181430120_addfileUrl2News.resx">
+      <DependentUpon>201807181430120_addfileUrl2News.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
