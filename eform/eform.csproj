@@ -949,6 +949,8 @@
     <Content Include="Views\Employee\ChangePassword.cshtml" />
     <Content Include="Views\Employee\ChangeMyPassword.cshtml" />
     <Content Include="Views\Form\Details.cshtml" />
+    <Content Include="Views\FormMgr\Index.cshtml" />
+    <Content Include="Views\FormMgr\Details.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
