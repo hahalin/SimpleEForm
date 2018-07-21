@@ -50,7 +50,7 @@ namespace eform.Controllers
             return View(list);
         }
         [AdminAuthorize(Roles = "Admin,Employee")]
-        public ActionResult Details(string id)
+        public ActionResult Details(string id,string FlowPageType="")
         {
             var context = new ApplicationDbContext();
             List<vwFlowSub> list = new List<vwFlowSub>();
@@ -67,7 +67,8 @@ namespace eform.Controllers
                     signDate = sitem.signDate,
                     signResult = signResultObj == null ? "" : signResultObj.nm,
                     signType = signTypeObj == null ? "會簽" : signTypeObj.nm,
-                    signer = signUser == null ? "" : signUser.cName
+                    signer = signUser == null ? "" : signUser.cName,
+                    comment=sitem.comment
                 };
                 list.Add(item);
             }
@@ -88,6 +89,7 @@ namespace eform.Controllers
                 };
             }
             ViewBag.SubModel = vwReqOverTimeObj;
+            ViewBag.FlowPageType = FlowPageType;
             return View(list);
         }
 
@@ -108,15 +110,26 @@ namespace eform.Controllers
                 fsub.signDate = context.getLocalTiime();
                 fsub.signResult = Convert.ToInt16(signValue);
                 fsub.comment = signMemo;
+                context.SaveChanges();
 
+                dbHelper dbh = new dbHelper();
                 if (fsub.signResult==1)
                 {
-                    dbHelper dbh = new dbHelper();
                     dbh.execSql("update FlowMains set flowStatus=2 where id='" + id + "'");
+                }
+
+                if (fsub.signResult==2)
+                {
+                    int allDenyCnt = context.FlowSubList.Where(x => x.pid == id && x.signResult == 2).Count();
+                    int allCnt= context.FlowSubList.Where(x => x.pid == id).Count();
+                    if (allCnt==allDenyCnt)
+                    {
+                        dbh.execSql("update FlowMains set flowStatus=3 where id='" + id + "'");
+                    }                        
                 }
             }
 
-            return RedirectToAction("Query", "FlowMgr");
+            return RedirectToAction("Query", "FormMgr");
         }
 
         [AdminAuthorize(Roles = "Admin,Employee")]
@@ -153,7 +166,7 @@ namespace eform.Controllers
                 };
                 list.Add(vwItem);
             }
-
+            ViewBag.FlowPageType = "Query";
             return View(list);
         }
     }

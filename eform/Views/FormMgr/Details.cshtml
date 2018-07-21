@@ -9,24 +9,26 @@
 <div class="row">
     <div class="col-md-8">
         <div class="box">
-            <div class="box-comments">
-                <div class="form-horizontal" style="padding:30px;">
-                    @using (Html.BeginForm("SignIt", "FormMgr", FormMethod.Post, new { id = "fmMain" }))
-                    {
-                        <input type="hidden" name="id" value="@flowMain.id" />
-                        <div class="form-group">
-                            <label class="control-label col-md-2">簽核: </label>
-                            <div class="col-md-10">
-                                <input type="radio" name="signValue" value="1" checked="checked" />同意
-                                <input type="radio" name="signValue" value="2" />不同意
+            @if (ViewBag.FlowPageType == "")
+            {
+                <div class="box-comments">
+                    <div class="form-horizontal" style="padding:30px;">
+                        @using (Html.BeginForm("SignIt", "FormMgr", FormMethod.Post, new { id = "fmMain" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="hid" value="@flowMain.id" />
+                            <div class="form-group">
+                                <label class="control-label col-md-2">簽核: </label>
+                                <div class="col-md-10">
+                                    <input type="radio" name="signValue" value="1" checked="checked" />同意
+                                    <input type="radio" name="signValue" value="2" />不同意
+                                </div>
                             </div>
-                        </div>
                             <div class="form-group">
                                 <div class="form-group" style="">
                                     <label class="control-label col-md-2">簽核意見: </label>
                                     <div class="col-md-10">
-                                        <textarea rows="3" style="width:90%;" name="signMemo">
-                                    </textarea>
+                                        <textarea rows="3" style="width:90%;" name="signMemo"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -35,9 +37,10 @@
                                     <button type="submit" class="btn btn-primary">送出</button>
                                 </div>
                             </div>
-                    }
+                        }
+                    </div>
                 </div>
-            </div>
+            }
             <div class="box-header">
                 <div class="box-title">
                     @*<h3><span class="label label-success">@ViewBag.Title</span></h3>*@
@@ -45,79 +48,79 @@
                 </div>
             </div>
             <div class="box-body>">
-                    <div class="form-horizontal" style="padding:30px;">
-                        <div class="form-group" style="border-bottom:1px solid gray;">
-                            <label class="control-label col-md-2">表單日期:</label>
-                            <div class="col-md-10">@flowMain.billDate</div>
-                        </div>
-                        <div class="form-group" style="border-bottom:1px solid gray;">
-                            <label class="control-label col-md-2">開始時間:</label>
-                            <div class="col-md-10">@subModel.dtBegin</div>
-                        </div>
-                        <div class="form-group" style="border-bottom:1px solid gray;">
-                            <label class="control-label col-md-2">開始時間:</label>
-                            <div class="col-md-10">@subModel.dtEnd</div>
-                        </div>
-                        <div class="form-group" style="border-bottom:1px solid gray;">
-                            <label class="control-label col-md-2">時數: </label>
-                            <div class="col-md-10">@subModel.hours</div>
-                        </div>
-                        <div class="form-group" style="border-bottom:1px solid gray;">
-                            <label class="control-label col-md-2">備註: </label>
-                            <div class="col-md-10">
-                                <span style="white-space: pre-line">@subModel.sMemo</span>
-                            </div>
+                <div class="form-horizontal" style="padding:30px;">
+                    <div class="form-group" style="border-bottom:1px solid gray;">
+                        <label class="control-label col-md-2">表單日期:</label>
+                        <div class="col-md-10">@flowMain.billDate</div>
+                    </div>
+                    <div class="form-group" style="border-bottom:1px solid gray;">
+                        <label class="control-label col-md-2">開始時間:</label>
+                        <div class="col-md-10">@subModel.dtBegin</div>
+                    </div>
+                    <div class="form-group" style="border-bottom:1px solid gray;">
+                        <label class="control-label col-md-2">開始時間:</label>
+                        <div class="col-md-10">@subModel.dtEnd</div>
+                    </div>
+                    <div class="form-group" style="border-bottom:1px solid gray;">
+                        <label class="control-label col-md-2">時數: </label>
+                        <div class="col-md-10">@subModel.hours</div>
+                    </div>
+                    <div class="form-group" style="border-bottom:1px solid gray;">
+                        <label class="control-label col-md-2">備註: </label>
+                        <div class="col-md-10">
+                            <span style="white-space: pre-line">@subModel.sMemo</span>
                         </div>
                     </div>
-
-                    <h3><span class="label label-success">簽核清單</span></h3>
-                    <table class="table table-bordered table-hover table-striped">
-                        <tr>
-                            <th>
-                                @Html.DisplayNameFor(model => model.seq)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.signDate)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.signer)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.signType)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.signResult)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.comment)
-                            </th>
-                        </tr>
-
-                        @foreach (var item in Model)
-                        {
-                            <tr>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.seq)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.signDate)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.signer)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.signType)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.signResult)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.comment)
-                                </td>
-                            </tr>
-                        }
-                    </table>
                 </div>
+
+                <h3><span class="label label-success">簽核清單</span></h3>
+                <table class="table table-bordered table-hover table-striped">
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.seq)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.signDate)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.signer)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.signType)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.signResult)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.comment)
+                        </th>
+                    </tr>
+
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.seq)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.signDate)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.signer)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.signType)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.signResult)
+                            </td>
+                            <td>
+                                <p style="white-space: pre-line">@Html.DisplayFor(modelItem => item.comment)</p>
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
             <div class="box-footer">
                 <a href="@Url.Action("Index","Form")" class="btn btn-primary">返回表單清單</a>
             </div>
