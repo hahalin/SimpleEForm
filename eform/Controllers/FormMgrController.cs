@@ -169,5 +169,64 @@ namespace eform.Controllers
             ViewBag.FlowPageType = "Query";
             return View(list);
         }
+
+        [AdminAuthorize(Roles = "Admin")]
+        [HttpGet]
+        public ActionResult ListAll(string status="0")
+        {
+            var context = new ApplicationDbContext();
+            List<SelectListItem> StatusItems = new List<SelectListItem>();
+
+            StatusItems.Add(new SelectListItem
+            {
+                Text = "全部",
+                Value = "0"
+            });
+
+            foreach (var item in context.flowStatusList())
+            {
+                StatusItems.Add(new SelectListItem
+                {
+                    Text=item.nm,
+                    Value=item.id.ToString()
+                });
+            }
+            ViewBag.SignResultItems = StatusItems;
+
+            int iStatus = int.Parse(status);
+
+            List<FlowMain> SignMainList = null;
+
+            if (iStatus == 0)
+            {
+                SignMainList=(from item in context.FlowMainList orderby item.billDate descending
+                 select item).ToList<FlowMain>();
+            }
+            else
+            {
+                SignMainList=(from item in context.FlowMainList orderby item.billDate descending
+                 where item.flowStatus == iStatus
+                 select item).ToList<FlowMain>();
+            }
+
+            List < vwFlowMain > list = new List<vwFlowMain>();
+
+            foreach (FlowMain item in SignMainList)
+            {
+                var Status = context.flowStatusList().Where(x => x.id == item.flowStatus).FirstOrDefault();
+                var sender = context.Users.Where(x => x.workNo.Equals(item.senderNo)).FirstOrDefault();
+                vwFlowMain vwItem = new vwFlowMain
+                {
+                    id = item.id,
+                    sender = sender.workNo + " " + sender.cName,
+                    billDate = item.billDate,
+                    flowName = item.flowName,
+                    flowStatus = Status == null ? "簽核中" : Status.nm
+                };
+                list.Add(vwItem);
+            }
+
+            return View(list);
+        }
     }
 }

@@ -13,7 +13,10 @@
         ApplicationUserManager mgr = new ApplicationUserManager(store);
         string id = User.Identity.GetUserId();
         var user = mgr.FindById(id);
-        UserName = User.Identity.Name + " " + user.cName;
+        if (user!=null)
+        {
+            UserName = User.Identity.Name + " " + user.cName;
+        }
     }
 
 }
@@ -141,6 +144,13 @@
                                     <i class="fa fa-book"></i>表單設定
                                 </a>
                             </li>
+
+                            <li>
+                                <a href="@Url.Action("ListAll", "FormMgr", null)">
+                                    <i class="fa fa-book"></i>表單查詢
+                                </a>
+                            </li>
+
                             @*<li>
                                 <a href='@Url.Action("Register", "Account")'><i class="fa fa-user-plus"></i><span>註冊</span></a>
                             </li>*@

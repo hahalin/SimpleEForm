@@ -14,10 +14,10 @@ using eform.Attributes;
 
 namespace eform.Controllers
 {
-    [AdminAuthorize(Roles="Admin")]
     public class EmployeeController : Controller
     {
         // GET: Employee
+        [AdminAuthorize(Roles = "Admin")]
         public ActionResult Index(string Id = "")
         {
 
@@ -69,6 +69,7 @@ namespace eform.Controllers
         }
 
         // GET: Employee/Create
+        [AdminAuthorize(Roles = "Admin")]
         public ActionResult Create()
         {
             ApplicationDbContext context = new ApplicationDbContext();
@@ -97,6 +98,7 @@ namespace eform.Controllers
 
         // POST: Employee/Create
         [HttpPost]
+        [AdminAuthorize(Roles = "Admin")]
         public ActionResult Create(FormCollection collection)
         {
             ApplicationDbContext context = new ApplicationDbContext();
@@ -137,6 +139,7 @@ namespace eform.Controllers
         }
 
         // GET: Employee/Edit/5
+        [AdminAuthorize(Roles = "Admin")]
         public ActionResult Edit(string id)
         {
             ApplicationDbContext context = new ApplicationDbContext();
@@ -188,6 +191,7 @@ namespace eform.Controllers
 
         // POST: Employee/Edit/5
         [HttpPost]
+        [AdminAuthorize(Roles = "Admin")]
         public ActionResult Edit(string id, vwEmployee model)
         {
 
@@ -313,6 +317,7 @@ namespace eform.Controllers
         }
 
         // GET: Employee/Delete/5
+        [AdminAuthorize(Roles = "Admin")]
         public ActionResult Delete(string id)
         {
             dbHelper dbh = new dbHelper();
@@ -323,6 +328,7 @@ namespace eform.Controllers
 
         // POST: Employee/Delete/5
         [HttpPost]
+        [AdminAuthorize(Roles = "Admin")]
         public ActionResult Delete(string id, FormCollection collection)
         {
             try
@@ -337,6 +343,7 @@ namespace eform.Controllers
             }
         }
 
+        [AdminAuthorize(Roles = "Admin")]
         public ActionResult ModifyPassword(string id)
         {
             return View();
@@ -407,7 +414,7 @@ namespace eform.Controllers
             }
         }
 
-        [AdminAuthorize(Roles = "Admin,Employee")]
+        [AdminAuthorize(Roles="Admin,Employee")]
         [HttpGet]
         public ActionResult ChangeMyPassword()
         {

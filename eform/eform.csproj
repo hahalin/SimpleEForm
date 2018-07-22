@@ -958,6 +958,7 @@
     <Content Include="Views\FlowMgr\Details.cshtml" />
     <Content Include="Views\FlowMgr\Index.cshtml" />
     <Content Include="Views\FormMgr\Query.cshtml" />
+    <Content Include="Views\FormMgr\ListAll.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
