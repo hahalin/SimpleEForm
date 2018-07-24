@@ -1,4 +1,6 @@
-﻿@model eform.Models.news
+﻿@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq
+@model eform.Models.news
 
 @{
     ViewBag.Title = "NewsDetail";
@@ -15,6 +17,33 @@
                     string content = Model.content.Replace("\"", "");
                 }
                 @Html.Raw(content)
+                <h4>上傳檔案清單:</h4>
+                @{
+                    JArray list = new JArray();
+                    if (!string.IsNullOrEmpty(Model.fileUrl))
+                    {
+                        try
+                        {
+                            list = JArray.Parse(Model.fileUrl);
+                        }
+                        catch (Exception ex)
+                        {
+                        }
+                    }
+                }
+                <ul>
+                    @foreach (JObject jobj in list)
+                    {
+                        string fileName = jobj["fileName"].ToString();
+                        string fileUrl = jobj["fileUrl"].ToString();
+
+                        <li>
+                            <a href="@Url.Content("/upload/"+HttpUtility.UrlDecode(fileUrl))" target="_blank">
+                                @fileName
+                            </a>
+                        </li>
+                    }
+                </ul>
             </div>
         </div>
     </div>

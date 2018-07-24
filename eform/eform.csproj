@@ -37,6 +37,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <FilesToIncludeForPublish>AllFilesInProjectFolder</FilesToIncludeForPublish>
+    <ExcludeGeneratedDebugSymbol>true</ExcludeGeneratedDebugSymbol>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -47,6 +49,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -258,6 +261,10 @@
     <Compile Include="Migrations\201807181430120_addfileUrl2News.Designer.cs">
       <DependentUpon>201807181430120_addfileUrl2News.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201807232013568_addNewsType.cs" />
+    <Compile Include="Migrations\201807232013568_addNewsType.Designer.cs">
+      <DependentUpon>201807232013568_addNewsType.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ApplicationDbContext.cs" />
@@ -268,6 +275,7 @@
     <Compile Include="Models\jobPo.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\news.cs" />
+    <Compile Include="Models\newsType.cs" />
     <Compile Include="Models\ReqOverTime.cs" />
     <Compile Include="Models\vwFlowMain.cs" />
     <Compile Include="Models\vwFlowRequest.cs" />
@@ -530,6 +538,12 @@
     <Content Include="admin-lte\plugins\input-mask\phone-codes\phone-codes.json" />
     <Content Include="Content\toastr.less" />
     <Content Include="Content\toastr.scss" />
+	<Content Include="Scripts\jQuery-File-Upload-9.22.0\js\jquery.fileupload.js" />
+	<Content Include="Scripts\jQuery-File-Upload-9.22.0\js\jquery.fileupload-ui.js" />
+	<Content Include="Scripts\jQuery-File-Upload-9.22.0\js\vendor\jquery.ui.widget.js" />
+	<Content Include="Scripts\jQuery-File-Upload-9.22.0\css\jquery.fileupload.css" />
+	<Content Include="Scripts\jQuery-File-Upload-9.22.0\css\jquery.fileupload-ui.css" />
+	<Content Include="Scripts\jQuery-File-Upload-9.22.0\css\style.css" />
     <Content Include="Scripts\ckeditor\adapters\jquery.js" />
     <Content Include="Scripts\ckeditor\CHANGES.html" />
     <Content Include="Scripts\ckeditor\ckeditor.asp" />
@@ -894,7 +908,9 @@
     <Content Include="Scripts\tether.min.js" />
     <Content Include="Scripts\toastr.js" />
     <Content Include="Scripts\toastr.min.js" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -1011,10 +1027,14 @@
     <EmbeddedResource Include="Migrations\201807181430120_addfileUrl2News.resx">
       <DependentUpon>201807181430120_addfileUrl2News.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201807232013568_addNewsType.resx">
+      <DependentUpon>201807232013568_addNewsType.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+	<ExcludeFoldersFromDeployment>upload</ExcludeFoldersFromDeployment> 
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
@@ -1054,4 +1074,24 @@
   </Target>
   <Target Name="AfterBuild">
   </Target> -->
+  
+  <Target Name="CustomCollectFiles">
+    <ItemGroup>
+      <_CustomFiles Include="..\upload\**\*" />
+      <FilesForPackagingFromProject Include="%(_CustomFiles.Identity)">
+        <DestinationRelativePath>%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
+      </FilesForPackagingFromProject>
+    </ItemGroup>
+  </Target>
+  <PropertyGroup>
+    <CopyAllFilesToSingleFolderForPackageDependsOn>
+      CustomCollectFiles;
+      $(CopyAllFilesToSingleFolderForPackageDependsOn);
+    </CopyAllFilesToSingleFolderForPackageDependsOn>
+
+    <CopyAllFilesToSingleFolderForMsdeployDependsOn>
+      CustomCollectFiles;
+      $(CopyAllFilesToSingleFolderForMsdeployDependsOn);
+    </CopyAllFilesToSingleFolderForMsdeployDependsOn>
+  </PropertyGroup>
 </Project>

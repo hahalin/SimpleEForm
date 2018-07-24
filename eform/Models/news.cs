@@ -16,11 +16,13 @@ namespace eform.Models
         [Display(Name = "公告日期")]
         public DateTime? ndate { get; set; }
         public string uid { get; set; }
+        [Display(Name = "公告類別")]
+        public string newsType { get; set; }
         [Display(Name ="標題")]
         [Required]
         public string title { get; set; }
         [Display(Name = "內容")]
-        [Required]
+        //[Required]
         [AllowHtml]
         public string content { get; set; }
         public bool isActive { get; set; } = true;

@@ -92,8 +92,9 @@ namespace eform.Controllers
         public ActionResult Delete(string hid)
         {
             dbHelper dbh = new dbHelper();
+            dbh.execSql("delete from jobpoes where depNo='" + hid + "'");
             dbh.execSql("delete from deps where depNo='" + hid + "'");
-            dbh.execSql("delete from jobpoes where depNo not in (select depNo from deps)");
+            dbh.execSql("delete from PoUsers where poNo in (select poNo from jobPoes)");
             return RedirectToAction("Index");
         }
 
@@ -125,6 +126,14 @@ namespace eform.Controllers
             jobPo model = context.jobPos.Where(x => x.poNo == id).FirstOrDefault();
             return View("CreatePo",model);
         }
+        [HttpGet]
+        public ActionResult DeletePo(string id)
+        {
+            dbHelper dbq = new dbHelper();
+            dbq.execSql("delete from jobPoes where poNo='" + id + "'");
+            return RedirectToAction("Details", "Dep", new { id = Request["depNo"].ToString() });
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult CreatePo(jobPo model)

@@ -1,4 +1,6 @@
-﻿@using eform.Models;
+﻿@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq
+@using eform.Models;
 @{
     //ViewBag.Title = "Index";
     IEnumerable<news> newslist = ViewBag.newslist;
@@ -14,13 +16,13 @@
                         <tbody>
                             <tr>
                             <tr>
-                                <th style="width:120px;">
+                                <th>
                                     公告日期
                                 </th>
-                                <th style="width:130px;">
+                                <th>
                                     公告類別
                                 </th>
-                                <th style="width:350px;">
+                                <th style="width:200px;">
                                     標題
                                 </th>
                                 <th>
@@ -29,39 +31,60 @@
                             </tr>
 
                             @foreach (var item in newslist)
-                        {
-                        <tr>
-                            <td>
-                                @{
-                                        string ndate = Convert.ToDateTime(item.ndate).ToString("yyyy-MM-dd");
-                                }
+                            {
+                                <tr>
+                                    <td>
+                                        @{
+                                            string ndate = Convert.ToDateTime(item.ndate).ToString("yyyy-MM-dd");
+                                        }
 
-                                @ndate
-                            </td>
-                            <td></td>
-                            <td>
-                                <a href="@Url.Action("NewsDetail", "Home", new { id = item.id })" class="text text-info">
-                                    @Html.DisplayFor(modelItem => item.title)
-                                </a>
-                            </td>
-                            <td>
-                                @if(!string.IsNullOrEmpty(item.fileUrl))
-                                { 
-                                    <a href="@item.fileUrl">
-                                        <i class="fa fa-paperclip"></i>
-                                        附加檔案
-                                    </a>
-                                }
-                            </td>
-                        </tr>
-                                    }
+                                        @ndate
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.newsType)
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("NewsDetail", "Home", new { id = item.id })" class="text text-info">
+                                            @Html.DisplayFor(modelItem => item.title)
+                                        </a>
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.fileUrl))
+                                        {
+                                            JArray list = new JArray();
+                                            if (!string.IsNullOrEmpty(item.fileUrl))
+                                            {
+                                                try
+                                                {
+                                                    list = JArray.Parse(item.fileUrl);
+                                                }
+                                                catch (Exception ex)
+                                                {
+                                                }
+                                            }
+
+                                            foreach (JObject jobj in list)
+                                            {
+                                                string fileName = jobj["fileName"].ToString();
+                                                string fileUrl = jobj["fileUrl"].ToString();
+
+                                                <a href="@Url.Content("/upload/"+HttpUtility.UrlDecode(fileUrl))" target="_blank">
+                                                    @*<i class="fa fa-paperclip"></i>*@
+                                                    @fileName
+                                                </a>
+                                                <br />
+                                            }
+                                        }
+                                    </td>
+                                </tr>
+                                            }
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
     </div>
-}
+                                            }
 
 @section scripts {
     <!-- We would add slider scripts here -->

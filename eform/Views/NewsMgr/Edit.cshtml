@@ -4,6 +4,11 @@
     ViewBag.Title = "Edit";
 }
 
+<link rel="stylesheet" href="~/Scripts/jQuery-File-Upload-9.22.0/css/jquery.fileupload.css" /> 
+<link rel="stylesheet" href="~/Scripts/jQuery-File-Upload-9.22.0/css/jquery.fileupload-ui.css" /> 
+<link rel="stylesheet" href="~/Scripts/jQuery-File-Upload-9.22.0/css/style.css" /> 
+
+
 <h2>Edit</h2>
 
 @using (Html.BeginForm())
@@ -37,6 +42,14 @@
             <div class="col-md-10">
                 @Html.EditorFor(model => model.title, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.title, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        
+        <div class="form-group">
+            @Html.LabelFor(model => model.newsType, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.newsType, ViewBag.newsTypeItems as IEnumerable<SelectListItem>, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.newsType, "", new { @class = "text-danger" })
             </div>
         </div>
 
@@ -77,3 +90,18 @@
 <div>
     @Html.ActionLink("Back to List", "Index")
 </div>
+
+@section Scripts
+{
+    <script src="~/Scripts/jQuery-File-Upload-9.22.0/js/jquery.fileupload.js"></script>
+    <script src="~/Scripts/jQuery-File-Upload-9.22.0/js/jquery.fileupload-ui.js"></script>
+
+    <script type="text/javascript">
+
+        $(function () {
+
+
+        })
+
+    </script>
+}

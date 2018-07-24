@@ -20,13 +20,13 @@ namespace eform.CustomMigration
             var store = new UserStore<ApplicationUser>(context);
             var manager = new UserManager<ApplicationUser>(store);
 
-            MinimumLengthValidator valid =(MinimumLengthValidator) manager.PasswordValidator;
+            MinimumLengthValidator valid = (MinimumLengthValidator)manager.PasswordValidator;
             valid.RequiredLength = 4;
 
             var user = new ApplicationUser
             {
                 UserName = "Admin",
-                workNo="Admin"
+                workNo = "Admin"
             };
 
             try
@@ -63,9 +63,9 @@ namespace eform.CustomMigration
 
             var manager = new RoleManager<ApplicationRole>(store);
 
-            var role = new ApplicationRole { Name = "Admin",isDefault=true,Description="系統管理員"};
+            var role = new ApplicationRole { Name = "Admin", isDefault = true, Description = "系統管理員" };
             manager.Create(role);
-            role = new ApplicationRole { Name = "Employee",isDefault=true,Description="員工" };
+            role = new ApplicationRole { Name = "Employee", isDefault = true, Description = "員工" };
             manager.Create(role);
             return true;
         }
@@ -80,15 +80,34 @@ namespace eform.CustomMigration
             if (_pendingMigrations)
             {
                 migrator.Update();
-                var context=new Models.ApplicationDbContext();
+                var context = new Models.ApplicationDbContext();
                 importDefaultRole(context);
                 importDefaultAdmin(context);
 
                 dbHelper dbh = new dbHelper();
                 dbh.execSql("update deps set sort=1 where sort=null");
 
+                if (context.newsTypeList.Count() == 0)
+                {
+                    seedingNewsTypeList(context);
+                }
+
             }
             return true;
+        }
+        public static void seedingNewsTypeList(ApplicationDbContext context)
+        {
+            context.newsTypeList.Add(new newsType { seq = 1, code = "9000-營運處" });
+            context.newsTypeList.Add(new newsType { seq = 2, code = "1000-測試設備製造處" });
+            context.newsTypeList.Add(new newsType { seq = 3, code = "1200-測試設備開發處" });
+            context.newsTypeList.Add(new newsType { seq = 4, code = "2000-燃料電池材料業務處" });
+            context.newsTypeList.Add(new newsType { seq = 5, code = "3000-電子計量產品業務處" });
+            context.newsTypeList.Add(new newsType { seq = 6, code = "4000-自動化設備處" });
+            context.newsTypeList.Add(new newsType { seq = 7, code = "5000-特用碳材料業務處" });
+            context.newsTypeList.Add(new newsType { seq = 8, code = "5100-上海群羿碳材料業務處" });
+            context.newsTypeList.Add(new newsType { seq = 9, code = "6000-開發處-亞氫" });
+            context.newsTypeList.Add(new newsType { seq = 10, code = "7000-Yanmar 業務暨工程處" });
+            context.SaveChanges();
         }
     }
 }

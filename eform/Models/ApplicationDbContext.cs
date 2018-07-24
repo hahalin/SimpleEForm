@@ -30,8 +30,8 @@ namespace eform.Models
         public DbSet<FlowMain> FlowMainList { get; set; }
         public DbSet<FlowSub> FlowSubList { get; set; }
         public DbSet<news> newsList { get; set; }
+        public DbSet<newsType> newsTypeList { get; set; }
         public DbSet<ReqOverTime> reqOverTimeList { get; set; }
-
         public List<vwSignType> signTypeList()
         {
             List<vwSignType> list = new List<vwSignType>();
@@ -99,12 +99,5 @@ namespace eform.Models
             return DateTime.UtcNow.AddSeconds(28800);
         }
 
-        //public ApplicationUser getMgr(ApplicationDbContext context, string id)
-        //{
-        //    string rid = "";
-
-
-        //    return rid;
-        //}
     }
 }

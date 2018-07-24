@@ -1,8 +1,14 @@
-﻿@model eform.Models.news
+﻿@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq
+@model eform.Models.news
 
 @{
     ViewBag.Title = "";
 }
+
+@*<link rel="stylesheet" href="~/Scripts/jQuery-File-Upload-9.22.0/css/jquery.fileupload.css" />
+    <link rel="stylesheet" href="~/Scripts/jQuery-File-Upload-9.22.0/css/jquery.fileupload-ui.css" />
+    <link rel="stylesheet" href="~/Scripts/jQuery-File-Upload-9.22.0/css/style.css" />*@
 
 <script src="~/Scripts/ckeditor/ckeditor.js"></script>
 @*<script src="~/Scripts/ckeditor/themes/default/theme.js"></script>*@
@@ -22,109 +28,185 @@
                     @Html.AntiForgeryToken()
 
                     <div class="form-horizontal">
-                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                    @Html.HiddenFor(model => model.uid, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.HiddenFor(model => model.id, new { htmlAttributes = new { @class = "form-control" } })
-                    <div class="form-group">
-                        @Html.LabelFor(model => model.ndate, htmlAttributes: new { @class = "control-label col-md-2" })
-                        <div class="col-md-10">
-                            @Html.EditorFor(model => model.ndate, new { htmlAttributes = new { @class = "form-control", type = "date" } })
-                            @Html.ValidationMessageFor(model => model.ndate, "", new { @class = "text-danger" })
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        @Html.LabelFor(model => model.title, htmlAttributes: new { @class = "control-label col-md-2" })
-                        <div class="col-md-10">
-                            @Html.EditorFor(model => model.title, new { htmlAttributes = new { @class = "form-control" } })
-                            @Html.ValidationMessageFor(model => model.title, "", new { @class = "text-danger" })
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        @Html.LabelFor(model => model.content, htmlAttributes: new { @class = "control-label col-md-2" })
-                        <div class="col-md-10">
-                            @Html.TextAreaFor(model => model.content, new { htmlAttributes = new { @class = "form-control" } })
-                            @Html.ValidationMessageFor(model => model.content, "", new { @class = "text-danger" })
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        @Html.LabelFor(model => model.fileUrl, htmlAttributes: new { @class = "control-label col-md-2" })
-                        <div class="col-md-10">
-                            @if (!string.IsNullOrEmpty(Model.fileUrl))
-                            {
-                                <a href="@Model.fileUrl"><i class="fa fa-paperclip"></i>已附加檔案</a>
-                                <br/>
-                            }
-                            <input type="file" name="fileUrl" />
-                            @Html.ValidationMessageFor(model => model.fileUrl, "", new { @class = "text-danger" })
-                        </div>
-                    </div>
-                    @*<div class="form-group">
-                            @Html.LabelFor(model => model.isActive, htmlAttributes: new { @class = "control-label col-md-2" })
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(model => model.uid, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.HiddenFor(model => model.id, new { htmlAttributes = new { @class = "form-control" } })
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.ndate, htmlAttributes: new { @class = "control-label col-md-2" })
                             <div class="col-md-10">
-                                <div class="checkbox">
-                                    @Html.EditorFor(model => model.isActive)
-                                    @Html.ValidationMessageFor(model => model.isActive, "", new { @class = "text-danger" })
+                                @Html.EditorFor(model => model.ndate, new { htmlAttributes = new { @class = "form-control", type = "date" } })
+                                @Html.ValidationMessageFor(model => model.ndate, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.title, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.title, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.title, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.newsType, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.DropDownListFor(model => model.newsType, ViewBag.newsTypeItems as IEnumerable<SelectListItem>, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.newsType, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.content, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.TextAreaFor(model => model.content, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.content, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.fileUrl, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @if (!string.IsNullOrEmpty(Model.fileUrl))
+                                {
+                                    JArray list = new JArray();
+                                    if (!string.IsNullOrEmpty(Model.fileUrl))
+                                    {
+                                        try
+                                        {
+                                            list = JArray.Parse(Model.fileUrl);
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                        }
+                                    }
+
+                                    foreach (JObject jobj in list)
+                                    {
+                                        string fileName = jobj["fileName"].ToString();
+                                        string fileUrl = jobj["fileUrl"].ToString();
+
+                                        <a href="@Url.Content("/upload/"+HttpUtility.UrlDecode(fileUrl))" target="_blank">
+                                            @fileName
+                                        </a>
+                                            <br />
+                                    }
+                                }
+                                <input type="file" name="fileUrl1" /><br />
+                                <input type="file" name="fileUrl2" /><br />
+                                <input type="file" name="fileUrl3" /><br />
+                                <input type="file" name="fileUrl4" /><br />
+                                <input type="file" name="fileUrl5" /><br />
+                                <input type="file" name="fileUrl6" /><br />
+                                @Html.ValidationMessageFor(model => model.fileUrl, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        @*<div class="form-group">
+                                @Html.LabelFor(model => model.isActive, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    <div class="checkbox">
+                                        @Html.EditorFor(model => model.isActive)
+                                        @Html.ValidationMessageFor(model => model.isActive, "", new { @class = "text-danger" })
+                                    </div>
                                 </div>
-                            </div>
-                        </div>*@
+                            </div>*@
 
-                    @*<div class="form-group">
-                            @Html.LabelFor(model => model.createTime, htmlAttributes: new { @class = "control-label col-md-2" })
-                            <div class="col-md-10">
-                                @Html.EditorFor(model => model.createTime, new { htmlAttributes = new { @class = "form-control" } })
-                                @Html.ValidationMessageFor(model => model.createTime, "", new { @class = "text-danger" })
-                            </div>
-                        </div>*@
+                        @*<div class="form-group">
+                                @Html.LabelFor(model => model.createTime, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.createTime, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.createTime, "", new { @class = "text-danger" })
+                                </div>
+                            </div>*@
 
-                    <div class="form-group">
-                        <div class="col-md-offset-2 col-md-10">
-                            <input type="submit" value="儲存" class="btn btn-primary" />
-                            <a href="@Url.Action("Index")" class="btn btn-default">取消</a>
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-10">
+                                <input type="submit" value="儲存" class="btn btn-primary" />
+                                <a href="@Url.Action("Index")" class="btn btn-default">取消</a>
+                            </div>
                         </div>
                     </div>
-                </div>
                 }
             </div>
             <div class="box-footer"></div>
         </div>
     </div>
-    </div>
+</div>
 
-    @section Scripts {
-        <script type="text/javascript">
-            $(function () {
-                var today = new Date();
-                var rightNow = (new Date()) - (new Date()).getTimezoneOffset() * 60000;
-                res = new Date(rightNow).toISOString();
-                $('#ndate').val(getLocalDateStr());
+@section Scripts {
 
-                CKEDITOR.config.font_names = '新細明體;標楷體;微軟正黑體;' + CKEDITOR.config.font_names;
+    @*<script src="~/Scripts/jQuery-File-Upload-9.22.0/js/vendor/jquery.ui.widget.js"></script>
+        <script src="~/Scripts/jQuery-File-Upload-9.22.0/js/jquery.fileupload.js"></script>
+        <script src="~/Scripts/jQuery-File-Upload-9.22.0/js/jquery.fileupload-ui.js"></script>*@
 
 
-                CKEDITOR.replace("content", {
-                    height: 200,
-                    //removeButtons: 'About,Source,ImageButton,Image,Flash,iframe,Underline,Strike,Subscript,Superscript,Anchor,Styles,Specialchar'
-                    toolbar: [
-                        //{ name: 'document', groups: ['mode', 'document', 'doctools'], items: ['Source', '-', 'Save', 'NewPage', 'Preview', 'Print', '-', 'Templates'] },
-                        //{ name: 'clipboard', groups: ['clipboard', 'undo'], items: ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'] },
-                        //{ name: 'editing', groups: ['find', 'selection', 'spellchecker'], items: ['Find', 'Replace', '-', 'SelectAll', '-', 'Scayt'] },
-                        //{ name: 'forms', items: ['Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton', 'HiddenField'] },
-                        //'/',
-                        { name: 'basicstyles', groups: ['basicstyles', 'cleanup'], items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat'] },
-                        { name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align', 'bidi'], items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'] },
-                        { name: 'links', items: ['Link', 'Unlink'] },
-                        //{ name: 'insert', items: ['Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe'] },
-                        //'/',
-                        { name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize'] },
-                        { name: 'colors', items: ['TextColor', 'BGColor'] }
-                        //{ name: 'tools', items: ['Maximize', 'ShowBlocks'] },
-                        //{ name: 'others', items: ['-'] },
-                        //{ name: 'about', items: ['About'] }
-                    ]
+    <script type="text/javascript">
+        $(function () {
+            var today = new Date();
+            var rightNow = (new Date()) - (new Date()).getTimezoneOffset() * 60000;
+            res = new Date(rightNow).toISOString();
+            $('#ndate').val(getLocalDateStr());
+
+            CKEDITOR.config.font_names = '新細明體;標楷體;微軟正黑體;' + CKEDITOR.config.font_names;
+
+
+            CKEDITOR.replace("content", {
+                height: 200,
+                //removeButtons: 'About,Source,ImageButton,Image,Flash,iframe,Underline,Strike,Subscript,Superscript,Anchor,Styles,Specialchar'
+                toolbar: [
+                    //{ name: 'document', groups: ['mode', 'document', 'doctools'], items: ['Source', '-', 'Save', 'NewPage', 'Preview', 'Print', '-', 'Templates'] },
+                    //{ name: 'clipboard', groups: ['clipboard', 'undo'], items: ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'] },
+                    //{ name: 'editing', groups: ['find', 'selection', 'spellchecker'], items: ['Find', 'Replace', '-', 'SelectAll', '-', 'Scayt'] },
+                    //{ name: 'forms', items: ['Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton', 'HiddenField'] },
+                    //'/',
+                    { name: 'basicstyles', groups: ['basicstyles', 'cleanup'], items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat'] },
+                    { name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align', 'bidi'], items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'] },
+                    { name: 'links', items: ['Link', 'Unlink'] },
+                    //{ name: 'insert', items: ['Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe'] },
+                    //'/',
+                    { name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize'] },
+                    { name: 'colors', items: ['TextColor', 'BGColor'] }
+                    //{ name: 'tools', items: ['Maximize', 'ShowBlocks'] },
+                    //{ name: 'others', items: ['-'] },
+                    //{ name: 'about', items: ['About'] }
+                ]
+            });
+            $('#fileUrl').fileupload();
+            return;
+            var uploadButton = $('<button/>')
+                .addClass('btn btn-primary')
+                .prop('disabled', true)
+                .text('Processing...')
+                .on('click', function () {
+                    var $this = $(this),
+                        data = $this.data();
+                    $this
+                        .off('click')
+                        .text('Abort')
+                        .on('click', function () {
+                            $this.remove();
+                            data.abort();
+                        });
+                    data.submit().always(function () {
+                        $this.remove();
+                    });
                 });
 
-            })
-        </script>
-    }
+            $('#fileUrl').fileupload()
+                .on(
+                'fileuploadadd',
+                function (e, data) {
+
+                    data.context = $('<div/>').appendTo('#files');
+                    $.each(data.files, function (index, file) {
+                        var node = $('<p/>')
+                            .append($('<span/>').text(file.name));
+                        if (!index) {
+                            node
+                                .append('<br>')
+                            //.append(uploadButton.clone(true).data(data));
+                        }
+                        node.appendTo(data.context);
+                    });
+                });
+        });
+    </script>
+}

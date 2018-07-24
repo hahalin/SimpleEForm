@@ -1,5 +1,6 @@
-﻿@model IEnumerable<eform.Models.news>
-
+﻿@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq
+@model IEnumerable<eform.Models.news>
 @{
     ViewBag.Title = "Index";
 }
@@ -26,6 +27,9 @@
                             @Html.DisplayNameFor(model => model.title)
                         </th>
                         <th>
+                            @Html.DisplayNameFor(model => model.newsType)
+                        </th>
+                        <th>
                             @Html.DisplayNameFor(model => model.fileUrl)
                         </th>
                         <th></th>
@@ -47,10 +51,36 @@
                                     @Html.DisplayFor(modelItem => item.title)
                                 </td>
                                 <td>
-                                    @if(!string.IsNullOrEmpty(item.fileUrl))
-                                    { 
-                                        <a href="@item.fileUrl"><i class="fa fa-paperclip"></i>附檔</a>
+                                    @Html.DisplayFor(modelItem => item.newsType)
+                                </td>
+                                <td>
+                                    @{ 
+                                        JArray list = new JArray();
+                                        if (!string.IsNullOrEmpty(item.fileUrl))
+                                        {
+                                            try
+                                            {
+                                                list = JArray.Parse(item.fileUrl);
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                            }
+                                        }
                                     }
+
+                                    @foreach (JObject jobj in list)
+                                    {
+                                        string fileName = jobj["fileName"].ToString();
+                                        string fileUrl = jobj["fileUrl"].ToString();
+
+                                        <a href="@Url.Content("/upload/"+HttpUtility.UrlDecode(fileUrl))" target="_blank">
+                                            @*<i class="fa fa-paperclip"></i>*@
+                                            @fileName
+                                        </a>
+                                        <br />
+                                    }
+
+                                    
                                 </td>
                                 <td>
                                     <a href="@Url.Action("Edit", new { id = item.id })" class="btn btn-info">修改</a>
