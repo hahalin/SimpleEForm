@@ -5,6 +5,8 @@ using System.Web;
 using System.Web.Mvc;
 using eform.Attributes;
 using eform.Models;
+using System.Data;
+
 namespace eform.Controllers
 {
     [AdminAuthorize(Roles = "Admin,Employee")]
@@ -80,8 +82,14 @@ namespace eform.Controllers
         }
 
         // GET: Form/Create
+        [AdminAuthorize(Roles ="Employee,Admin")]
         public ActionResult CreateOverTimeForm()
         {
+            string UserName=User.Identity.Name;
+            var context = new ApplicationDbContext();
+            var user=context.Users.Where(x => x.workNo == UserName).FirstOrDefault();
+            ViewBag.UserName = user.cName;
+            initViewBag(context);
             return View();
         }
 
@@ -97,13 +105,14 @@ namespace eform.Controllers
                     ModelState.AddModelError("", "開始時間不得晚於結束時間");
                 }
             }
+            var context = new ApplicationDbContext();
 
             if (!ModelState.IsValid)
             {
+                initViewBag(context); 
                 return View(Model);
             }
 
-            var context = new ApplicationDbContext();
             string FlowDefKey = "OverTime";
             FlowMain fmain = new FlowMain();
             List<FlowSub> fsublist = new List<FlowSub>();
@@ -187,52 +196,57 @@ namespace eform.Controllers
             catch (Exception ex)
             {
                 ModelState.AddModelError("", ex.Message);
+                initViewBag(context);
                 return View(Model);
             }
         }
 
-        // GET: Form/Edit/5
-        public ActionResult Edit(int id)
+        
+        void initViewBag(ApplicationDbContext context)
         {
-            return View();
-        }
+            List<SelectListItem> placelist = new List<SelectListItem>();
+            placelist.Add(new SelectListItem{ Value="",Text= "選擇工作地點" });
+            placelist.Add(new SelectListItem { Value = "測試區", Text = "測試區" });
+            placelist.Add(new SelectListItem { Value = "組裝區", Text = "組裝區" });
+            placelist.Add(new SelectListItem { Value = "加工區", Text = "加工區" });
+            placelist.Add(new SelectListItem { Value = "倉庫區", Text = "倉庫區" });
+            placelist.Add(new SelectListItem { Value = "辦公區", Text = "辦公區" });
+            placelist.Add(new SelectListItem { Value = "其他", Text = "其他" });
+            ViewBag.placelist = placelist;
 
-        // POST: Form/Edit/5
-        [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
-        {
-            try
+            var user = context.Users.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
+            string workno = user.workNo;
+            dbHelper dbh = new dbHelper();
+            string sql = @"select a.poNo,b.depNo,b.poNm,c.depNm
+                            from PoUsers a inner join jobPoes b on a.poNO=b.poNo 
+                                           inner join deps c on b.depNo=c.depNo
+                            where a.UserId='@workno'";
+            sql = sql.Replace("@workno", workno);
+            DataTable tbpo = dbh.sql2tb(sql);
+            List <vwPoNo> polist= new List<vwPoNo>();
+            List<dep> deplist = new List<dep>();
+            foreach(DataRow r in tbpo.Rows)
             {
-                // TODO: Add update logic here
+                if (deplist.Where(x=>x.depNo==r["depNo"].ToString()).Count()==0)
+                {
+                    deplist.Add(new dep
+                    {
+                        depNo = r["depNo"].ToString(),
+                        depNm = r["depNm"].ToString()
+                    });
+                }
 
-                return RedirectToAction("Index");
+                polist.Add(new vwPoNo
+                {
+                    depNo = r["depNo"].ToString(),
+                    depNm = r["depNm"].ToString(),
+                    poNo = r["poNo"].ToString(),
+                    poNm = r["poNm"].ToString()
+                });
             }
-            catch
-            {
-                return View();
-            }
-        }
 
-        // GET: Form/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: Form/Delete/5
-        [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add delete logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
+            ViewBag.depList = deplist;
+            ViewBag.poList = polist;
         }
     }
 }

@@ -9,26 +9,25 @@
 @if (User.Identity.IsAuthenticated)
 {
     <div class="row">
-        <div class="col-xs-10 col-md-8">
+        <div class="col-xs-10 col-md-10">
             <div class="box">
                 <div class="box-header">
-                    <table class="table table-hover">
+                    <table class="table table-hover table-bordered table-striped">
+                        <tr>
+                            <th style="width:110px;">
+                                公告日期
+                            </th>
+                            <th style="width:120px;">
+                                公告類別
+                            </th>
+                            <th>
+                                標題
+                            </th>
+                            <th>
+                                附檔
+                            </th>
+                        </tr>
                         <tbody>
-                            <tr>
-                            <tr>
-                                <th>
-                                    公告日期
-                                </th>
-                                <th>
-                                    公告類別
-                                </th>
-                                <th style="width:200px;">
-                                    標題
-                                </th>
-                                <th>
-                                    附檔
-                                </th>
-                            </tr>
 
                             @foreach (var item in newslist)
                             {
@@ -48,7 +47,7 @@
                                             @Html.DisplayFor(modelItem => item.title)
                                         </a>
                                     </td>
-                                    <td>
+                                    <td style="font-size:12px;">
                                         @if (!string.IsNullOrEmpty(item.fileUrl))
                                         {
                                             JArray list = new JArray();
@@ -63,17 +62,21 @@
                                                 }
                                             }
 
-                                            foreach (JObject jobj in list)
-                                            {
+                                        <ul>
+
+                                            @foreach (JObject jobj in list)
+                                                {
                                                 string fileName = jobj["fileName"].ToString();
                                                 string fileUrl = jobj["fileUrl"].ToString();
 
-                                                <a href="@Url.Content("/upload/"+HttpUtility.UrlDecode(fileUrl))" target="_blank">
-                                                    @*<i class="fa fa-paperclip"></i>*@
-                                                    @fileName
-                                                </a>
-                                                <br />
-                                            }
+                                                <li style="padding-bottom:3px;">
+                                                    <a href="@Url.Content("/upload/"+HttpUtility.UrlDecode(fileUrl))" target="_blank">
+                                                        @fileName
+                                                    </a>
+                                                </li>
+                                                }
+
+                                        </ul>
                                         }
                                     </td>
                                 </tr>

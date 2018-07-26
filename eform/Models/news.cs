@@ -27,6 +27,7 @@ namespace eform.Models
         public string content { get; set; }
         public bool isActive { get; set; } = true;
         public DateTime? createTime { get; set; }
+        public DateTime? createTime2 { get; set; }
         [Display(Name = "夾檔")]
         public string fileUrl { get; set; }
     }

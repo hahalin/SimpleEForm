@@ -1,5 +1,6 @@
 ﻿@model eform.Models.vwReqOverTime
-
+@using Newtonsoft.Json;
+@using eform.Models;
 @{
     ViewBag.Title = "申請加班單";
 }
@@ -17,12 +18,16 @@
                 {
                     @Html.AntiForgeryToken()
 
-                    <div class="form-horizontal">
+                    <div class="form-horizontal col-md-10">
                         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
                         <div class="form-group">
-                            @Html.LabelFor(model =>model.billDate , htmlAttributes: new { @class = "control-label col-md-2" })
-                            <div class="col-md-10">
+                            <label class="control-label col-md-2">申請人</label>
+                            <div class="col-md-4">
+                                <div class="form-control">@ViewBag.UserName</div>
+                            </div>
+                            @Html.LabelFor(model => model.billDate, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
                                 @Html.EditorFor(model => model.billDate, new { htmlAttributes = new { @class = "form-control", type = "date" } })
                                 @Html.ValidationMessageFor(model => model.billDate, "", new { @class = "text-danger," })
                             </div>
@@ -30,39 +35,76 @@
 
                         <div class="form-group">
                             @Html.LabelFor(model => model.dtBegin, htmlAttributes: new { @class = "control-label col-md-2" })
-                            <div class="col-md-10">
+                            <div class="col-md-4">
                                 @Html.EditorFor(model => model.dtBegin, new { htmlAttributes = new { @class = "form-control", type = "datetime-local" } })
                                 @Html.ValidationMessageFor(model => model.dtBegin, "", new { @class = "text-danger" })
                             </div>
-                        </div>
-
-                        <div class="form-group">
                             @Html.LabelFor(model => model.dtEnd, htmlAttributes: new { @class = "control-label col-md-2" })
-                            <div class="col-md-10">
+                            <div class="col-md-4">
                                 @Html.EditorFor(model => model.dtEnd, new { htmlAttributes = new { @class = "form-control", type = "datetime-local" } })
                                 @Html.ValidationMessageFor(model => model.dtEnd, "", new { @class = "text-danger" })
                             </div>
                         </div>
-                        <div class="form-group">
 
-                            @Html.LabelFor(model => model.hours, htmlAttributes: new { @class = "control-label col-md-2" })
-                            <div class="col-md-10">
-                                @Html.EditorFor(model => model.hours, new { htmlAttributes = new { @class = "form-control",type="number" } })
-                                @Html.ValidationMessageFor(model => model.hours, "", new { @class = "text-danger" })
+                        @*<div class="form-group">
+
+                                @Html.LabelFor(model => model.hours, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.hours, new { htmlAttributes = new { @class = "form-control",type="number" } })
+                                    @Html.ValidationMessageFor(model => model.hours, "", new { @class = "text-danger" })
+                                </div>
+                            </div>*@
+
+                        <div class="form-group">
+                            <label class="control-label col-md-2">部門</label>
+                            <div class="col-md-4">
+                                <select id="cboDepList" name="edDep" class="form-control"></select>
+
+                            </div>
+                            <label class="control-label col-md-2">職稱</label>
+                            <div class="col-md-4">
+                                <select id="cboPoList" name="edPo" class="form-control"></select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.sType, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-2">
+                                @Html.RadioButtonFor(model => model.sType, "平日", new { @class = "checkbox-inline" })
+                                平日
+                                @Html.RadioButtonFor(model => model.sType, "假日", new { @class = "checkbox-inline" })
+                                假日
+                            </div>
+                            @Html.LabelFor(model => model.place, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-6">
+                                <div style="float:left;">
+                                    @Html.DropDownListFor(model => model.place, ViewBag.placelist as IEnumerable<SelectListItem>, new { @class = "form-control", style = "float: left;width: 220px;" })
+                                    @Html.TextBoxFor(model => model.otherPlace, new { @class = "form-control", style = "width:120px;float:left;margin-left:5px;" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.prjId, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-5">
+                                @Html.TextBoxFor(model => model.prjId, new { @class = "form-control", style = "width:500px;" })
                             </div>
                         </div>
 
                         <div class="form-group">
                             @Html.LabelFor(model => model.sMemo, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10" style="margin-bottom:10px;">
+                                @Html.TextAreaFor(model => model.sMemo, htmlAttributes: new { @class = "form-control", rows = "2", style = "width:500px;" })
+                            </div>
+                            <br />
+                            @Html.LabelFor(model => model.sMemo2, htmlAttributes: new { @class = "control-label col-md-2" })
                             <div class="col-md-10">
-                                @Html.TextAreaFor(model => model.sMemo, htmlAttributes : new { @class = "form-control", rows = "3" })
-                                @Html.ValidationMessageFor(model => model.sMemo, "", new { @class = "text-danger" })
+                                @Html.TextAreaFor(model => model.sMemo2, htmlAttributes: new { @class = "form-control", rows = "2", style = "width:500px;" })
+                                <span style="color:brown;font-size:12px;margin-top:0px;">有使用水電氣需求者必填</span>
                             </div>
                         </div>
-
                         <div class="form-group">
-                            <div class="col-md-offset-2 col-md-10">
-                                <input type="submit" value="送出" class="btn btn-primary" onclick="return doSubmit();" />
+                            <div class="col-md-offset-2 col-md-10 text-center">
+                                <input type="submit" value="送出" class="btn-lg btn-primary" onclick="return doSubmit();" />
                             </div>
                         </div>
                     </div>
@@ -75,23 +117,55 @@
         </div>
     </div>
 </div>
-                @section Scripts {
-                    <script type="text/javascript">
-                        function doSubmit() {
-                            debugger;
-                            var dtend = new Date($('#dtEnd').val()).getTime();
-                            var dtbegin = new Date($('#dtBegin').val()).getTime();
-                            if ((dtend - dtbegin) < 0) {
-                                toastr["error"]("結束時間不得小於開始時間", "Error");
-                                return false;
-                            }
-                            return true;
+@section Scripts {
+    <script type="text/javascript">
+        function doSubmit() {
+            var dtend = new Date($('#dtEnd').val()).getTime();
+            var dtbegin = new Date($('#dtBegin').val()).getTime();
+            if ((dtend - dtbegin) < 0) {
+                toastr["error"]("結束時間不得小於開始時間", "Error");
+                return false;
+            }
+            return true;
+        }
+        $(function () {
+            //$('#sMemo').css('width', '500px');
+            //$('input[name="edsMemo2"]').css('width', '500px');
+            $('#billDate').val(getLocalDateStr());
+            $('#dtBegin').val(getLocalDateTimeStr());
+            $('#dtEnd').val(getLocalDateTimeStr());
+
+            var depList = @Html.Raw(JsonConvert.SerializeObject(ViewBag.depList));
+            var poList = @Html.Raw(JsonConvert.SerializeObject(ViewBag.poList));
+            var cboDepList = $('#cboDepList');
+            var cboPoList = $('#cboPoList');
+            $(cboDepList).append(
+                $('<option></option>').val(0).html("選擇部門")
+            );
+            $(cboPoList).append(
+                $('<option></option>').val(0).html("選擇職稱")
+            );
+            $.each(depList, function (val, obj) {
+                $(cboDepList).append(
+                    $('<option></option>').val(obj.depNo).html(obj.depNm)
+                );
+            });
+            $(cboDepList).on("change", function (e) {
+                var depV = this.value;
+                $('#cboPoList option').remove();
+                $(cboPoList).append(
+                    $('<option></option>').val(0).html("選擇職稱")
+                );
+                if (depV != "0") {
+                    $.each(poList, function (val, obj) {
+                        if (obj.depNo == depV) {
+                            $(cboPoList).append(
+                                $('<option></option>').val(obj.poNo).html(obj.poNm)
+                            );
                         }
-                        $(function () {
-                            $('#sMemo').css('width', '500px');
-                            $('#billDate').val(getLocalDateStr());
-                            $('#dtBegin').val(getLocalDateTimeStr());
-                            $('#dtEnd').val(getLocalDateTimeStr());
-                        });
-                    </script>
+                    });
                 }
+            });
+        });
+    </script>
+}

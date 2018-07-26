@@ -39,7 +39,7 @@ namespace eform.Controllers
         {
             var context = new ApplicationDbContext();
             seedingNewsTypeList(context);
-            var qry = from item in context.newsList.ToList<news>() orderby item.createTime descending select item;
+            var qry = from item in context.newsList.ToList<news>() orderby item.createTime2 descending select item;
             var model = qry.ToList<news>();
             return View(model);
         }
@@ -128,6 +128,7 @@ namespace eform.Controllers
             {
                 model.id = Guid.NewGuid().ToString();
                 ModelID = model.id;
+                model.createTime2 = context.getLocalTiime();
                 //if (fileUrl != "")
                 //{
                 //    model.fileUrl = fileUrl;
@@ -140,6 +141,7 @@ namespace eform.Controllers
                 ModelID = currentModel.id;
                 currentModel.title = model.title;
                 currentModel.createTime = DateTime.UtcNow.AddSeconds(28800);
+                model.createTime2 = context.getLocalTiime();
                 currentModel.content = model.content;
                 currentModel.ndate = model.ndate;
                 currentModel.newsType = model.newsType;
@@ -233,7 +235,7 @@ namespace eform.Controllers
 
             try
             {
-                DirectoryInfo di = new DirectoryInfo(@"C:\inetpub\upload\" + filepath);
+                DirectoryInfo di = new DirectoryInfo(@"C:\inetpub\upload\" + id);
                 while(di.GetFiles().Count()>0)
                 {
                     di.GetFiles()[0].Delete();

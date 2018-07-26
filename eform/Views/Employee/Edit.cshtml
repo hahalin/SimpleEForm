@@ -206,10 +206,10 @@
                         }
                         $('form,input,select,textarea').attr("autocomplete", "off");
                         $('#workNo').css('ime-mode','normal');
-updatePoListUI();
+                        updatePoListUI();
 
-var cboDepList = $('#cboDepList');
-var cboPoList = $('#cboPoList');
+                        var cboDepList = $('#cboDepList');
+                        var cboPoList = $('#cboPoList');
                             $(cboDepList).append(
                                 $('<option></option>').val(0).html("選擇部門")
                             );
@@ -220,7 +220,7 @@ var cboPoList = $('#cboPoList');
                                 $(cboDepList).append(
                                     $('<option></option>').val(obj.k).html(obj.v)
                                 );
-});
+                            });
 
                             $('#cboDepList').selectpicker();
 

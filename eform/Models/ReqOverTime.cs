@@ -19,7 +19,7 @@ namespace eform.Models
         public DateTime? dtEnd { get; set; }
         [DisplayName("加班時數")]
         public int hours { get; set; } = 0;
-        [DisplayName("備註")]
+        [DisplayName("加班事由")]
         public string sMemo { get; set; }
     }
 }
