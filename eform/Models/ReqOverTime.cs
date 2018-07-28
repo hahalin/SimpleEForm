@@ -21,5 +21,6 @@ namespace eform.Models
         public int hours { get; set; } = 0;
         [DisplayName("加班事由")]
         public string sMemo { get; set; }
+        public string jext { get; set; }
     }
 }

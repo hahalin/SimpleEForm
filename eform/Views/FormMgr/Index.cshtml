@@ -37,7 +37,10 @@
                                 @Html.DisplayFor(modelItem => item.sender)
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.billDate)
+                                @{
+                                    DateTime billdate = Convert.ToDateTime(item.billDate.ToString());
+                                }
+                                @billdate.ToString("yyyy-MM-dd HH:mm:ss")
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.flowName)

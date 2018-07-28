@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using eform.Attributes;
 using eform.Models;
 using System.Data;
+using Newtonsoft.Json.Linq;
 
 namespace eform.Controllers
 {
@@ -71,23 +72,48 @@ namespace eform.Controllers
             {
                 vwReqOverTimeObj = new vwReqOverTime
                 {
+                    billDate = fmain.billDate,
                     dtBegin = reqOverTimeObj.dtBegin,
                     dtEnd = reqOverTimeObj.dtEnd,
                     hours = reqOverTimeObj.hours,
                     sMemo = reqOverTimeObj.sMemo
                 };
+
+                JObject jobjext= null;
+                try
+                {
+                    jobjext=JObject.Parse(reqOverTimeObj.jext);
+                    vwReqOverTimeObj.sType= jobjext["stype"] == null ? "" : jobjext["stype"].ToString();
+                    vwReqOverTimeObj.place = jobjext["place"] == null ? "" : jobjext["place"].ToString();
+                    vwReqOverTimeObj.otherPlace = jobjext["otherPlace"] == null ? "" : jobjext["otherPlace"].ToString();
+                    vwReqOverTimeObj.prjId = jobjext["prjId"] == null ? "" : jobjext["prjId"].ToString();
+                    //vwReqOverTimeObj.sMemo = jobjext["sMemo"] == null ? "" : jobjext["sMemo"].ToString();
+                    vwReqOverTimeObj.sMemo2 = jobjext["sMemo2"] == null ? "" : jobjext["sMemo2"].ToString();
+                    vwReqOverTimeObj.worker= jobjext["worker"] == null ? "" : jobjext["worker"].ToString();
+                    vwReqOverTimeObj.depNo = jobjext["depNo"] == null ? "" : jobjext["depNo"].ToString();
+                    dep depobj = context.deps.Where(x => x.depNo.Equals(vwReqOverTimeObj.depNo)).FirstOrDefault();
+                    vwReqOverTimeObj.depNm = jobjext["depNo"] == null ? "" : depobj.depNm;
+                    vwReqOverTimeObj.poNo = jobjext["poNo"] == null ? "" : jobjext["poNo"].ToString();
+                    vwReqOverTimeObj.poNm = jobjext["poNo"] == null ? "" : context.jobPos.Where(x => x.poNo.Equals(vwReqOverTimeObj.poNo)).FirstOrDefault().poNm;
+                }
+                catch (Exception ex)
+                {
+                    //vwReqOverTimeObj.sMemo = ex.Message;
+                }
+
+
             }
             ViewBag.SubModel = vwReqOverTimeObj;
             return View(list);
         }
 
         // GET: Form/Create
-        [AdminAuthorize(Roles ="Employee,Admin")]
+        [AdminAuthorize(Roles = "Employee,Admin")]
         public ActionResult CreateOverTimeForm()
         {
-            string UserName=User.Identity.Name;
+            string UserName = User.Identity.Name;
             var context = new ApplicationDbContext();
-            var user=context.Users.Where(x => x.workNo == UserName).FirstOrDefault();
+            var user = context.Users.Where(x => x.workNo == UserName).FirstOrDefault();
             ViewBag.UserName = user.cName;
             initViewBag(context);
             return View();
@@ -98,20 +124,54 @@ namespace eform.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult CreateOverTimeForm(vwReqOverTime Model)
         {
+
+            #region "checkinput"
+            List<string> errList = new List<string>();
             if (Model.dtEnd.HasValue && Model.dtBegin.HasValue)
             {
-                if (DateTime.Compare(Convert.ToDateTime(Model.dtBegin), Convert.ToDateTime(Model.dtEnd)) > 0)
+                int icompare = DateTime.Compare(Convert.ToDateTime(Model.dtBegin), Convert.ToDateTime(Model.dtEnd));
+                if (icompare >= 0)
                 {
-                    ModelState.AddModelError("", "開始時間不得晚於結束時間");
+                    errList.Add("結束時間必須大於開始時間");
                 }
             }
+            if (string.IsNullOrEmpty(Model.poNo))
+            {
+                errList.Add("請選擇部門與職稱");
+            }
+            if (string.IsNullOrEmpty(Model.sType))
+            {
+                errList.Add("請選擇加班類型");
+            }
+            if (
+                (string.IsNullOrEmpty(Model.place)) ||
+                (Model.place == "其他" && string.IsNullOrEmpty(Model.otherPlace))
+               )
+            {
+                errList.Add("請選擇工作地點");
+            }
+            if (string.IsNullOrEmpty(Model.sMemo))
+            {
+                errList.Add("請輸入加班事由");
+            }
+
+            if (errList.Count>0)
+            {
+                ViewBag.UserName = Request.Form["worker"];
+                ModelState.AddModelError("", string.Join(" , " , errList.ToArray<string>()));
+            }
+
+            #endregion
+
             var context = new ApplicationDbContext();
 
             if (!ModelState.IsValid)
             {
-                initViewBag(context); 
+                initViewBag(context);
                 return View(Model);
             }
+
+            Model.hours = Convert.ToInt32(((DateTime)Model.dtEnd).Subtract((DateTime)Model.dtBegin).TotalHours);
 
             string FlowDefKey = "OverTime";
             FlowMain fmain = new FlowMain();
@@ -129,7 +189,7 @@ namespace eform.Controllers
             fmain.flowName = "加班單";
             fmain.flowStatus = 1;
             fmain.senderNo = sender.workNo;
-            fmain.billDate = Model.billDate;
+            fmain.billDate = context.getLocalTiime();//Model.billDate;
             context.FlowMainList.Add(fmain);
 
             ReqOverTime fmOverTime = new ReqOverTime
@@ -191,21 +251,36 @@ namespace eform.Controllers
             try
             {
                 context.SaveChanges();
+
+                JObject jobj = new JObject();
+                jobj["worker"] = sender.cName;
+                jobj["stype"] = Model.sType;
+                jobj["place"] = Model.place;
+                jobj["otherPlace"] = Model.otherPlace;
+                jobj["prjId"] = Model.prjId;
+                jobj["sMemo2"] = Model.sMemo2;
+                jobj["depNo"] = Model.depNo;
+                jobj["poNo"] = Model.poNo;
+
+                dbh.execSql("update ReqOverTimes set jext =N'"+jobj.ToString()+"'");
+
+
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError("", ex.Message);
                 initViewBag(context);
+                ViewBag.UserName = Request.Form["worker"].ToString();
                 return View(Model);
             }
         }
 
-        
+
         void initViewBag(ApplicationDbContext context)
         {
             List<SelectListItem> placelist = new List<SelectListItem>();
-            placelist.Add(new SelectListItem{ Value="",Text= "選擇工作地點" });
+            placelist.Add(new SelectListItem { Value = "", Text = "選擇工作地點" });
             placelist.Add(new SelectListItem { Value = "測試區", Text = "測試區" });
             placelist.Add(new SelectListItem { Value = "組裝區", Text = "組裝區" });
             placelist.Add(new SelectListItem { Value = "加工區", Text = "加工區" });
@@ -223,11 +298,11 @@ namespace eform.Controllers
                             where a.UserId='@workno'";
             sql = sql.Replace("@workno", workno);
             DataTable tbpo = dbh.sql2tb(sql);
-            List <vwPoNo> polist= new List<vwPoNo>();
+            List<vwPoNo> polist = new List<vwPoNo>();
             List<dep> deplist = new List<dep>();
-            foreach(DataRow r in tbpo.Rows)
+            foreach (DataRow r in tbpo.Rows)
             {
-                if (deplist.Where(x=>x.depNo==r["depNo"].ToString()).Count()==0)
+                if (deplist.Where(x => x.depNo == r["depNo"].ToString()).Count() == 0)
                 {
                     deplist.Add(new dep
                     {

@@ -11,8 +11,17 @@ namespace eform.Models
     {
         public string id { get; set; }
         public string flowId { get; set; }
+        public string worker { get; set; }
         [DisplayName("申請日期")]
         public DateTime? billDate { get; set; }
+        [DisplayName("部門")]
+        public string depNo { get; set; }
+        [DisplayName("部門")]
+        public string depNm { get; set; }
+        [DisplayName("職稱")]
+        public string poNo { get; set; }
+        [DisplayName("職稱")]
+        public string poNm { get; set; }
         [DisplayName("開始時間")]
         public DateTime? dtBegin { get; set; }
         [DisplayName("結束時間")]
