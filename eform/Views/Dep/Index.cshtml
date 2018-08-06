@@ -1,16 +1,28 @@
 ﻿@model IEnumerable<eform.Models.dep>
 
 @{
-    ViewBag.Title = "部們管理";
+    int depLevel = (int)ViewBag.depLevel;
+    if (depLevel==1)
+    {
+        ViewBag.Title = "處級管理";
+    }
+    if (depLevel == 2)
+    {
+        ViewBag.Title = "部級管理";
+    }
+    if (depLevel == 3)
+    {
+        ViewBag.Title = "課級管理";
+    }
 }
 
-<h2>部門管理</h2>
+<h2>@ViewBag.Title</h2>
 
 <div class="row">
     <div class="col-md-6">
         <div class="box">
             <div class="box-header">
-                <a class="btn btn-primary" href="@Url.Action("Create")"><i class="fa fa-plus"></i>新增部門</a>
+                <a class="btn btn-primary" href="@Url.Action("Create",new { depLevel = depLevel})"><i class="fa fa-plus"></i>新增</a>
                 @*@Html.ActionLink("新增部門", "Create", new {}, new { @class = "btn btn-primary" })*@
             </div>
             <div class="box-body">

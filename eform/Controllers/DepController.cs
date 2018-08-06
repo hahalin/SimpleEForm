@@ -12,12 +12,11 @@ namespace eform.Controllers
     public class DepController : Controller
     {
         // GET: Dep
-        public ActionResult Index(string id)
+        public ActionResult Index(string id,int depLevel=1)
         {
             var context = new ApplicationDbContext();
-
-            var model = context.deps.OrderBy(x => x.sort).ToList<dep>();
-
+            var model = context.deps.Where(x=>x.depLevel==1).OrderBy(x => x.sort).ToList<dep>();
+            ViewBag.depLevel = depLevel;
             return View(model);
         }
 
@@ -185,6 +184,20 @@ namespace eform.Controllers
                 }
             }
             return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult Gm()
+        {
+            dep model = new dep();
+            model.depNo = "001";
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult Gm (FormCollection fm)
+        {
+            return View();
         }
 
     }

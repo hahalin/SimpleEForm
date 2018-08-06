@@ -7,73 +7,137 @@
 }
 
 <div class="row">
-    <div class="col-md-8">
-        <div class="box">
-            @if (ViewBag.FlowPageType == "")
+    @if (ViewBag.FlowPageType == "")
             {
+
+        <div class="col-md-10">
+            <div class="box">
                 <div class="box-comments">
                     <div class="form-horizontal" style="padding:30px;">
                         @using (Html.BeginForm("SignIt", "FormMgr", FormMethod.Post, new { id = "fmMain" }))
                         {
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="hid" value="@flowMain.id" />
-                            <div class="form-group">
-                                <label class="control-label col-md-2">簽核: </label>
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="hid" value="@flowMain.id" />
+                        <div class="form-group">
+                            <label class="control-label col-md-2">簽核: </label>
+                            <div class="col-md-10">
+                                <input type="radio" name="signValue" value="1" checked="checked" />同意
+                                <input type="radio" name="signValue" value="2" />不同意
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-group" style="">
+                                <label class="control-label col-md-2">簽核意見: </label>
                                 <div class="col-md-10">
-                                    <input type="radio" name="signValue" value="1" checked="checked" />同意
-                                    <input type="radio" name="signValue" value="2" />不同意
+                                    <textarea rows="3" style="width:90%;" name="signMemo"></textarea>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <div class="form-group" style="">
-                                    <label class="control-label col-md-2">簽核意見: </label>
-                                    <div class="col-md-10">
-                                        <textarea rows="3" style="width:90%;" name="signMemo"></textarea>
-                                    </div>
-                                </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="text-center col-md-8">
+                                <button type="submit" class="btn btn-primary">送出</button>
                             </div>
-                            <div class="form-group">
-                                <div class="text-center col-md-8">
-                                    <button type="submit" class="btn btn-primary">送出</button>
-                                </div>
-                            </div>
+                        </div>
                         }
                     </div>
                 </div>
-            }
+            </div>
+        </div>
+    }
+    <div class="col-md-10">
+        <div class="box">
             <div class="box-header">
                 <div class="box-title">
-                    @*<h3><span class="label label-success">@ViewBag.Title</span></h3>*@
-                    <h3>@flowMain.flowName 明細</h3>
+                    <h3><span class="label label-info">@flowMain.flowName 明細</span></h3>
                 </div>
             </div>
-            <div class="box-body>">
-                <div class="form-horizontal" style="padding:30px;">
-                    <div class="form-group" style="border-bottom:1px solid gray;">
-                        <label class="control-label col-md-2">表單日期:</label>
-                        <div class="col-md-10">@flowMain.billDate</div>
+            <div class="box-body">
+                <div class="form-horizontal col-md-10" style="margin-top:10px;">
+                    <div class="form-group">
+                        <label class="control-label col-md-2">申請人</label>
+                        <div class="col-md-4">
+                            <div class="form-control">@subModel.worker</div>
+                        </div>
+                        @Html.LabelFor(model => subModel.billDate, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-4">
+                            @{
+                                string billdate = ((DateTime)flowMain.billDate).ToString("yyyy/MM/dd");
+                            }
+                            <div class="form-control">
+                                @billdate
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-group" style="border-bottom:1px solid gray;">
-                        <label class="control-label col-md-2">開始時間:</label>
-                        <div class="col-md-10">@subModel.dtBegin</div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => subModel.dtBegin, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-4">
+                            <div class="form-control">@subModel.dtBegin</div>
+                        </div>
+                        @Html.LabelFor(model => subModel.dtEnd, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-4">
+                            <div class="form-control">@subModel.dtEnd</div>
+                        </div>
                     </div>
-                    <div class="form-group" style="border-bottom:1px solid gray;">
-                        <label class="control-label col-md-2">開始時間:</label>
-                        <div class="col-md-10">@subModel.dtEnd</div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => subModel.depNm, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-4">
+                            <div class="form-control">@subModel.depNm</div>
+                        </div>
+                        @Html.LabelFor(model => subModel.poNm, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-4">
+                            <div class="form-control">@subModel.poNm</div>
+                        </div>
                     </div>
-                    <div class="form-group" style="border-bottom:1px solid gray;">
-                        <label class="control-label col-md-2">時數: </label>
-                        <div class="col-md-10">@subModel.hours</div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => subModel.sType, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-4">
+                            <div class="form-control">@subModel.sType</div>
+                        </div>
+                        @Html.LabelFor(model => subModel.place, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-4">
+                            @{
+                                string place = "";
+                                place = subModel.place;
+                                if (place == "其他")
+                                {
+                                    place = place + ";" + subModel.otherPlace;
+                                }
+                            }
+                            <div class="form-control">@place</div>
+                        </div>
                     </div>
-                    <div class="form-group" style="border-bottom:1px solid gray;">
-                        <label class="control-label col-md-2">備註: </label>
+                    <div class="form-group">
+                        @Html.LabelFor(model => subModel.prjId, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-4">
+                            <div class="form-control">@subModel.prjId</div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => subModel.sMemo, htmlAttributes: new { @class = "control-label col-md-2" })
                         <div class="col-md-10">
-                            <span style="white-space: pre-line">@subModel.sMemo</span>
+                            <p style="white-space: pre-line">@subModel.sMemo</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => subModel.sMemo2, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            <p style="white-space: pre-line">@subModel.sMemo2</p>
                         </div>
                     </div>
                 </div>
 
+            </div>
+        </div>
+    </div>
+    <div class="col-md-10">
+        <div class="box">
+            <div class="box-header">
                 <h3><span class="label label-success">簽核清單</span></h3>
+            </div>
+            <div class="box-body">
                 <table class="table table-bordered table-hover table-striped">
                     <tr>
                         <th>
@@ -98,32 +162,31 @@
 
                     @foreach (var item in Model)
                     {
-                        <tr>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.seq)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.signDate)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.signer)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.signType)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.signResult)
-                            </td>
-                            <td>
-                                <p style="white-space: pre-line">@Html.DisplayFor(modelItem => item.comment)</p>
-                            </td>
-                        </tr>
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.seq)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.signDate)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.signer)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.signType)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.signResult)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.comment)
+                        </td>
+                    </tr>
                     }
                 </table>
             </div>
             <div class="box-footer">
-                @*<a href="@Url.Action("Index","Form")" class="btn btn-primary">返回表單清單</a>*@
-                    <a href="@Request.UrlReferrer" class="btn btn-primary">返回表單清單</a>
+                <a href="@Request.UrlReferrer" class="btn btn-primary">返回表單清單</a>
             </div>
         </div>
     </div>

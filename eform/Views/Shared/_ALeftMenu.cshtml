@@ -123,10 +123,32 @@
                                     <i class="fa fa-circle-o"></i>Role
                                 </a>
                             </li>*@
-                            <li>
-                                <a href="@Url.Action("Index", "Dep", null)">
-                                    <i class="fa fa-circle-o"></i>部門
+                            <li class="treeview">
+                                <a href="#">
+                                    <i class="fa fa-th-list"></i>部門管理
                                 </a>
+                                <ul class="treeview-menu">
+                                    <li>
+                                        <a href="@Url.Action("Gm", "Dep")">
+                                            <i class="fa fa-circle-o"></i>總經理室設定
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="@Url.Action("Index", "Dep", new { depLevel = 1 })">
+                                            <i class="fa fa-circle-o"></i>處
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="@Url.Action("Index", "Dep", new { depLevel = 2 })">
+                                            <i class="fa fa-circle-o"></i>部
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="@Url.Action("Index", "Dep", new { depLevel = 3 })">
+                                            <i class="fa fa-circle-o"></i>課
+                                        </a>
+                                    </li>
+                                </ul>
                             </li>
                             <li>
                                 <a href="@Url.Action("Index", "Employee", null)">

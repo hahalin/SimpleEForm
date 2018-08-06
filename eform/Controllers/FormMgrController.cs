@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using eform.Attributes;
 using eform.Models;
 using eform.Attributes;
+using Newtonsoft.Json.Linq;
 
 namespace eform.Controllers
 {
@@ -50,7 +51,7 @@ namespace eform.Controllers
             return View(list);
         }
         [AdminAuthorize(Roles = "Admin,Employee")]
-        public ActionResult Details(string id,string FlowPageType="")
+        public ActionResult Details(string id, string FlowPageType = "")
         {
             var context = new ApplicationDbContext();
             List<vwFlowSub> list = new List<vwFlowSub>();
@@ -68,7 +69,7 @@ namespace eform.Controllers
                     signResult = signResultObj == null ? "" : signResultObj.nm,
                     signType = signTypeObj == null ? "會簽" : signTypeObj.nm,
                     signer = signUser == null ? "" : signUser.cName,
-                    comment=sitem.comment
+                    comment = sitem.comment
                 };
                 list.Add(item);
             }
@@ -87,6 +88,26 @@ namespace eform.Controllers
                     hours = reqOverTimeObj.hours,
                     sMemo = reqOverTimeObj.sMemo
                 };
+                JObject jobjext = null;
+                try
+                {
+                    jobjext = JObject.Parse(reqOverTimeObj.jext);
+                    vwReqOverTimeObj.sType = jobjext["stype"] == null ? "" : jobjext["stype"].ToString();
+                    vwReqOverTimeObj.place = jobjext["place"] == null ? "" : jobjext["place"].ToString();
+                    vwReqOverTimeObj.otherPlace = jobjext["otherPlace"] == null ? "" : jobjext["otherPlace"].ToString();
+                    vwReqOverTimeObj.prjId = jobjext["prjId"] == null ? "" : jobjext["prjId"].ToString();
+                    //vwReqOverTimeObj.sMemo = jobjext["sMemo"] == null ? "" : jobjext["sMemo"].ToString();
+                    vwReqOverTimeObj.sMemo2 = jobjext["sMemo2"] == null ? "" : jobjext["sMemo2"].ToString();
+                    vwReqOverTimeObj.worker = jobjext["worker"] == null ? "" : jobjext["worker"].ToString();
+                    vwReqOverTimeObj.depNo = jobjext["depNo"] == null ? "" : jobjext["depNo"].ToString();
+                    dep depobj = context.deps.Where(x => x.depNo.Equals(vwReqOverTimeObj.depNo)).FirstOrDefault();
+                    vwReqOverTimeObj.depNm = jobjext["depNo"] == null ? "" : depobj.depNm;
+                    vwReqOverTimeObj.poNo = jobjext["poNo"] == null ? "" : jobjext["poNo"].ToString();
+                    vwReqOverTimeObj.poNm = jobjext["poNo"] == null ? "" : context.jobPos.Where(x => x.poNo.Equals(vwReqOverTimeObj.poNo)).FirstOrDefault().poNm;
+                }
+                catch (Exception ex)
+                {
+                }
             }
             ViewBag.SubModel = vwReqOverTimeObj;
             ViewBag.FlowPageType = FlowPageType;
@@ -105,7 +126,7 @@ namespace eform.Controllers
             string workNo = context.Users.Where(x => x.UserName == User.Identity.Name).FirstOrDefault().workNo;
 
             FlowSub fsub = context.FlowSubList.Where(x => x.pid == id && x.workNo == workNo).FirstOrDefault();
-            if (fsub !=null)
+            if (fsub != null)
             {
                 fsub.signDate = context.getLocalTiime();
                 fsub.signResult = Convert.ToInt16(signValue);
@@ -113,19 +134,19 @@ namespace eform.Controllers
                 context.SaveChanges();
 
                 dbHelper dbh = new dbHelper();
-                if (fsub.signResult==1)
+                if (fsub.signResult == 1)
                 {
                     dbh.execSql("update FlowMains set flowStatus=2 where id='" + id + "'");
                 }
 
-                if (fsub.signResult==2)
+                if (fsub.signResult == 2)
                 {
                     int allDenyCnt = context.FlowSubList.Where(x => x.pid == id && x.signResult == 2).Count();
-                    int allCnt= context.FlowSubList.Where(x => x.pid == id).Count();
-                    if (allCnt==allDenyCnt)
+                    int allCnt = context.FlowSubList.Where(x => x.pid == id).Count();
+                    //if (allCnt == allDenyCnt)
                     {
                         dbh.execSql("update FlowMains set flowStatus=3 where id='" + id + "'");
-                    }                        
+                    }
                 }
             }
 
@@ -172,7 +193,7 @@ namespace eform.Controllers
 
         [AdminAuthorize(Roles = "Admin")]
         [HttpGet]
-        public ActionResult ListAll(string status="0")
+        public ActionResult ListAll(string status = "0")
         {
             var context = new ApplicationDbContext();
             List<SelectListItem> StatusItems = new List<SelectListItem>();
@@ -187,8 +208,8 @@ namespace eform.Controllers
             {
                 StatusItems.Add(new SelectListItem
                 {
-                    Text=item.nm,
-                    Value=item.id.ToString()
+                    Text = item.nm,
+                    Value = item.id.ToString()
                 });
             }
             ViewBag.SignResultItems = StatusItems;
@@ -199,31 +220,36 @@ namespace eform.Controllers
 
             if (iStatus == 0)
             {
-                SignMainList=(from item in context.FlowMainList orderby item.billDate descending
-                 select item).ToList<FlowMain>();
+                SignMainList = (from item in context.FlowMainList
+                                orderby item.billDate descending
+                                select item).ToList<FlowMain>();
             }
             else
             {
-                SignMainList=(from item in context.FlowMainList orderby item.billDate descending
-                 where item.flowStatus == iStatus
-                 select item).ToList<FlowMain>();
+                SignMainList = (from item in context.FlowMainList
+                                orderby item.billDate descending
+                                where item.flowStatus == iStatus
+                                select item).ToList<FlowMain>();
             }
 
-            List < vwFlowMain > list = new List<vwFlowMain>();
+            List<vwFlowMain> list = new List<vwFlowMain>();
 
             foreach (FlowMain item in SignMainList)
             {
                 var Status = context.flowStatusList().Where(x => x.id == item.flowStatus).FirstOrDefault();
                 var sender = context.Users.Where(x => x.workNo.Equals(item.senderNo)).FirstOrDefault();
-                vwFlowMain vwItem = new vwFlowMain
+                if (sender != null)
                 {
-                    id = item.id,
-                    sender = sender.workNo + " " + sender.cName,
-                    billDate = item.billDate,
-                    flowName = item.flowName,
-                    flowStatus = Status == null ? "簽核中" : Status.nm
-                };
-                list.Add(vwItem);
+                    vwFlowMain vwItem = new vwFlowMain
+                    {
+                        id = item.id,
+                        sender = sender.workNo + " " + sender.cName,
+                        billDate = item.billDate,
+                        flowName = item.flowName,
+                        flowStatus = Status == null ? "簽核中" : Status.nm
+                    };
+                    list.Add(vwItem);
+                }
             }
 
             return View(list);

@@ -1,0 +1,46 @@
+﻿@model eform.Models.dep
+@{ 
+    ViewBag.Title = "總經理室設定";
+}
+<div class="row">
+    <div class="col-md-6">
+        <div class="box">
+            <div class="box-header">
+                <h3>@ViewBag.Title</h3>
+                <a class="btn btn-success" href="@Url.Action("Details",new { id = Model.depNo,depLevel=0})">
+                    <i class="fa fa-group"></i>
+                    職稱管理
+                </a>
+            </div>
+            <div class="box-body">
+
+                @using (Html.BeginForm("Gm", "Dep", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="form-horizontal">
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(model => model.depNo)
+                        <div class="form-group">
+                            @Html.Label("名稱", htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.depNm, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.depNm, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-10">
+                                <input type="submit" value="儲存" class="btn btn-primary">
+                                <a class="btn btn-default" href="@Url.Action("index","Dep",new { depLevel = 1 })">取消</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -27,9 +27,9 @@
                                 <div class="form-control">@ViewBag.UserName</div>
                                 <input type="hidden" name="worker" value="@ViewBag.UserName" />
                             </div>
-                            @Html.LabelFor(model => model.billDate, htmlAttributes: new { @class = "control-label col-md-2" })
+                            @Html.LabelFor(model => model.billDate, htmlAttributes: new { @class = "control-label col-md-2"})
                             <div class="col-md-4">
-                                @Html.EditorFor(model => model.billDate, new { htmlAttributes = new { @class = "form-control", type = "date" } })
+                                @Html.EditorFor(model => model.billDate, new { htmlAttributes = new { @class = "form-control", type = "date", @readonly = "readonly" } })
                                 @Html.ValidationMessageFor(model => model.billDate, "", new { @class = "text-danger," })
                             </div>
                         </div>

@@ -15,6 +15,7 @@ namespace eform.Models
         [Display(Name ="部門名稱")]
         public string depNm { get; set; }
         public string parentDepNo { get; set;}
+        public int depLevel { get; set; } = 1;
         [Display(Name = "序號")]
         public int sort { get; set; } = 1;
         public ICollection<jobPo> depJobPos { get; set; }
