@@ -31,7 +31,7 @@
                         <div class="form-group">
                             <div class="col-md-offset-2 col-md-10">
                                 <input type="submit" value="儲存" class="btn btn-primary">
-                                <a class="btn btn-default" href="@Url.Action("index","Dep",new { depLevel = 1 })">取消</a>
+                                @*<a class="btn btn-default" href="@Url.Action("index","Dep",new { depLevel = 1 })">取消</a>*@
                             </div>
                         </div>
                     </div>
@@ -43,4 +43,18 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+
+    <script type="text/javascript">
+
+        $(function () {
+
+            var showok = "@TempData["saveok"]";
+            if (showok == 'Y')
+            {
+                alert('存檔完成');
+            }
+        });
+        
+
+    </script>
 }

@@ -15,16 +15,33 @@ namespace eform.Controllers
         public ActionResult Index(string id,int depLevel=1)
         {
             var context = new ApplicationDbContext();
-            var model = context.deps.Where(x=>x.depLevel==1).OrderBy(x => x.sort).ToList<dep>();
+            var model = context.deps.Where(x=>x.depLevel==depLevel).OrderBy(x => x.sort).ToList<dep>();
             ViewBag.depLevel = depLevel;
             return View(model);
         }
 
-        public ActionResult Create()
+        public ActionResult Create(int depLevel=1)
         {
-            ViewBag.Title = "新增部門";
+            switch (depLevel)
+            {
+                case 1:
+                    ViewBag.Title = "新增-處";
+                    break;
+                case 2:
+                    ViewBag.Title = "新增-部";
+                    break;
+                case 3:
+                    ViewBag.Title = "新增-課";
+                    break;
+            }
+
             ViewBag.Mode = "Create";
-            return View();
+            ViewBag.depLevel = depLevel;
+            dep model = new dep
+            {
+                depLevel = depLevel
+            };
+            return View(model);
         }
         public ActionResult Edit(string id)
         {
@@ -43,9 +60,9 @@ namespace eform.Controllers
 
             if (string.IsNullOrEmpty(model.depNo))
             {
-                if (context.deps.Where(x => x.depNm == model.depNm).Count() > 0)
+                if (context.deps.Where(x => x.depNm == model.depNm && x.depLevel==model.depLevel).Count() > 0)
                 {
-                    ModelState.AddModelError("depNm", "部門名稱重複");
+                    ModelState.AddModelError("depNm", "名稱重複");
                 }
                 try
                 {
@@ -54,7 +71,7 @@ namespace eform.Controllers
                     {
                         context.deps.Add(model);
                         context.SaveChanges();
-                        return RedirectToAction("Index");
+                        return RedirectToAction("Index",new { depLevel = model.depLevel});
                     }
                 }
                 catch (Exception ex)
@@ -64,9 +81,9 @@ namespace eform.Controllers
             }
             else
             {
-                if (context.deps.Where(x => x.depNm == model.depNm && x.depNo.Equals(model.depNo)==false).Count() > 0)
+                if (context.deps.Where(x => x.depNm == model.depNm && x.depLevel==model.depLevel && x.depNo.Equals(model.depNo)==false).Count() > 0)
                 {
-                    ModelState.AddModelError("depNm", "部門名稱重複");
+                    ModelState.AddModelError("depNm", "名稱重複");
                 }
                 try
                 {
@@ -75,8 +92,9 @@ namespace eform.Controllers
                         dep saveModel = context.deps.Where(x => x.depNo == model.depNo).FirstOrDefault();
                         saveModel.sort = model.sort;
                         saveModel.depNm = model.depNm;
+                        saveModel.depLevel = model.depLevel;
                         context.SaveChanges();
-                        return RedirectToAction("Index");
+                        return RedirectToAction("Index",new { depLevel = model.depLevel });
                     }
                 }
                 catch (Exception ex)
@@ -189,15 +207,36 @@ namespace eform.Controllers
         [HttpGet]
         public ActionResult Gm()
         {
-            dep model = new dep();
-            model.depNo = "001";
+            var ctx = new ApplicationDbContext();
+            dep model = ctx.deps.Where(x => x.depNo == "001").Count() == 0 ? new dep() : ctx.deps.Where(x => x.depNo == "001").First();
             return View(model);
         }
 
         [HttpPost]
-        public ActionResult Gm (FormCollection fm)
+        public ActionResult Gm (dep Model)
         {
-            return View();
+            var ctx = new ApplicationDbContext();
+            dep tModel = null;
+
+            tModel = ctx.deps.Where(x => x.depNo == "001").Count() == 0 ? null : ctx.deps.Where(x => x.depNo == "001").First();
+
+            if (tModel==null)
+            {
+                tModel = new dep
+                {
+                    depNo = "001",
+                    sort = 1
+                };
+                ctx.deps.Add(tModel);
+            }
+
+            tModel.depNm = Model.depNm;
+            tModel.parentDepNo = "";
+            tModel.depLevel = 0;
+
+            ctx.SaveChanges();
+            TempData["saveok"] = "Y";
+            return View(tModel);
         }
 
     }

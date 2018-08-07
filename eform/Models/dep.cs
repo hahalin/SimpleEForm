@@ -13,6 +13,7 @@ namespace eform.Models
         [Key]
         public string depNo { get; set; }
         [Display(Name ="部門名稱")]
+        [Required(ErrorMessage ="請輸入名稱")]
         public string depNm { get; set; }
         public string parentDepNo { get; set;}
         public int depLevel { get; set; } = 1;
