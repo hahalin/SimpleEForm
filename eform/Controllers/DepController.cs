@@ -12,26 +12,54 @@ namespace eform.Controllers
     public class DepController : Controller
     {
         // GET: Dep
-        public ActionResult Index(string id,int depLevel=1)
+        public ActionResult Index(int depLevel=1,string pId="0")
         {
             var context = new ApplicationDbContext();
-            var model = context.deps.Where(x=>x.depLevel==depLevel).OrderBy(x => x.sort).ToList<dep>();
+            var model = context.deps.Where(x=>x.depLevel==depLevel && x.parentDepNo==pId).OrderBy(x => x.sort).ToList<dep>();
+            if (depLevel == 2)
+            {
+                List<dep> pDepList = context.deps.Where(x => x.depLevel == 1).ToList<dep>();
+                List<SelectListItem> depSelList = new List<SelectListItem>();
+
+                depSelList.Add(new SelectListItem
+                {
+                    Value = "0",
+                    Text = "請選擇所屬【處】"
+                });
+
+                foreach (dep depObj in pDepList)
+                {
+                    depSelList.Add(new SelectListItem
+                    {
+                        Value=depObj.depNo,
+                        Text=depObj.depNm
+                    });
+                };
+
+                foreach (SelectListItem item in depSelList)
+                {
+                  item.Selected = item.Value == pId;
+                }
+                ViewBag.depLevel = depLevel;
+                ViewBag.depSelList = depSelList;
+            }
             ViewBag.depLevel = depLevel;
+            ViewBag.pId = pId;
             return View(model);
         }
 
-        public ActionResult Create(int depLevel=1)
+        public ActionResult Create(int depLevel=1,string pId="001")
         {
             switch (depLevel)
             {
                 case 1:
-                    ViewBag.Title = "新增-處";
+                    ViewBag.Title = "新增-處級";
                     break;
                 case 2:
-                    ViewBag.Title = "新增-部";
+                    ViewBag.Title = "新增-部門";
                     break;
                 case 3:
-                    ViewBag.Title = "新增-課";
+                    ViewBag.Title = "新增-課別";
                     break;
             }
 
@@ -39,6 +67,7 @@ namespace eform.Controllers
             ViewBag.depLevel = depLevel;
             dep model = new dep
             {
+                parentDepNo=pId,
                 depLevel = depLevel
             };
             return View(model);
