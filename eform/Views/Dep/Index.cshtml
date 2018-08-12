@@ -1,5 +1,5 @@
 ﻿@model IEnumerable<eform.Models.dep>
-
+@using System.Web.Mvc.Html;
 @{
     int depLevel = (int)ViewBag.depLevel;
     string columnNameCatption = "名稱";
@@ -23,7 +23,7 @@
 <h2>@ViewBag.Title</h2>
 
 <div class="row">
-    <div class="col-md-10">
+    <div class="col-md-8">
         <div class="box">
             <div class="box-header">
                 @if (ViewBag.depLevel == 2)
@@ -32,12 +32,12 @@
                     {
                         <div class="form-horizontal">
                             <div class="form-group">
-                                <label class="control-label col-md-1">處:</label>
-                                <div class="col-md-4">
+                                <label class="control-label col-md-2">所屬處級:</label>
+                                <div class="col-md-3">
                                     @Html.DropDownList("pId", (List<SelectListItem>)ViewBag.depSelList, new { id = "pId", @class = "form-control" })
-                                    @Html.Hidden("depLevel",(Int32)ViewBag.depLevel)
+                                    @Html.Hidden("depLevel", (Int32)ViewBag.depLevel)
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <button class="btn btn-info" type="submit" id="btnQuery"><i class="fa fa-search"></i> 查詢</button>
                                     <a class="btn btn-primary" href="@Url.Action("Create", new { depLevel = depLevel,pId=ViewBag.pId })" id="btnAdd"><i class="fa fa-plus"></i>新增</a>
                                 </div>
@@ -49,7 +49,25 @@
                 {
                     <a class="btn btn-primary" href="@Url.Action("Create",new { depLevel = depLevel,pId="001"})" id="btnAdd"><i class="fa fa-plus"></i>新增</a>
                 }
-
+                else if (ViewBag.depLevel == 3)
+                {
+                    using (Html.BeginForm("Index", "Dep", FormMethod.Get))
+                    {
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <label class="control-label col-md-2">所屬部門:</label>
+                                <div class="col-md-3">
+                                    @Html.DropDownList("pId", (List<SelectListItemExtends>)ViewBag.depSelList, new { id = "pId", @class = "form-control select2" })
+                                    @Html.Hidden("depLevel", (Int32)ViewBag.depLevel)
+                                </div>
+                                <div class="col-md-3">
+                                    <button class="btn btn-info" type="submit" id="btnQuery"><i class="fa fa-search"></i> 查詢</button>
+                                    <a class="btn btn-primary" href="@Url.Action("Create", new { depLevel = depLevel,pId=ViewBag.pId })" id="btnAdd"><i class="fa fa-plus"></i>新增</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
                 @Html.Hidden("hDepLevel", (string)ViewBag.devLevel, new { id = "hDepLevel" })
 
 
@@ -77,7 +95,7 @@
                                     @Html.DisplayFor(modelItem => item.depNm)
                                 </td>
                                 <td>
-                                    <a class="btn btn-success" href="@Url.Action("Edit",new { id = item.depNo })">
+                                    <a class="btn btn-success" href="@Url.Action("Edit",new { id = item.depNo,depLevel=item.depLevel })">
                                         <i class="fa fa-pencil"></i>
                                         編輯
                                     </a>
@@ -115,6 +133,9 @@
 @section Scripts {
     <script type="text/javascript">
         $(function () {
+
+            $('#pId option:enabled').css('font-weight', 'normal').css('font-size', '14px').css('color', 'blue');
+            $('#pId option:disabled').css('font-weight', 'normal').css('font-size', '18px').css("margin-top", "10px");
 
             $('#pId').on('change', function () {
                 $('#btnQuery').trigger('click');

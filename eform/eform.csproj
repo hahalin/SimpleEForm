@@ -225,6 +225,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Html\HtmlHelperExtensions.cs" />
     <Compile Include="Migrations\201806180409474_init.cs" />
     <Compile Include="Migrations\201806180409474_init.Designer.cs">
       <DependentUpon>201806180409474_init.cs</DependentUpon>
@@ -280,6 +281,10 @@
     <Compile Include="Migrations\201808061422331_addLevel2Dep.cs" />
     <Compile Include="Migrations\201808061422331_addLevel2Dep.Designer.cs">
       <DependentUpon>201808061422331_addLevel2Dep.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201808121626114_whatneedadd.cs" />
+    <Compile Include="Migrations\201808121626114_whatneedadd.Designer.cs">
+      <DependentUpon>201808121626114_whatneedadd.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -1049,6 +1054,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201808061422331_addLevel2Dep.resx">
       <DependentUpon>201808061422331_addLevel2Dep.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808121626114_whatneedadd.resx">
+      <DependentUpon>201808121626114_whatneedadd.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

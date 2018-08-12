@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using eform.Models;
 using System.Data.Entity.Infrastructure;
+using System.Web.Mvc.Html;
 
 namespace eform.Controllers
 {
@@ -12,7 +13,7 @@ namespace eform.Controllers
     public class DepController : Controller
     {
         // GET: Dep
-        public ActionResult Index(int depLevel=1,string pId="0")
+        public ActionResult Index(int depLevel=1,string pId="001")
         {
             var context = new ApplicationDbContext();
             var model = context.deps.Where(x=>x.depLevel==depLevel && x.parentDepNo==pId).OrderBy(x => x.sort).ToList<dep>();
@@ -43,6 +44,56 @@ namespace eform.Controllers
                 ViewBag.depLevel = depLevel;
                 ViewBag.depSelList = depSelList;
             }
+
+            if (depLevel == 3)
+            {
+                List<dep> pDepList = context.deps.Where(x => x.depLevel == 1).ToList<dep>();
+                List<SelectListItemExtends> depSelList = new List<SelectListItemExtends>();
+
+                depSelList.Add(new SelectListItemExtends
+                {
+                    Value = "0",
+                    Text = "請選擇所屬【部門】",
+                    Enabled= true
+                });
+
+                foreach (dep depObj in pDepList)
+                {
+                    depSelList.Add(new SelectListItemExtends
+                    {
+                        Value = depObj.depNo,
+                        Text = depObj.depNm,
+                        Enabled=false
+                    });
+                    List<SelectListItemExtends> depSubSelList = new List<SelectListItemExtends>();
+                    List<dep> pDepSubList = context.deps.Where(x => x.depLevel == 2 && x.parentDepNo==depObj.depNo).ToList<dep>();
+                    foreach(dep depSubObj in pDepSubList)
+                    {
+                        depSelList.Add(new SelectListItemExtends
+                        {
+                            Value = depSubObj.depNo,
+                            Text = "    " + depSubObj.depNm,
+                            Enabled = true
+                        });
+                    }
+
+                    foreach (SelectListItemExtends item in depSelList)
+                    {
+                        item.Selected = item.Value == pId;
+                    }
+                    ViewBag.depLevel = depLevel;
+                    ViewBag.depSelList = depSelList;
+
+                };
+
+                foreach (SelectListItem item in depSelList)
+                {
+                    item.Selected = item.Value == pId;
+                }
+                ViewBag.depLevel = depLevel;
+                ViewBag.depSelList = depSelList;
+            }
+
             ViewBag.depLevel = depLevel;
             ViewBag.pId = pId;
             return View(model);
@@ -76,7 +127,20 @@ namespace eform.Controllers
         {
             var db = new ApplicationDbContext();
             var dep = db.deps.Where(x => x.depNo == id).SingleOrDefault<dep>();
-            ViewBag.Title = "編輯部門";
+            int depLevel = dep.depLevel;
+            switch (depLevel)
+            {
+                case 1:
+                    ViewBag.Title = "編輯-處級單位";
+                    break;
+                case 2:
+                    ViewBag.Title = "編輯-部門單位";
+                    break;
+                case 3:
+                    ViewBag.Title = "編輯-課別單位";
+                    break;
+            }
+
             ViewBag.Mode = "Edit";
             var model = dep;
             return View("Create", model);
@@ -100,7 +164,7 @@ namespace eform.Controllers
                     {
                         context.deps.Add(model);
                         context.SaveChanges();
-                        return RedirectToAction("Index",new { depLevel = model.depLevel});
+                        return RedirectToAction("Index",new { depLevel = model.depLevel,pId=model.parentDepNo});
                     }
                 }
                 catch (Exception ex)
@@ -123,7 +187,7 @@ namespace eform.Controllers
                         saveModel.depNm = model.depNm;
                         saveModel.depLevel = model.depLevel;
                         context.SaveChanges();
-                        return RedirectToAction("Index",new { depLevel = model.depLevel });
+                        return RedirectToAction("Index",new { depLevel = model.depLevel,pId=model.parentDepNo });
                     }
                 }
                 catch (Exception ex)
@@ -184,6 +248,12 @@ namespace eform.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult CreatePo(jobPo model)
         {
+            if(string.IsNullOrEmpty(model.poNm))
+            {
+                ModelState.AddModelError("poNm", "不可為空值");
+                return View(model);
+            }
+
             var context = new ApplicationDbContext();
             if (string.IsNullOrEmpty(model.poNo))
             {
