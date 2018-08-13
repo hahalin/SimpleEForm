@@ -20,6 +20,15 @@
     }
 }
 
+<style>
+    .select2 option:disabled {
+        height: 30px;
+        padding:10px;
+        color:gray;
+    }
+</style>
+
+
 <h2>@ViewBag.Title</h2>
 
 <div class="row">
@@ -57,7 +66,7 @@
                             <div class="form-group">
                                 <label class="control-label col-md-2">所屬部門:</label>
                                 <div class="col-md-3">
-                                    @Html.DropDownList("pId", (List<SelectListItemExtends>)ViewBag.depSelList, new { id = "pId", @class = "form-control select2" })
+                                    @Html.DropDownList("pId", (List<SelectListItem>)ViewBag.depSelList, new { id = "pId", @class = "form-control select2" })
                                     @Html.Hidden("depLevel", (Int32)ViewBag.depLevel)
                                 </div>
                                 <div class="col-md-3">
@@ -129,13 +138,16 @@
         </div>
     </div>
 </div>
-
 @section Scripts {
     <script type="text/javascript">
         $(function () {
+            $('#pId option').css('height', '30px');
+            $('#pId option:enabled').css('font-weight', 'normal').css('font-size', '16px');
+            $('#pId option:disabled').css('font-weight', 'normal').css('font-size', '14px').css("margin-top", "10px").css('color', 'gray');
+            $('#pId option:first').css('font-size', '14px').css('color', 'gray');
+            $('#pId option').css('height','20px');
 
-            $('#pId option:enabled').css('font-weight', 'normal').css('font-size', '14px').css('color', 'blue');
-            $('#pId option:disabled').css('font-weight', 'normal').css('font-size', '18px').css("margin-top", "10px");
+         
 
             $('#pId').on('change', function () {
                 $('#btnQuery').trigger('click');

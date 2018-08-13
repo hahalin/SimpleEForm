@@ -24,7 +24,7 @@ namespace eform.Controllers
             ApplicationDbContext context = new ApplicationDbContext();
             var store = new UserStore<ApplicationUser>(context);
             var manager = new UserManager<ApplicationUser>(store);
-            List<ApplicationUser> users = store.Users.Where(x => x.status==1 && x.UserName.ToLower().Contains("sadmin") == false).ToList<ApplicationUser>();
+            List<ApplicationUser> users = store.Users.Where(x => x.status == 1 && x.UserName.ToLower().Contains("sadmin") == false).ToList<ApplicationUser>();
             List<vwEmployee> model = new List<vwEmployee>();
 
             foreach (var usr in users)
@@ -58,7 +58,7 @@ namespace eform.Controllers
                         Id = usr.Id,
                         workNo = usr.workNo,
                         UserCName = usr.cName,
-                        UserEName=usr.eName,
+                        UserEName = usr.eName,
                         Title = string.Join(",", usrTitle.ToArray())
                     });
                 }
@@ -79,7 +79,7 @@ namespace eform.Controllers
                 Id = "",
                 workNo = "",
                 UserCName = "",
-                UserEName="",
+                UserEName = "",
                 Title = "",
                 Password = "",
                 rePassword = ""
@@ -109,8 +109,8 @@ namespace eform.Controllers
                 UserName = collection["workNo"].ToString(),
                 workNo = collection["workNo"].ToString(),
                 cName = collection["UserCName"].ToString(),
-                eName= collection["UserEName"].ToString(),
-                status=1
+                eName = collection["UserEName"].ToString(),
+                status = 1
             };
 
             try
@@ -219,10 +219,10 @@ namespace eform.Controllers
 
                 var newuser = new ApplicationUser
                 {
-                    UserName =model.workNo,
+                    UserName = model.workNo,
                     workNo = model.workNo,
                     cName = model.UserCName,
-                    eName=model.UserEName
+                    eName = model.UserEName
                 };
 
                 try
@@ -322,7 +322,7 @@ namespace eform.Controllers
         {
             dbHelper dbh = new dbHelper();
             dbh.execSql("update dbo.AspNetUsers set status=0,workNo=workNo+'-remove' where Id='" + id + "'");
-            
+
             return RedirectToAction("Index");
         }
 
@@ -355,9 +355,9 @@ namespace eform.Controllers
 
             var context = new ApplicationDbContext();
 
-            var userlist=context.Users.Where(x =>x.status==1 && x.workNo.Contains(q) || x.cName.Contains(q)).ToList<ApplicationUser>();
+            var userlist = context.Users.Where(x => x.status == 1 && x.workNo.Contains(q) || x.cName.Contains(q)).ToList<ApplicationUser>();
 
-            foreach(var user in userlist)
+            foreach (var user in userlist)
             {
                 dynamic obj = new ExpandoObject();
                 obj.id = user.workNo;
@@ -375,7 +375,7 @@ namespace eform.Controllers
             //};
         }
 
-        [AdminAuthorize(Roles="Admin")]
+        [AdminAuthorize(Roles = "Admin")]
         [HttpGet]
         public ActionResult ChangePassword(string id)
         {
@@ -383,7 +383,7 @@ namespace eform.Controllers
             var store = new UserStore<ApplicationUser>(context);
             ApplicationUserManager mgr = new ApplicationUserManager(store);
             var user = mgr.FindById(id);
-            ViewBag.UserText=user.workNo+" "+user.cName;
+            ViewBag.UserText = user.workNo + " " + user.cName;
             ChangePasswordViewModel model = new ChangePasswordViewModel
             {
                 id = id
@@ -414,7 +414,7 @@ namespace eform.Controllers
             }
         }
 
-        [AdminAuthorize(Roles="Admin,Employee")]
+        [AdminAuthorize(Roles = "Admin,Employee")]
         [HttpGet]
         public ActionResult ChangeMyPassword()
         {
@@ -462,12 +462,17 @@ namespace eform.Controllers
             foreach (var dep in context.deps)
             {
                 dynamic depobj = new ExpandoObject();
+                depobj.depLevel = dep.depLevel;
+                depobj.parentDepNo = dep.parentDepNo;
                 depobj.k = dep.depNo;
                 depobj.v = dep.depNm;
                 AllDep.Add(depobj);
             }
 
-            foreach (var po in context.jobPos)
+            string[] depAry = (from depitem in context.deps select depitem.depNo).ToArray<string>();
+            var listJobPos = from item in context.jobPos where depAry.Contains(item.depNo) select item;
+
+            foreach (var po in listJobPos)
             {
                 AllPo.Add(new vwPoNo
                 {
@@ -477,6 +482,7 @@ namespace eform.Controllers
                     poNm = po.poNm,
                 });
             }
+
             ViewBag.allDep = AllDep;
             ViewBag.allPo = AllPo;
         }
@@ -502,5 +508,5 @@ namespace eform.Controllers
             }
             ViewBag.Roles = vwRoles;
         }
-    } 
+    }
 }

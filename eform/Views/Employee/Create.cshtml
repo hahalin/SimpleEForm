@@ -111,22 +111,47 @@
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            部門-職稱選擇
+                            職稱選擇
                         </div>
                         <div class="modal-body">
                             <div class="form-horizontal">
                                 <div class="form-group">
-                                    <label class="control-label col-md-2">部門</label>
+                                    <label class="control-label col-md-2">處級</label>
                                     <div class="col-md-5">
-                                        <select id="cboDepList"></select>
+                                        <select id="cboDepList1"></select>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label class="control-label col-md-2">職稱</label>
                                     <div class="col-md-5">
-                                        <select id="cboPoList"></select>
+                                        <select id="cboPoList1"></select>
                                     </div>
                                 </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2">部門</label>
+                                    <div class="col-md-5">
+                                        <select id="cboDepList2"></select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2">職稱</label>
+                                    <div class="col-md-5">
+                                        <select id="cboPoList2"></select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2">課別</label>
+                                    <div class="col-md-5">
+                                        <select id="cboDepList3"></select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2">職稱</label>
+                                    <div class="col-md-5">
+                                        <select id="cboPoList3"></select>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -173,44 +198,104 @@
 
                             updatePoListUI();
 
-                            var cboDepList = $('#cboDepList');
-                            var cboPoList = $('#cboPoList');
+                            var cboDepList1 = $('#cboDepList1');
+                            var cboDepList2 = $('#cboDepList2');
+                            var cboDepList3 = $('#cboDepList3');
+                            var cboPoList1 = $('#cboPoList1');
+                            var cboPoList2 = $('#cboPoList2');
+                            var cboPoList3 = $('#cboPoList3');
 
 
-                            $(cboDepList).append(
+                            $(cboDepList1).append(
+                                $('<option></option>').val(0).html("選擇處級")
+                            );
+                            $(cboDepList2).append(
                                 $('<option></option>').val(0).html("選擇部門")
                             );
-                            $(cboPoList).append(
+                            $(cboDepList3).append(
+                                $('<option></option>').val(0).html("選擇課別")
+                            );
+                            $(cboPoList1).append(
                                 $('<option></option>').val(0).html("選擇職稱")
                             );
-                            $.each(depList, function (val, obj) {
-                                $(cboDepList).append(
-                                    $('<option></option>').val(obj.k).html(obj.v)
-                                );
-                            });
+                            $(cboPoList2).append(
+                                $('<option></option>').val(0).html("選擇職稱")
+                            );
+                            $(cboPoList3).append(
+                                $('<option></option>').val(0).html("選擇職稱")
+                            );
 
-                            $('#cboDepList').selectpicker();
-                            //$('#cboPoList').selectpicker('show');
 
-                            $(cboDepList).on("change", function (e) {
-                                var depV = this.value;
-                                $('#cboPoList option').remove();
-                                $(cboPoList).append(
+                            function loadDep(cbo, level, parentDepNo)
+                            {
+                                if (level == 1)
+                                {
+                                    $.each(depList, function (val, obj) {
+                                        if (obj.depLevel == 1) {
+                                            $('#'+cbo).append(
+                                                $('<option></option>').val(obj.k).html(obj.v)
+                                            );
+                                        }
+                                    });
+                                }
+                                if (level == 2) {
+                                    $.each(depList, function (val, obj) {
+                                        if (obj.depLevel == 2 && obj.parentDepNo == parentDepNo) {
+                                            $('#' + cbo).append(
+                                                $('<option></option>').val(obj.k).html(obj.v)
+                                            );
+                                        }
+                                    });
+                                }
+                                if (level == 3) {
+                                    $.each(depList, function (val, obj) {
+                                        if (obj.depLevel == 3 && obj.parentDepNo == parentDepNo) {
+                                            $('#' + cbo).append(
+                                                $('<option></option>').val(obj.k).html(obj.v)
+                                            );
+                                        }
+                                    });
+                                }
+                            }
+
+                            function loadPo(cbo, dep) {
+                                $('#' + cbo + ' option').remove();
+                                $('#' + cbo).append(
                                     $('<option></option>').val(0).html("選擇職稱")
                                 );
-                                if (depV != "0")
-                                {
+                                var depV = $('#' + dep).val();
+                                if (depV != "0") {
                                     $.each(poList, function (val, obj) {
-                                        if (obj.depNo == depV)
-                                        {
+                                        if (obj.depNo == depV) {
                                             $(cboPoList).append(
                                                 $('<option></option>').val(obj.poNo).html(obj.poNm)
                                             );
                                         }
                                     });
                                 }
-                                $('#cboPoList').selectpicker('destroy');
-                                $('#cboPoList').selectpicker('show');
+                                $($('#' + cbo)).selectpicker('destroy');
+                                $($('#' + cbo)).selectpicker('show');
+                            }
+
+                            loadDep('cboDepList1', 1, '');
+                        
+                            $('#cboDepList1').selectpicker(); 
+
+                            $(cboDepList1).on("change", function (e) {
+                                var depV = this.value;
+                                loadPo("cboPoList1", "cboDepList1");
+                                loadDep('cboDepList2', 1, depV);
+                                $('#cboDepList2').selectpicker();
+                            });
+                            $(cboDepList2).on("change", function (e) {
+                                var depV = this.value;
+                                loadPo("cboPoList2", "cboDepList2");
+                                loadDep('cboPoList2', 2, depV);
+                                $('#cboDepList3').selectpicker();
+                            });
+                            $(cboDepList3).on("change", function (e) {
+                                var depV = this.value;
+                                loadPo("cboPoList3", "cboDepList3");
                             });
 
                             $('#btnSelPo').on('click', function () {

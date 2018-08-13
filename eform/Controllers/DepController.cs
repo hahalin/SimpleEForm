@@ -48,36 +48,39 @@ namespace eform.Controllers
             if (depLevel == 3)
             {
                 List<dep> pDepList = context.deps.Where(x => x.depLevel == 1).ToList<dep>();
-                List<SelectListItemExtends> depSelList = new List<SelectListItemExtends>();
+                List<SelectListItem> depSelList = new List<SelectListItem>();
 
-                depSelList.Add(new SelectListItemExtends
+                depSelList.Add(new SelectListItem
                 {
                     Value = "0",
-                    Text = "請選擇所屬【部門】",
-                    Enabled= true
+                    Text = "請選擇所屬【部門】"
+                    //,Enabled= true
                 });
 
                 foreach (dep depObj in pDepList)
                 {
-                    depSelList.Add(new SelectListItemExtends
-                    {
-                        Value = depObj.depNo,
-                        Text = depObj.depNm,
-                        Enabled=false
-                    });
-                    List<SelectListItemExtends> depSubSelList = new List<SelectListItemExtends>();
+                    //depSelList.Add(new SelectListItemExtends
+                    //{
+                    //    Value = depObj.depNo,
+                    //    Text = depObj.depNm,
+                    //    Enabled=false
+                    //});
+                    var gp = new SelectListGroup { Name = depObj.depNm };
+
+                    List<SelectListItem> depSubSelList = new List<SelectListItem>();
                     List<dep> pDepSubList = context.deps.Where(x => x.depLevel == 2 && x.parentDepNo==depObj.depNo).ToList<dep>();
                     foreach(dep depSubObj in pDepSubList)
                     {
-                        depSelList.Add(new SelectListItemExtends
+                        depSelList.Add(new SelectListItem
                         {
                             Value = depSubObj.depNo,
-                            Text = "    " + depSubObj.depNm,
-                            Enabled = true
+                            Text = depSubObj.depNm,
+                            Group = gp
+                            //Enabled = true
                         });
                     }
 
-                    foreach (SelectListItemExtends item in depSelList)
+                    foreach (SelectListItem item in depSelList)
                     {
                         item.Selected = item.Value == pId;
                     }

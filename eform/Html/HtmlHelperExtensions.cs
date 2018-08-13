@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Web.Routing;
+using System.Linq;
 
 namespace System.Web.Mvc.Html
 {
@@ -18,6 +19,11 @@ namespace System.Web.Mvc.Html
             //Iterated over the IEnumerable list.
             foreach (var item in selectList)
             {
+                //if (groups.Where(x => x == item.Group.Name).Count() ==0)
+                //{
+                //    var groupOption = new TagBuilder("optgroup");
+                //    groupOption.la
+                //}
                 option = new TagBuilder("option");
                 option.MergeAttribute("value", item.Value.ToString());
 
@@ -27,10 +33,9 @@ namespace System.Web.Mvc.Html
                 {
                     option.MergeAttribute("enabled", "enabled");
                 }
-
                 if (item.Selected)
                 {
-                    option.MergeAttribute("selected","selected");
+                    option.MergeAttribute("selected", "selected");
                 }
                 if (item.PropExtends != null)
                     option.MergeAttributes(item.PropExtends);
