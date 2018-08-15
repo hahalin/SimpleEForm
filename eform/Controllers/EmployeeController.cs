@@ -40,6 +40,17 @@ namespace eform.Controllers
                     dep depObj = poObj == null ? null : context.deps.Where(x => x.depNo == poObj.depNo).FirstOrDefault<dep>();
                     if (depObj != null)
                     {
+                        string depNm = depObj.depNm;
+                        dep depObj2= context.deps.Where(x => x.depNo == depObj.parentDepNo).FirstOrDefault<dep>();
+                        if (depObj2 != null)
+                        {
+                            depNm = depObj2.depNm + "-" + depNm;
+                            dep depObj3 = context.deps.Where(x => x.depNo == depObj2.parentDepNo).FirstOrDefault<dep>();
+                            if (depObj3 != null)
+                            {
+                                depNm = depObj3.depNm + "-" + depNm;
+                            }
+                        }
                         poNoList.Add(new vwPoNo
                         {
                             poNo = poObj.poNo,
@@ -47,7 +58,7 @@ namespace eform.Controllers
                             depNo = poObj.depNo,
                             depNm = depObj.depNm
                         });
-                        usrTitle.Add(depObj.depNm + "-" + poObj.poNm);
+                        usrTitle.Add(depNm + "：" + poObj.poNm);
                     }
                 }
 
@@ -271,6 +282,10 @@ namespace eform.Controllers
                         if (user.poList == null)
                         {
                             user.poList = new List<PoUser>();
+                        }
+                        else
+                        {
+                            user.poList.Clear();
                         }
                         foreach (string poId in poIdLst)
                         {

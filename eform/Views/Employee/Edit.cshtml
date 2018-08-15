@@ -167,10 +167,37 @@
                     {
                         $("#ulPoList li").remove();
                         $.each(currentPoList, function (idx, obj) {
+
+                            var depfilter = depList.filter(x => x.k == obj.depNo);
+                            var depName = obj.depNm;
+                            var dep = null;
+                            var dep1 = null;
+                            var dep2 = null;
+                            if (depfilter.length > 0)
+                            {
+                                dep = depfilter[0];
+                            };
+                            if ((dep != null) && (dep.parentDepNo != ""))
+                            {
+                                depfilter = depList.filter(x => x.k == dep.parentDepNo);
+                                if (depfilter.length > 0)
+                                {
+                                    dep1 = depfilter[0];
+                                    depName = dep1.v + " " + depName;
+                                }
+                            }
+                            if ((dep1 !=null) && (dep1.parentDepNo != "")) {
+                                depfilter = depList.filter(x => x.k == dep1.parentDepNo);
+                                if (depfilter.length > 0) {
+                                    dep2 = depfilter[0];
+                                    depName = dep2.v + " " + depName;
+                                }
+                            }
+
                             $("#ulPoList").append(
                                 '<li class="list-group-item" id="' + obj.poNo + '">'
                                 + '<button type="button" class="text-danger"><i class="fa fa-minus"></i></button>'
-                                + obj.depNm + "-" + obj.poNm
+                                + depName + "-" + obj.poNm
                                 + '</li>'
                             );
                         });
@@ -178,7 +205,14 @@
                         $('#ulPoList li button').on('click', function () {
                             var id = $(this).parent('li').attr('id');
                             $(this).parent('li').remove();
-                            currentPoList = currentPoList.filter(item => item.poNo !== id)
+                            currentPoList = currentPoList.filter(item => item.poNo !== id);
+                            var poListValue = "";
+                            if (currentPoList != null) {
+                                poListValue = currentPoList.map(function (item) {
+                                    return item['poNo'];
+                                });
+                            }
+                            $('#hPoList').val(poListValue.toString()); 
                         });
                         var poListValue = "";
                         if (currentPoList != null) {
@@ -186,7 +220,8 @@
                                 return item['poNo'];
                             });
                         }
-                        $('#hPoList').val(poListValue.toString());
+                        $('#hPoList').val(poListValue.toString()); 
+                        
                     }
 
                     function doSubmit()
@@ -226,6 +261,15 @@
                         var cboPoList2 = $('#cboPoList2');
                         var cboPoList3 = $('#cboPoList3');
 
+                        var depGmFilter = depList.filter(x => x.k == "001");
+                        var depGm = null;
+                        if (depGmFilter.length > 0) {
+                            depGm = depGmFilter[0];
+                        }
+
+                        //$(cboDepList1).empty(); $(cboDepList2).empty(); $(cboDepList3).empty();
+                        //$(cboPoList1).empty(); $(cboPoList2).empty(); $(cboPoList3).empty();
+
                         $(cboDepList1).append($('<option></option>').val(0).html("選擇處級"));
                         $(cboDepList2).append($('<option></option>').val(0).html("選擇部門"));
                         $(cboDepList3).append($('<option></option>').val(0).html("選擇課別"));
@@ -234,7 +278,17 @@
                         $(cboPoList3).append($('<option></option>').val(0).html("選擇職稱"));
 
                         function loadDep(cbo, level, parentDepNo) {
+                            $('#' + cbo + ' option').remove();
                             if (level == 1) {
+                                $(cboDepList1).append($('<option></option>').val(0).html("選擇處級"));
+
+                                if (depGm != null)
+                                {
+                                    $('#' + cbo).append(
+                                        $('<option></option>').val(depGm.k).html(depGm.v)
+                                    );
+                                }
+                                
                                 $.each(depList, function (val, obj) {
                                     if (obj.depLevel == 1) {
                                         $('#' + cbo).append(
@@ -244,6 +298,7 @@
                                 });
                             }
                             if (level == 2) {
+                                $(cboDepList2).append($('<option></option>').val(0).html("選擇部門"));
                                 $.each(depList, function (val, obj) {
                                     if (obj.depLevel == 2 && obj.parentDepNo == parentDepNo) {
                                         $('#' + cbo).append(
@@ -253,6 +308,7 @@
                                 });
                             }
                             if (level == 3) {
+                                $(cboDepList3).append($('<option></option>').val(0).html("選擇課別"));
                                 $.each(depList, function (val, obj) {
                                     if (obj.depLevel == 3 && obj.parentDepNo == parentDepNo) {
                                         $('#' + cbo).append(
@@ -294,7 +350,7 @@
                         $(cboDepList2).on("change", function (e) {
                             var depV = this.value;
                             loadPo("cboPoList2", "cboDepList2");
-                            loadDep('cboPoList2', 3, depV);
+                            loadDep('cboDepList3', 3, depV);
                             //$('#cboDepList3').selectpicker();
                         });
                         $(cboDepList3).on("change", function (e) {
@@ -303,14 +359,35 @@
                         });    
 
                         $('#btnSelPo').on('click', function () {
-                            $("#cboDepList").val(0);
-                            $("#cboDepList").change();
+                            $("#cboDepList1").val(0);
+                            $("#cboDepList1").change();
+                            $("#cboDepList2").val(0);
+                            $("#cboDepList2").change();
+                            $("#cboDepList3").val(0);
+                            $("#cboDepList3").change();
                         });
                         $('#btnAddPo').on('click', function () {
                             var poExist = false;
 
+                            var po1 = $('#cboPoList1').val().toString();
+                            var po2 = $('#cboPoList2').val().toString();
+                            var po3 = $('#cboPoList3').val().toString();
+
+                            if (po1 == "0" && po2 == "0" && po3 == "0")
+                            {
+                                alert('請選擇職稱');
+                                return;
+                            }
+
+                            var poSelect = "0";
+
+                            if (po1 != "0") { poSelect = po1; };
+                            if (po2 != "0") { poSelect = po2; };
+                            if (po3 != "0") { poSelect = po3; };
+                              
+                            
                             $.each(currentPoList, function (val, obj) {
-                                if (obj.poNo.toString() == $('#cboPoList').val()) {
+                                if (obj.poNo.toString() == poSelect) {
                                     poExist = true;
                                     return false;
                                 }
@@ -318,7 +395,7 @@
 
                             if (!poExist) {
                                 $.each(poList, function (val, obj) {
-                                    if (obj.poNo.toString() == $('#cboPoList').val()) {
+                                    if (obj.poNo.toString() == poSelect) {
                                         currentPoList.push(obj);
                                         return false;
                                     }
