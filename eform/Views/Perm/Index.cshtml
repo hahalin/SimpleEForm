@@ -1,0 +1,64 @@
+﻿@model IEnumerable<eform.Models.ApplicationUser>
+
+<h3>@ViewBag.Title</h3>
+<div class="row">
+    <div class="col-md-6">
+        <div class="box">
+            <div class="box-header">
+                <a class="btn btn-primary" href="@Url.Action("Create",new { mod = ViewBag.Mod })"><i class="fa fa-plus"></i>新增權限人員</a>
+            </div>
+            <div class="box-body">
+                <table class="table table-bordered table-hover table-striped">
+                    <tr>
+                        <th>
+                            工號
+                        </th>
+                        <th>
+                            姓名
+                        </th>
+                        <th></th>
+                    </tr>
+
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.HiddenFor(modelItem => item.Id)
+                                @Html.DisplayFor(modelItem => item.workNo)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.cName)
+                            </td>
+                            
+                            <td>
+                                <a class="btn btn-danger" data-workNo="@item.workNo" data-mod="@ViewBag.Mod" href="#" onclick="checkDelete();">
+                                    <i class="fa fa-trash"></i>
+                                    刪除
+                                </a>
+                            </td>
+                        </tr>
+                                    }
+
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script type="text/javascript">
+        function checkDelete() {
+            event.preventDefault();
+            var workNo = $(event.target).attr('data-workNo');
+            var mod = $(event.target).attr('data-mod');
+            var r = confirm("確定刪除?");
+            if (r == true)
+            {
+                var url = "@Url.Action("Delete","Perm")"+"?workNo=xxxx&mod=yyyy";
+                url = url.replace("xxxx", workNo).replace("yyyy", mod);
+                document.location = url;
+            }
+        }
+    </script>
+}

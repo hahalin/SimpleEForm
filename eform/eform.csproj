@@ -218,6 +218,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\NewsMgrController.cs" />
+    <Compile Include="Controllers\PermController.cs" />
     <Compile Include="Controllers\RoleController.cs" />
     <Compile Include="CustomMigration\DefaultSeed.cs" />
     <Compile Include="CustomMigration\eFormDBInitializer.cs" />
@@ -286,6 +287,10 @@
     <Compile Include="Migrations\201808121626114_whatneedadd.Designer.cs">
       <DependentUpon>201808121626114_whatneedadd.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201808161136263_addTablePerm.cs" />
+    <Compile Include="Migrations\201808161136263_addTablePerm.Designer.cs">
+      <DependentUpon>201808161136263_addTablePerm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ApplicationDbContext.cs" />
@@ -297,6 +302,7 @@
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\news.cs" />
     <Compile Include="Models\newsType.cs" />
+    <Compile Include="Models\permission.cs" />
     <Compile Include="Models\ReqOverTime.cs" />
     <Compile Include="Models\vwFlowMain.cs" />
     <Compile Include="Models\vwFlowRequest.cs" />
@@ -991,6 +997,8 @@
     <Content Include="Views\FormMgr\Query.cshtml" />
     <Content Include="Views\FormMgr\ListAll.cshtml" />
     <Content Include="Views\Dep\Gm.cshtml" />
+    <Content Include="Views\Perm\Index.cshtml" />
+    <Content Include="Views\Perm\Create.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1057,6 +1065,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201808121626114_whatneedadd.resx">
       <DependentUpon>201808121626114_whatneedadd.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808161136263_addTablePerm.resx">
+      <DependentUpon>201808161136263_addTablePerm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

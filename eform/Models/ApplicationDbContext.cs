@@ -32,6 +32,8 @@ namespace eform.Models
         public DbSet<news> newsList { get; set; }
         public DbSet<newsType> newsTypeList { get; set; }
         public DbSet<ReqOverTime> reqOverTimeList { get; set; }
+        public DbSet<permission> permList { get; set; }
+
         public List<vwSignType> signTypeList()
         {
             List<vwSignType> list = new List<vwSignType>();
@@ -52,7 +54,7 @@ namespace eform.Models
             });
             return list;
         }
-
+        
         public List<vwFlowStatus> flowStatusList()
         {
             List<vwFlowStatus> list = new List<vwFlowStatus>();
