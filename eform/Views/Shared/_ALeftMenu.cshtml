@@ -2,9 +2,11 @@
 @using Microsoft.AspNet.Identity.EntityFramework
 @using Microsoft.AspNet.Identity
 
+
 @{
     string UserName = "guest";
     bool isAdmin = false;
+    List<permission> permList = new List<permission>();
     if (Request.IsAuthenticated)
     {
         isAdmin = User.IsInRole("Admin");
@@ -16,6 +18,7 @@
         if (user != null)
         {
             UserName = User.Identity.Name + " " + user.cName;
+            permList = context.permList.Where(x => x.workNo == user.workNo).ToList<permission>();
         }
     }
 
@@ -89,6 +92,35 @@
                                 <i class="fa fa-circle-o"></i>修改個人密碼
                             </a>
                         </li>
+                    </ul>
+                </li>
+
+                <li class="treeview">
+                    <a href="#">
+                        <i class="fa fa-money"></i> <span>薪資查詢區</span> <i class="fa fa-angle-left pull-right"></i>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li>
+                            <a href="@Url.Action("Index", "Salary", null)" hrefa="#">
+                                <i class="fa fa-circle-o"></i>個人薪資查詢
+                            </a>
+                        </li>
+                        @if (permList.Where(x=>x.mod== "ReportSalary").Count()>0)
+                        { 
+                            <li>
+                                <a href="@Url.Action("All", "Salary", null)" hrefa="#">
+                                    <i class="fa fa-key"></i>薪資查詢(管理權限)
+                                </a>
+                            </li>
+                        }
+                        @if (permList.Where(x => x.mod == "ReportUpload").Count() > 0)
+                        {
+                            <li>
+                                <a href="@Url.Action("Upload", "Salary", null)" hrefa="#">
+                                    <i class="fa fa-key"></i>薪資檔案上傳(管理權限)
+                                </a>
+                            </li>
+                        }
                     </ul>
                 </li>
 
