@@ -167,7 +167,6 @@
                     {
                         $("#ulPoList li").remove();
                         $.each(currentPoList, function (idx, obj) {
-
                             var depfilter = depList.filter(x => x.k == obj.depNo);
                             var depName = obj.depNm;
                             var dep = null;
@@ -177,7 +176,7 @@
                             {
                                 dep = depfilter[0];
                             };
-                            if ((dep != null) && (dep.parentDepNo != ""))
+                            if ((dep != null) && (dep.parentDepNo != "") && (dep.parentDepNo != "001"))
                             {
                                 depfilter = depList.filter(x => x.k == dep.parentDepNo);
                                 if (depfilter.length > 0)
@@ -186,7 +185,8 @@
                                     depName = dep1.v + " " + depName;
                                 }
                             }
-                            if ((dep1 !=null) && (dep1.parentDepNo != "")) {
+                            if ((dep1 != null) && (dep1.parentDepNo != "") && (dep1.parentDepNo != "001"))
+                            {
                                 depfilter = depList.filter(x => x.k == dep1.parentDepNo);
                                 if (depfilter.length > 0) {
                                     dep2 = depfilter[0];

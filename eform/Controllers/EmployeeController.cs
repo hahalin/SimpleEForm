@@ -42,11 +42,11 @@ namespace eform.Controllers
                     {
                         string depNm = depObj.depNm;
                         dep depObj2= context.deps.Where(x => x.depNo == depObj.parentDepNo).FirstOrDefault<dep>();
-                        if (depObj2 != null)
+                        if (depObj2 != null && depObj2.depNo !="001")
                         {
                             depNm = depObj2.depNm + "-" + depNm;
                             dep depObj3 = context.deps.Where(x => x.depNo == depObj2.parentDepNo).FirstOrDefault<dep>();
-                            if (depObj3 != null)
+                            if (depObj3 != null && depObj3.depNo != "001")
                             {
                                 depNm = depObj3.depNm + "-" + depNm;
                             }
@@ -299,6 +299,10 @@ namespace eform.Controllers
                                 });
                             }
                         }
+                    }
+                    else
+                    {
+                        user.poList.Clear();
                     }
 
                     List<string> roleList = ((string)Request.Form["roles"]).Split(',').ToList<string>();

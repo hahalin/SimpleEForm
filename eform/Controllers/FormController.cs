@@ -91,10 +91,15 @@ namespace eform.Controllers
                     vwReqOverTimeObj.sMemo2 = jobjext["sMemo2"] == null ? "" : jobjext["sMemo2"].ToString();
                     vwReqOverTimeObj.worker= jobjext["worker"] == null ? "" : jobjext["worker"].ToString();
                     vwReqOverTimeObj.depNo = jobjext["depNo"] == null ? "" : jobjext["depNo"].ToString();
-                    dep depobj = context.deps.Where(x => x.depNo.Equals(vwReqOverTimeObj.depNo)).FirstOrDefault();
-                    vwReqOverTimeObj.depNm = jobjext["depNo"] == null ? "" : depobj.depNm;
+
                     vwReqOverTimeObj.poNo = jobjext["poNo"] == null ? "" : jobjext["poNo"].ToString();
                     vwReqOverTimeObj.poNm = jobjext["poNo"] == null ? "" : context.jobPos.Where(x => x.poNo.Equals(vwReqOverTimeObj.poNo)).FirstOrDefault().poNm;
+
+                    jobPo poObj = context.jobPos.Where(x => x.poNo == vwReqOverTimeObj.poNo).First();
+                    string depNo = poObj.depNo;
+                    string depNm = getParentDeps(depNo, context) + " : " + poObj.poNm;
+                    vwReqOverTimeObj.depNm = depNm;
+
                 }
                 catch (Exception ex)
                 {
@@ -116,7 +121,9 @@ namespace eform.Controllers
             var user = context.Users.Where(x => x.workNo == UserName).FirstOrDefault();
             ViewBag.UserName = user.cName;
             initViewBag(context);
-            return View();
+            vwReqOverTime Model = new vwReqOverTime();
+            Model.sType = "平日";
+            return View(Model);
         }
 
         // POST: Form/CreateOverTimeForm
@@ -276,6 +283,26 @@ namespace eform.Controllers
             }
         }
 
+        string getParentDeps(string depNo,ApplicationDbContext ctx)
+        {
+            string r = "";
+            dep depObj = ctx.deps.Where(x => x.depNo == depNo).First();
+            
+            if (depObj != null)
+            {
+                r = depObj.depNm;
+                if (depObj.depLevel > 1 )
+                {
+                    r= getParentDeps(depObj.parentDepNo, ctx) + "-" + r;
+                }
+                else if(depObj.parentDepNo !="001")
+                {
+                    r = depObj.depNm + "-" + r;
+                }
+            }
+
+            return r;
+        }
 
         void initViewBag(ApplicationDbContext context)
         {
@@ -295,7 +322,7 @@ namespace eform.Controllers
             string sql = @"select a.poNo,b.depNo,b.poNm,c.depNm
                             from PoUsers a inner join jobPoes b on a.poNO=b.poNo 
                                            inner join deps c on b.depNo=c.depNo
-                            where a.UserId='@workno'";
+                            where a.UserId='@workno' and a.applicationUser_id is not null";
             sql = sql.Replace("@workno", workno);
             DataTable tbpo = dbh.sql2tb(sql);
             List<vwPoNo> polist = new List<vwPoNo>();
@@ -318,6 +345,13 @@ namespace eform.Controllers
                     poNo = r["poNo"].ToString(),
                     poNm = r["poNm"].ToString()
                 });
+            }
+
+            foreach(var item in polist)
+            {
+                string depParentName = getParentDeps(item.depNo,context);
+
+                item.depNm = depParentName + ":" + item.poNm;
             }
 
             ViewBag.depList = deplist;
