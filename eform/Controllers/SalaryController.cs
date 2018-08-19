@@ -85,6 +85,7 @@ namespace eform.Controllers
             }
             var ctx = new ApplicationDbContext();
             var user = ctx.Users.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
+
             if (user != null)
             {
                 string workNo = user.workNo;
@@ -175,6 +176,16 @@ namespace eform.Controllers
         [HttpGet]
         public ActionResult All()
         {
+            var ctx = new ApplicationDbContext();
+            var user = ctx.Users.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
+            if (user != null)
+            {
+                if (ctx.permList.Where(x => x.workNo == user.workNo && x.mod == "ReportSalary").Count() == 0)
+                {
+                    return RedirectToAction("AccessDenied", "Account");
+                }
+            }
+
             ViewBag.Title = "全部薪資查詢(主管權限)";
             ViewBag.Action = "All";
             return View("Index");
@@ -184,6 +195,7 @@ namespace eform.Controllers
         [HttpPost]
         public ActionResult All(string ym = "")
         {
+            //ReportSalary
             ViewBag.Title = "全部薪資查詢(主管權限)";
             if (string.IsNullOrEmpty(ym))
             {
@@ -191,6 +203,16 @@ namespace eform.Controllers
                 View("Index");
             }
             var ctx = new ApplicationDbContext();
+            var user = ctx.Users.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
+            if (user != null)
+            {
+                if(ctx.permList.Where(x=>x.workNo==user.workNo && x.mod=="ReportSalary").Count()==0)
+                {
+                    return RedirectToAction("AccessDenied","Account");
+                }
+            }
+
+
             int y = Convert.ToInt32(ym.Split('-')[0]);
             int m = Convert.ToInt32(ym.Split('-')[1]);
             DateTime dtym = new DateTime(y, m, 1);
