@@ -100,14 +100,14 @@ namespace eform.Controllers
                     {
                         jobj = JObject.Parse(sObj.jData);
                         List<string> removeList = new List<string>();
-                        foreach(JProperty prop in jobj.Properties())
+                        foreach (JProperty prop in jobj.Properties())
                         {
-                            if (getHiddenFields().Where(x=>prop.Name.Contains(x)).Count()>0)
+                            if (getHiddenFields().Where(x => prop.Name.Contains(x)).Count() > 0)
                             {
                                 removeList.Add(prop.Name);
                             }
                         }
-                        foreach(string propName in removeList)
+                        foreach (string propName in removeList)
                         {
                             jobj.Remove(propName);
                         }
@@ -188,16 +188,22 @@ namespace eform.Controllers
             if (string.IsNullOrEmpty(ym))
             {
                 ModelState.AddModelError("", "請輸入年度與月份");
-                return View();
+                View("Index");
             }
             var ctx = new ApplicationDbContext();
             int y = Convert.ToInt32(ym.Split('-')[0]);
             int m = Convert.ToInt32(ym.Split('-')[1]);
             DateTime dtym = new DateTime(y, m, 1);
             ViewBag.ym = dtym.ToString("yyyy-MM");
-            salary sObj = ctx.salaryList.Where(x => x.year == y && x.month == m).FirstOrDefault();
-            if (sObj != null)
+
+            List<salary> sObjList = ctx.salaryList.Where(x => x.year == y && x.month == m).ToList<salary>();
+            List<KeyValuePair<string, int>> fdList = new List<KeyValuePair<string, int>>();
+
+            DataTable dt = new DataTable();
+
+            if (sObjList.Count > 0)
             {
+                salary sObj = sObjList[0];
                 JObject jobj = null;
                 try
                 {
@@ -209,15 +215,16 @@ namespace eform.Controllers
                 }
                 if (jobj == null)
                 {
-                    return View();
+                    View("Index");
                 }
-                DataTable dt = new DataTable();
-
-                List<KeyValuePair<string, int>> fdList = new List<KeyValuePair<string, int>>();
 
                 for (int i = 0; i < jobj.Properties().ToList<JProperty>().Count(); i++)
                 {
                     string pnm = jobj.Properties().ToList<JProperty>()[i].Name;
+                    if (pnm == "雇主負擔" || pnm == "本人負擔")
+                    {
+                        pnm = "勞保-" + pnm;
+                    }
                     if (pnm.Split('-').Count() > 1)
                     {
                         pnm = pnm.Split('-')[0];
@@ -244,20 +251,42 @@ namespace eform.Controllers
                     }
                     dt.Columns.Add(jobj.Properties().ToList<JProperty>()[i].Name);
                 }
-
-                DataRow r = dt.NewRow();
-                for (int i = 0; i < jobj.Properties().ToList<JProperty>().Count(); i++)
-                {
-                    string pnm = jobj.Properties().ToList<JProperty>()[i].Name;
-                    r[pnm] = jobj[pnm];
-                }
-                dt.Rows.Add(r);
-                dt.AcceptChanges();
-                ViewBag.data = dt;
-                ViewBag.fdList = fdList;
-                return View();
             }
-            return View();
+
+            foreach (salary sObj in sObjList)
+            {
+                JObject jobj = null;
+                try
+                {
+                    jobj = JObject.Parse(sObj.jData);
+                }
+                catch (Exception ex)
+                {
+                    jobj = null;
+                }
+
+                if (jobj != null)
+                {
+                    DataRow r = dt.NewRow();
+                    for (int i = 0; i < jobj.Properties().ToList<JProperty>().Count(); i++)
+                    {
+                        string pnm = jobj.Properties().ToList<JProperty>()[i].Name;
+                        if (pnm=="勞保-雇主負擔" || pnm == "勞保-本人負擔")
+                        {
+                            r[pnm] = jobj[pnm.Replace("勞保-","")];
+                        }
+                        else
+                        {
+                            r[pnm] = jobj[pnm];
+                        }
+                    }
+                    dt.Rows.Add(r);
+                    dt.AcceptChanges();
+                }
+            }
+            ViewBag.data = dt;
+            ViewBag.fdList = fdList;
+            return View("Index");
         }
 
         [HttpGet]

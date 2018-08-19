@@ -27,8 +27,8 @@
 }
 
 
-<h2>@ViewBag.Title</h2>
-<div class="row">
+<h3>@ViewBag.Title</h3>
+<div class="row" id="div1">
     @using (Html.BeginForm(action, "Salary", FormMethod.Post, new { enctype = "multipart/form-data" }))
     {
         @Html.AntiForgeryToken()
@@ -37,24 +37,25 @@
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
             <div class="form-group">
                 <label class="control-label col-md-1">年-月</label>
-                <div class="col-md-3">
-                    <input type="month" name="ym" class="form-control" value="@sYm" />
+                <div class="col-md-3" style="float:left;position:relative;width:300px;">
+                    <input type="month" name="ym" class="form-control" style="width:150px;" value="@sYm" />
+                    <input type="submit" value="查詢" class="btn btn-primary" onclick="doLoading();" style="float:left;position:absolute;left:170px;top:2px;" />
                 </div>
-                <input type="submit" value="查詢" class="btn btn-primary" onclick="doUpload();" />
+                
             </div>
         </div>
     }
 </div>
-<div class="row" style="overflow:auto;">
-    <div class="box" style="overflow:auto;">
+<div class="row" >
+    <div class="box" id="box1" style="overflow:auto;position:relative;right:10px;left:5px;bottom:10px;height:500px;">
         <div class="box-header">
             @*<div class="box-title">
             </div>*@
         </div>
-        <div class="box-body" style="float:left;">
+        <div class="box-body" style="overflow:auto;float:left;position:absolute;">
             @if (dtData != null)
             {
-                <table class="table" id="tb1" style="font-size:12px;margin-bottom:20px;">
+                <table class="table table-responsive" id="tb1" style="font-size:12px;margin-bottom:20px;">
                     <tr>
                         @foreach (var fd in fdList)
                         {
@@ -136,7 +137,7 @@
     <script type="text/javascript" src="~/Scripts/jquery.blockUI.js"></script>
     <script type="text/javascript">
 
-        function doUpload() {
+        function doLoading() {
             $.blockUI({
                 message: '<h2>資料查詢中...</h2>'
             });
@@ -151,6 +152,9 @@
             //$('#tb1').css('width', '95%');
             //$('#tb1').css('right', '10px');
             //$('#tb1').css('float', 'left');
+            $('#box1').height($(window).height() - 230);
+            
+            
             
         })
     </script>
