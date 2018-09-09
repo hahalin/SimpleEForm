@@ -5,6 +5,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Collections.Generic;
 using System;
+using System.Linq;
 
 namespace eform.Models
 {
@@ -102,5 +103,28 @@ namespace eform.Models
             return DateTime.UtcNow.AddSeconds(28800);
         }
 
+        public string getParentDeps(string depNo, ApplicationDbContext ctx)
+        {
+            string r = "";
+            dep depObj = ctx.deps.Where(x => x.depNo == depNo).First();
+
+            if (depObj != null)
+            {
+                r = depObj.depNm;
+                if (depNo != "001")
+                {
+                    if (depObj.depLevel > 1)
+                    {
+                        r = getParentDeps(depObj.parentDepNo, ctx) + "-" + r;
+                    }
+                    else if (depObj.parentDepNo != "001")
+                    {
+                        r = depObj.depNm + "-" + r;
+                    }
+                }
+            }
+
+            return r;
+        }
     }
 }

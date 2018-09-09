@@ -21,7 +21,7 @@ namespace eform.Controllers
 
             var sender = context.Users.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
 
-            List<FlowMain> flist = context.FlowMainList.Where(x => x.senderNo == sender.workNo).OrderByDescending(x => x.billDate).ToList<FlowMain>();
+            List<FlowMain> flist = context.FlowMainList.Where(x => x.senderNo == sender.workNo && x.flowStatus !=99).OrderByDescending(x => x.billDate).ToList<FlowMain>();
 
             foreach (FlowMain fitem in flist)
             {
@@ -36,6 +36,7 @@ namespace eform.Controllers
                 };
                 list.Add(item);
             }
+
 
             return View(list);
         }
@@ -58,7 +59,7 @@ namespace eform.Controllers
                     signDate = sitem.signDate,
                     signResult = signResultObj == null ? "" : signResultObj.nm,
                     signType = signTypeObj == null ? "會簽" : signTypeObj.nm,
-                    signer = signUser == null ? "" : signUser.cName
+                    signer = signUser == null ? "" : signUser.workNo+"-"+signUser.cName
                 };
                 list.Add(item);
             }
@@ -97,7 +98,7 @@ namespace eform.Controllers
 
                     jobPo poObj = context.jobPos.Where(x => x.poNo == vwReqOverTimeObj.poNo).First();
                     string depNo = poObj.depNo;
-                    string depNm = getParentDeps(depNo, context) + " : " + poObj.poNm;
+                    string depNm =context.getParentDeps(depNo, context) + " : " + poObj.poNm;
                     vwReqOverTimeObj.depNm = depNm;
 
                 }
@@ -116,6 +117,9 @@ namespace eform.Controllers
         [AdminAuthorize(Roles = "Employee,Admin")]
         public ActionResult CreateOverTimeForm()
         {
+            //ViewBag.Title = "加班申請單";
+            //return RedirectToAction("onWorking", "Account");
+
             string UserName = User.Identity.Name;
             var context = new ApplicationDbContext();
             var user = context.Users.Where(x => x.workNo == UserName).FirstOrDefault();
@@ -126,21 +130,68 @@ namespace eform.Controllers
             return View(Model);
         }
 
+        List<string> getDepSigner(ApplicationDbContext ctx, dep depObj,string senderWorkNo,List<string> signerList)
+        {
+            if (signerList==null)
+            {
+                signerList = new List<string>();
+            }
+            dbHelper dbh = new dbHelper();
+            if (depObj==null)
+            {
+                return signerList;
+            }
+
+            var mgrPo = ctx.jobPos.Where(x => x.isFormSigner == true && x.depNo == depObj.depNo).FirstOrDefault();
+            if (mgrPo != null)
+            {
+                string mgrNo = dbh.sql2Str("select top 1 UserId from PoUsers where  ApplicationUser_Id is not null and  poNo='" + mgrPo.poNo + "' and UserId <> '" + senderWorkNo + "'");
+
+                if (!string.IsNullOrEmpty(mgrNo))
+                {
+                    signerList.Add(mgrNo);
+                }
+            }
+            if (depObj.depLevel==1)
+            {
+                return signerList;
+            }
+            else
+            {
+                dep parentDepObj = ctx.deps.Where(x => x.depNo == depObj.parentDepNo).First();
+                signerList= getDepSigner(ctx, parentDepObj, senderWorkNo, signerList);
+                return signerList;
+            }
+        }
+
         // POST: Form/CreateOverTimeForm
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult CreateOverTimeForm(vwReqOverTime Model)
         {
 
+
             #region "checkinput"
             List<string> errList = new List<string>();
-            if (Model.dtEnd.HasValue && Model.dtBegin.HasValue)
+
+            DateTime dtBegin, dtEnd;
+            dtBegin = Convert.ToDateTime(Model.dtBegin);
+            dtEnd = Convert.ToDateTime(Model.dtEnd);
+            try
             {
-                int icompare = DateTime.Compare(Convert.ToDateTime(Model.dtBegin), Convert.ToDateTime(Model.dtEnd));
+                dtBegin = new DateTime(dtBegin.Year, dtBegin.Month, dtBegin.Day, Model.beginHH, Model.beginMM, 0);
+                dtEnd = new DateTime(dtEnd.Year, dtEnd.Month, dtEnd.Day, Model.endHH, Model.endMM, 0);
+
+                int icompare = DateTime.Compare(dtBegin, dtEnd);
                 if (icompare >= 0)
                 {
                     errList.Add("結束時間必須大於開始時間");
                 }
+
+            }
+            catch (Exception ex)
+            {
+                errList.Add("開始時間、結束時間必須是正確格式");
             }
             if (string.IsNullOrEmpty(Model.poNo))
             {
@@ -150,13 +201,16 @@ namespace eform.Controllers
             {
                 errList.Add("請選擇加班類型");
             }
-            if (
-                (string.IsNullOrEmpty(Model.place)) ||
-                (Model.place == "其他" && string.IsNullOrEmpty(Model.otherPlace))
-               )
+            if (Model.place == "其他" && string.IsNullOrEmpty(Model.otherPlace))
             {
                 errList.Add("請選擇工作地點");
             }
+
+            if (string.IsNullOrEmpty(Model.place))
+            {
+                errList.Add("請選擇工作地點");
+            }
+
             if (string.IsNullOrEmpty(Model.sMemo))
             {
                 errList.Add("請輸入加班事由");
@@ -201,8 +255,8 @@ namespace eform.Controllers
 
             ReqOverTime fmOverTime = new ReqOverTime
             {
-                dtBegin = Model.dtBegin,
-                dtEnd = Model.dtEnd,
+                dtBegin = dtBegin,
+                dtEnd = dtEnd,
                 hours = Model.hours,
                 sMemo = Model.sMemo,
                 id = Guid.NewGuid().ToString(),
@@ -214,25 +268,28 @@ namespace eform.Controllers
             int flowSeq = 1;
 
             dbHelper dbh = new dbHelper();
-            string senderPoNo = dbh.sql2Str("select poNo from PoUsers where UserId='" + sender.workNo + "'");
+            string senderPoNo = dbh.sql2Str("select poNo from PoUsers where UserId='" + sender.workNo + "' and ApplicationUser_Id is not null");
             string senderMgrNo = "";
+
+            List<string> signerList = new List<string>();
+
             if (!string.IsNullOrEmpty(senderPoNo))
             {
                 string senderDepNo = dbh.sql2Str("select depNo from jobPoes where poNo='" + senderPoNo + "'");
                 if (!string.IsNullOrEmpty(senderDepNo))
                 {
-                    var mgrPo = context.jobPos.Where(x => x.isFormSigner == true && x.depNo == senderDepNo).FirstOrDefault();
-                    senderMgrNo = dbh.sql2Str("select top 1 UserId from PoUsers where poNo='" + mgrPo.poNo + "' and UserId <> '" + sender.workNo + "'");
+                    dep depObj = context.deps.Where(x => x.depNo == senderDepNo).FirstOrDefault();
+                    signerList = getDepSigner(context, depObj, sender.workNo, signerList);
                 }
             }
 
-            if (!string.IsNullOrEmpty(senderMgrNo))
+            foreach (string signer in signerList) 
             {
                 FlowSub fsub = new FlowSub();
                 fsub.pid = fmain.id;
                 fsub.id = Guid.NewGuid().ToString();
                 fsub.seq = flowSeq;
-                fsub.workNo = senderMgrNo;
+                fsub.workNo = signer;
                 fsub.signType = 1;
                 fsub.signResult = 0;
                 flowSeq++;
@@ -241,7 +298,7 @@ namespace eform.Controllers
 
             foreach (FlowDefSub defItem in fDefSubList)
             {
-                if (defItem.workNo != senderMgrNo)
+                if (defItem.workNo != senderMgrNo && signerList.Where(x=>x==defItem.workNo).Count()==0 && defItem.workNo != sender.workNo)
                 {
                     FlowSub fsub = new FlowSub();
                     fsub.pid = fmain.id;
@@ -252,6 +309,7 @@ namespace eform.Controllers
                     fsub.signResult = 0;
                     flowSeq++;
                     context.FlowSubList.Add(fsub);
+                    signerList.Add(defItem.workNo);
                 }
             }
 
@@ -269,7 +327,7 @@ namespace eform.Controllers
                 jobj["depNo"] = Model.depNo;
                 jobj["poNo"] = Model.poNo;
 
-                dbh.execSql("update ReqOverTimes set jext =N'"+jobj.ToString()+"'");
+                dbh.execSql("update ReqOverTimes set jext =N'"+jobj.ToString()+"' where flowId='"+fmain.id+"'");
 
 
                 return RedirectToAction("Index");
@@ -281,27 +339,6 @@ namespace eform.Controllers
                 ViewBag.UserName = Request.Form["worker"].ToString();
                 return View(Model);
             }
-        }
-
-        string getParentDeps(string depNo,ApplicationDbContext ctx)
-        {
-            string r = "";
-            dep depObj = ctx.deps.Where(x => x.depNo == depNo).First();
-            
-            if (depObj != null)
-            {
-                r = depObj.depNm;
-                if (depObj.depLevel > 1 )
-                {
-                    r= getParentDeps(depObj.parentDepNo, ctx) + "-" + r;
-                }
-                else if(depObj.parentDepNo !="001")
-                {
-                    r = depObj.depNm + "-" + r;
-                }
-            }
-
-            return r;
         }
 
         void initViewBag(ApplicationDbContext context)
@@ -349,13 +386,41 @@ namespace eform.Controllers
 
             foreach(var item in polist)
             {
-                string depParentName = getParentDeps(item.depNo,context);
+                string depParentName = "";
+                if (item.depNo=="001")
+                {
+                    depParentName = item.depNm;
+                }
+                else
+                { 
+                    depParentName = context.getParentDeps(item.depNo,context);
+                }
 
                 item.depNm = depParentName + ":" + item.poNm;
             }
 
+            List<SelectListItem> beginHH = new List<SelectListItem>();
+            List<SelectListItem> beginMM = new List<SelectListItem>();
+            List<SelectListItem> endHH = new List<SelectListItem>();
+            List<SelectListItem> endMM = new List<SelectListItem>();
+
+            for (int i=0;i<=24;i++)
+            {
+                beginHH.Add(new SelectListItem { Text = i.ToString(), Value = i.ToString() });
+                endHH.Add(new SelectListItem { Text = i.ToString(), Value = i.ToString() });
+            }
+            for (int i = 0; i <= 60; i++)
+            {
+                beginMM.Add(new SelectListItem { Text = i.ToString(), Value = i.ToString() });
+                endMM.Add(new SelectListItem { Text = i.ToString(), Value = i.ToString() });
+            }
+
             ViewBag.depList = deplist;
             ViewBag.poList = polist;
+            ViewBag.beginHH = beginHH;
+            ViewBag.beginMM = beginMM;
+            ViewBag.endHH = endHH;
+            ViewBag.endMM = endMM;
         }
     }
 }

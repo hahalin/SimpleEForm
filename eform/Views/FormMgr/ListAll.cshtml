@@ -12,59 +12,71 @@
                     <h3><span class="label label-success">@ViewBag.Title</span></h3>
                 </div>
             </div>
-            <div class="box-header">
-                <p>
-                    @Html.DropDownList("status", (IEnumerable<SelectListItem>)ViewBag.SignResultItems)
-                    <button type="button" class="btn btn-primary" id="btnQuery">查詢</button>
-                </p>
-            </div>
-            <div class="box-body>">
-                <table class="table table-bordered table-hover table-striped">
-                    <tr>
-                        <th>
-                            @Html.DisplayNameFor(model => model.sender)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.billDate)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.flowName)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.flowStatus)
-                        </th>
-                        <th></th>
-                    </tr>
+            @using (Html.BeginForm("Delete", "FormMgr", FormMethod.Post))
+            {
+                <div class="box-header">
+                    <p>
+                        @Html.DropDownList("status", (IEnumerable<SelectListItem>)ViewBag.SignResultItems)
+                        <button type="button" class="btn btn-primary" id="btnQuery">查詢</button>
+                        <button type="submit" class="btn btn-danger" id="btnDelete">刪除</button>
+                        <input type="hidden" id="ids" name="ids" />
+                    </p>
+                </div>
 
-                    @foreach (var item in Model)
-                    {
+                <div class="box-body>">
+                    <table class="table table-bordered table-hover table-striped">
                         <tr>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.sender)
-                            </td>
-                            <td>
-                                @*@Html.DisplayFor(modelItem => item.billDate)*@
-                                @{
-                                    DateTime billdate = Convert.ToDateTime(item.billDate.ToString());
-                                }
-                                @billdate.ToString("yyyy-MM-dd HH:mm:ss")
+                            <th>
 
-
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.flowName)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.flowStatus)
-                            </td>
-                            <td>
-                                <a href="@Url.Action("Details",new {id=item.id,FlowPageType="Query"})" class="btn btn-info">表單明細</a>
-                            </td>
+                            </th>
+                            <th class="text-center">
+                                @Html.DisplayNameFor(model => model.sender)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.billDate)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.flowName)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.flowStatus)
+                            </th>
+                            <th></th>
                         </tr>
-                    }
 
-                </table>
-            </div>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="text-center">
+                                    <input type="checkbox" name="ID" value="@item.id" class="custom-checkbox chkCheckBoxId" />
+                                </td>
+                                <td class="text-center">
+                                    @Html.DisplayFor(modelItem => item.sender)
+                                </td>
+                                <td>
+                                    @*@Html.DisplayFor(modelItem => item.billDate)*@
+                                    @{
+                                        DateTime billdate = Convert.ToDateTime(item.billDate.ToString());
+                                    }
+                                    @billdate.ToString("yyyy-MM-dd HH:mm:ss")
+
+
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.flowName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.flowStatus)
+                                </td>
+                                <td>
+                                    <a href="@Url.Action("Details", new { id = item.id, FlowPageType = "Query" })" class="btn btn-info">表單明細</a>
+                                </td>
+                            </tr>
+                                        }
+
+                    </table>
+                </div>
+            }
         </div>
     </div>
 </div>
@@ -72,13 +84,22 @@
 @section Scripts
 {
     <script type="text/javascript">
-    $(function(){
-        $('#btnQuery').click(function(){
-            var url = "@Url.Action("ListAll", new { status = "xxx" })";
-            url = url.replace("xxx", $('#status').val());
-            window.location = url;
-        });
+        $(function () {
+            $('#btnQuery').click(function () {
+                var url = "@Url.Action("ListAll", new { status = "xxx" })";
+                url = url.replace("xxx", $('#status').val());
+                window.location = url;
+            });
 
-    });
+            $('#btnDelete').click(function () {
+                var selList = [];
+                for (var i = 0; i < $('.custom-checkbox:checked').length; i++)
+                {
+                    selList.push($($('.custom-checkbox:checked')[i]).
+                };
+
+            });
+
+        });
     </script>
 }

@@ -26,6 +26,11 @@ namespace eform.Models
         public DateTime? dtBegin { get; set; }
         [DisplayName("結束時間")]
         public DateTime? dtEnd { get; set; }
+        public int beginHH { get; set; } = 0;
+        public int beginMM { get; set; } = 0;
+        public int endHH { get; set; } = 0;
+        public int endMM { get; set; } = 0;
+
         [DisplayName("加班時數")]
         //[Range(1,12,ErrorMessage ="加班時數必須於1到12小時間")]
         //[Required(ErrorMessage ="加班時數必須輸入")]
@@ -35,7 +40,7 @@ namespace eform.Models
         [DisplayName("加班類型")]
         public string sType { get; set; } = "平日";
         [DisplayName("工作地點")]
-        [Required(ErrorMessage ="請選擇工作地點")]
+        //[Required(ErrorMessage ="請選擇工作地點")]
         public string place { get; set; }
         public string otherPlace { get; set; } = "";
         [DisplayName("專案代碼")]

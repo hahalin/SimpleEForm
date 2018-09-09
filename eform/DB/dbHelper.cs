@@ -50,7 +50,7 @@ namespace eform
             SqlCommand cmd = new SqlCommand(sql, con);
             try
             {
-                return (string)cmd.ExecuteScalar();
+                return Convert.ToString(cmd.ExecuteScalar());
             }
             catch (Exception ex)
             {

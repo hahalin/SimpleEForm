@@ -70,6 +70,7 @@ namespace eform.Controllers
             list.Add("個人自願提繳率");
             list.Add("個人自願提繳率本人負擔>=6%");
             list.Add("個人自願提繳率本人負擔");
+            list.Add("資遣費");
             return list;
         }
 
@@ -218,7 +219,7 @@ namespace eform.Controllers
             DateTime dtym = new DateTime(y, m, 1);
             ViewBag.ym = dtym.ToString("yyyy-MM");
 
-            List<salary> sObjList = ctx.salaryList.Where(x => x.year == y && x.month == m).ToList<salary>();
+            List<salary> sObjList = ctx.salaryList.Where(x => x.year == y && x.month == m).OrderBy(x=>x.workNo).ToList<salary>();
             List<KeyValuePair<string, int>> fdList = new List<KeyValuePair<string, int>>();
 
             DataTable dt = new DataTable();
@@ -342,20 +343,26 @@ namespace eform.Controllers
 
                 var ctx = new ApplicationDbContext();
 
-                string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "upload", ctx.getLocalTiime().ToString("yyyyMMdd") + ".xlsx");
-                if (System.IO.File.Exists(path))
+                //string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "upload", ctx.getLocalTiime().ToString("yyyyMMdd") + ".xlsx");
+                string path = @"C:\inetpub\upload\" + ctx.getLocalTiime().ToString("yyyyMM");
+                DirectoryInfo di = new DirectoryInfo(path);
+                if (di.Exists == false)
                 {
-                    System.IO.File.Delete(path);
+                    di.Create();
                 }
-                file.SaveAs(path);
-
-                ExcelPackage pkg = new ExcelPackage(new FileInfo(path));
+                string uploadfile= path+@"\" + ctx.getLocalTiime().ToString("yyyyMMdd") + ".xlsx";
+                if (System.IO.File.Exists(uploadfile))
+                {
+                    //System.IO.File.Delete(uploadfile);
+                }
+                file.SaveAs(uploadfile);
+                ExcelPackage pkg = new ExcelPackage(new FileInfo(uploadfile));
                 ExcelWorkbook bk = pkg.Workbook;
                 ExcelWorksheet sht = bk.Worksheets[1];
 
                 List<string> fieldList = new List<string>();
 
-                for (int j = 1; j <= 72; j++)
+                for (int j = 1; j <= 73; j++)
                 {
                     fieldList.Add(sht.Cells[1, j].Text.Replace("\n", "").Replace(" ", ""));
                 }
@@ -405,7 +412,7 @@ namespace eform.Controllers
                     sObj.jData = jobj.ToString();
                     ctx.SaveChanges();
                 }
-
+                //System.IO.File.Delete(uploadfile);
                 TempData["msg"] = "上傳完成";
                 return View();
             }

@@ -50,6 +50,35 @@ namespace eform.Controllers
 
             return View(list);
         }
+
+
+        [AdminAuthorize(Roles = "Admin,Employee")]
+        [HttpPost]
+        public ActionResult Delete(FormCollection formCollection)
+        {
+            try
+            {
+                string[] ids = formCollection["ID"].Split(new char[] { ',' });
+                if (ids.Count() == 0)
+                {
+                    return RedirectToAction("ListAll");
+                }
+                List<string> idList = new List<string>();
+                foreach (string s in ids)
+                {
+                    idList.Add("'" + s + "'");
+                }
+                string instr = string.Join(",", idList);
+                dbHelper dbh = new dbHelper();
+                dbh.execSql("update flowmains set flowStatus=99 where id in (" + instr + ")");
+                return RedirectToAction("ListAll");
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ListAll");
+            }
+        }
+
         [AdminAuthorize(Roles = "Admin,Employee")]
         public ActionResult Details(string id, string FlowPageType = "")
         {
@@ -96,14 +125,18 @@ namespace eform.Controllers
                     vwReqOverTimeObj.place = jobjext["place"] == null ? "" : jobjext["place"].ToString();
                     vwReqOverTimeObj.otherPlace = jobjext["otherPlace"] == null ? "" : jobjext["otherPlace"].ToString();
                     vwReqOverTimeObj.prjId = jobjext["prjId"] == null ? "" : jobjext["prjId"].ToString();
-                    //vwReqOverTimeObj.sMemo = jobjext["sMemo"] == null ? "" : jobjext["sMemo"].ToString();
+
                     vwReqOverTimeObj.sMemo2 = jobjext["sMemo2"] == null ? "" : jobjext["sMemo2"].ToString();
                     vwReqOverTimeObj.worker = jobjext["worker"] == null ? "" : jobjext["worker"].ToString();
                     vwReqOverTimeObj.depNo = jobjext["depNo"] == null ? "" : jobjext["depNo"].ToString();
-                    dep depobj = context.deps.Where(x => x.depNo.Equals(vwReqOverTimeObj.depNo)).FirstOrDefault();
-                    vwReqOverTimeObj.depNm = jobjext["depNo"] == null ? "" : depobj.depNm;
+
                     vwReqOverTimeObj.poNo = jobjext["poNo"] == null ? "" : jobjext["poNo"].ToString();
                     vwReqOverTimeObj.poNm = jobjext["poNo"] == null ? "" : context.jobPos.Where(x => x.poNo.Equals(vwReqOverTimeObj.poNo)).FirstOrDefault().poNm;
+
+                    jobPo poObj = context.jobPos.Where(x => x.poNo == vwReqOverTimeObj.poNo).First();
+                    string depNo = poObj.depNo;
+                    string depNm = context.getParentDeps(depNo, context) + " : " + poObj.poNm;
+                    vwReqOverTimeObj.depNm = depNm;
                 }
                 catch (Exception ex)
                 {
@@ -161,7 +194,7 @@ namespace eform.Controllers
             var user = context.Users.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
 
             var unSignMainList = from item in context.FlowMainList
-                                 where item.flowStatus != 1
+                                 where item.flowStatus != 1 && item.flowStatus != 99
                                  select item.id;
 
             var mySignSubList = (from item in context.FlowSubList
@@ -221,12 +254,14 @@ namespace eform.Controllers
             if (iStatus == 0)
             {
                 SignMainList = (from item in context.FlowMainList
+                                where item.flowStatus != 99
                                 orderby item.billDate descending
                                 select item).ToList<FlowMain>();
             }
             else
             {
                 SignMainList = (from item in context.FlowMainList
+                                where item.flowStatus != 99
                                 orderby item.billDate descending
                                 where item.flowStatus == iStatus
                                 select item).ToList<FlowMain>();

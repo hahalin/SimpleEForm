@@ -24,7 +24,7 @@ namespace eform.Controllers
             ApplicationDbContext context = new ApplicationDbContext();
             var store = new UserStore<ApplicationUser>(context);
             var manager = new UserManager<ApplicationUser>(store);
-            List<ApplicationUser> users = store.Users.Where(x => x.status == 1 && x.UserName.ToLower().Contains("sadmin") == false).ToList<ApplicationUser>();
+            List<ApplicationUser> users = store.Users.Where(x => x.status == 1 && x.UserName.ToLower().Contains("sadmin") == false).OrderBy(x=>x.workNo).ToList<ApplicationUser>();
             List<vwEmployee> model = new List<vwEmployee>();
 
             foreach (var usr in users)

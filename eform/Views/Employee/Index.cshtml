@@ -4,7 +4,7 @@
     ViewBag.Title = "Index";
 }
 
-<h3>員工管理</h3>
+<h4>員工管理</h4>
 
 @*<script type="text/javascript">
         //var someArray = [<%foreach(var s in ViewBag.testList){%>'<%=s%>',<%}%>];
@@ -12,42 +12,42 @@
         console.log(yourJavaScriptArray);
     </script>*@
 
-<div class="row">
-    <div class="col-md-10">
-        <div class="box">
+<div class="row" style="margin-left:0;padding-left:0;">
+    <div class="col-md-10" style="margin-left:0;padding-left:0;">
+        <div class="box" style="margin-left:0;padding-left:0;">
             <div class="box-header">
                 <a class="btn btn-primary" href="@Url.Action("Create")"><i class="fa fa-plus"></i>新增員工</a>
                 @*@Html.ActionLink("新增部門", "Create", new {}, new { @class = "btn btn-primary" })*@
             </div>
             <div class="box-body">
-                <table class="table">
+                <table class="table table-bordered table-hover table-responsive">
                     <tr>
-                        <th>
+                        <th width="130" class="text-center">
                             @Html.DisplayNameFor(model => model.workNo)
                         </th>
-                        <th>
+                        <th width="140" class="text-center">
                             @Html.DisplayNameFor(model => model.UserCName)
                         </th>
-                        <th>
+                        <th width="140" class="text-center">
                             @Html.DisplayNameFor(model => model.UserEName)
                         </th>
-                        <th>
+                        <th class="text-center">
                             @Html.DisplayNameFor(model => model.Title)
                         </th>
-                        <th></th>
+                        <th width="140"></th>
                     </tr>
 
                     @foreach (var item in Model)
                     {
                         <tr>
-                            <td>
+                            <td class="text-center">
                                 @Html.HiddenFor(modelItem => item.Id)
                                 @Html.DisplayFor(modelItem => item.workNo)
                             </td>
-                            <td>
+                            <td class="text-center">
                                 @Html.DisplayFor(modelItem => item.UserCName)
                             </td>
-                            <td>
+                            <td class="text-center">
                                 @Html.DisplayFor(modelItem => item.UserEName)
                             </td>
                             <td>
@@ -56,7 +56,7 @@
                                 }
                                 @if (titleArray.Count()>0)
                                 { 
-                                    <ul style="padding-left:1px;">
+                                    <ul style="padding-left:15px;">
                                         @foreach (string title in titleArray)
                                         {
                                             if (!string.IsNullOrEmpty(title))
@@ -67,12 +67,12 @@
                                     </ul>
                                 }
                             </td>
-                            <td>
-                                <a class="btn btn-info" href="@Url.Action("Edit",new { id = item.Id })">
-                                    <i class="fa fa-group"></i>
+                            <td >
+                                <a class="btn btn-info btn-sm" href="@Url.Action("Edit",new { id = item.Id })" style="font-size:11px;">
+                                    <i class="fa fa-pencil"></i>
                                     編輯
                                 </a>
-                                <a class="btn btn-danger" data-id="@item.Id" href="#" onclick="checkDelete();" >
+                                <a class="btn btn-danger btn-sm" data-id="@item.Id" href="#" onclick="checkDelete();" style="font-size:11px;">
                                     <i class="fa fa-trash"></i>
                                     刪除
                                 </a>

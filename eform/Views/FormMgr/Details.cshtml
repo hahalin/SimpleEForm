@@ -61,7 +61,7 @@
                         @Html.LabelFor(model => subModel.billDate, htmlAttributes: new { @class = "control-label col-md-2" })
                         <div class="col-md-4">
                             @{
-                                string billdate = ((DateTime)flowMain.billDate).ToString("yyyy/MM/dd");
+                                string billdate = ((DateTime)flowMain.billDate).ToString("yyyy-MM-dd");
                             }
                             <div class="form-control">
                                 @billdate
@@ -72,22 +72,19 @@
                     <div class="form-group">
                         @Html.LabelFor(model => subModel.dtBegin, htmlAttributes: new { @class = "control-label col-md-2" })
                         <div class="col-md-4">
-                            <div class="form-control">@subModel.dtBegin</div>
+                            <div class="form-control">@Convert.ToDateTime(subModel.dtBegin).ToString("yyyy-MM-dd HH:mm")</div>
                         </div>
                         @Html.LabelFor(model => subModel.dtEnd, htmlAttributes: new { @class = "control-label col-md-2" })
                         <div class="col-md-4">
-                            <div class="form-control">@subModel.dtEnd</div>
+                            <div class="form-control">@Convert.ToDateTime(subModel.dtEnd).ToString("yyyy-MM-dd HH:mm")</div>
                         </div>
                     </div>
                     <div class="form-group">
                         @Html.LabelFor(model => subModel.depNm, htmlAttributes: new { @class = "control-label col-md-2" })
-                        <div class="col-md-4">
+                        <div class="col-md-10">
                             <div class="form-control">@subModel.depNm</div>
                         </div>
-                        @Html.LabelFor(model => subModel.poNm, htmlAttributes: new { @class = "control-label col-md-2" })
-                        <div class="col-md-4">
-                            <div class="form-control">@subModel.poNm</div>
-                        </div>
+
                     </div>
 
                     <div class="form-group">
@@ -122,8 +119,8 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        @Html.LabelFor(model => subModel.sMemo2, htmlAttributes: new { @class = "control-label col-md-2" })
-                        <div class="col-md-10">
+                        @Html.LabelFor(model => subModel.sMemo2, htmlAttributes: new { @class = "control-label col-md-2 text-nowrap" })
+                        <div class="col-md-9">
                             <p style="white-space: pre-line">@subModel.sMemo2</p>
                         </div>
                     </div>

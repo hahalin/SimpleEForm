@@ -2,7 +2,7 @@
 @using Newtonsoft.Json;
 @using eform.Models;
 @{
-    ViewBag.Title = "申請加班單";
+    ViewBag.Title = "加班預填單";
 }
 <link rel="stylesheet" type="text/css" href="~/Content/bootstrap-datetimepicker.min.css" />
 <div class="row">
@@ -10,7 +10,7 @@
         <div class="box">
             <div class="box-header">
                 <div class="box-title">
-                    <h3><span class="label label-success">加班單申請</span></h3>
+                    <h3><span class="label label-success">加班預填單</span></h3>
                 </div>
             </div>
             <div class="box-body>">
@@ -19,7 +19,7 @@
                     @Html.AntiForgeryToken()
 
                     <div class="form-horizontal col-md-10">
-                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger", style = "font-size:15px;font-weight:bold;" })
 
                         <div class="form-group">
                             <label class="control-label col-md-2">申請人</label>
@@ -27,7 +27,7 @@
                                 <div class="form-control">@ViewBag.UserName</div>
                                 <input type="hidden" name="worker" value="@ViewBag.UserName" />
                             </div>
-                            @Html.LabelFor(model => model.billDate, htmlAttributes: new { @class = "control-label col-md-2"})
+                            @Html.LabelFor(model => model.billDate, htmlAttributes: new { @class = "control-label col-md-2" })
                             <div class="col-md-4">
                                 @Html.EditorFor(model => model.billDate, new { htmlAttributes = new { @class = "form-control", type = "date", @readonly = "readonly" } })
                                 @Html.ValidationMessageFor(model => model.billDate, "", new { @class = "text-danger," })
@@ -36,30 +36,43 @@
 
                         <div class="form-group">
                             @Html.LabelFor(model => model.dtBegin, htmlAttributes: new { @class = "control-label col-md-2" })
-                            <div class="col-md-4">
-                                <div class='input-group date' id='datetimepicker1'
-                                     data-date-format="HH:mm"
-                                 >
+                            <div class="col-md-3">
+                                <div class='input-group date' id='datetimepicker1'>
                                     @Html.EditorFor(model => model.dtBegin, new { htmlAttributes = new { @class = "form-control", type = "text" } })
                                     <span class="input-group-addon">
                                         <span class="glyphicon glyphicon-calendar"></span>
                                     </span>
                                 </div>
-                                    @Html.ValidationMessageFor(model => model.dtBegin, "", new { @class = "text-danger" })
-                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                @Html.DropDownListFor(model => model.beginHH, (SelectList)ViewBag.beginHHList, new { @class = "form-control", style = "width:70px;"})
+                            </div>
+                            <label class="control-label col-md-1">時</label>
+                            <div class="col-md-1">
+                                @Html.DropDownListFor(model => model.beginMM, (SelectList)ViewBag.beginMMList, new { @class = "form-control", style = "width:70px;"})
+                            </div>
+                            <label class="control-label col-md-1">分</label>
+                            @Html.ValidationMessageFor(model => model.dtBegin, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group">
                             @Html.LabelFor(model => model.dtEnd, htmlAttributes: new { @class = "control-label col-md-2" })
-                            <div class="col-md-4">
-                                @*@Html.EditorFor(model => model.dtEnd, new { htmlAttributes = new { @class = "form-control", type = "datetime-local" } })*@
-                                <div class='input-group date' id='datetimepicker2'
-                                     data-date-format="HH:mm"
-                                >
+                            <div class="col-md-3">
+                                <div class='input-group date' id='datetimepicker2'>
                                     @Html.EditorFor(model => model.dtEnd, new { htmlAttributes = new { @class = "form-control", type = "text" } })
                                     <span class="input-group-addon">
                                         <span class="glyphicon glyphicon-calendar"></span>
                                     </span>
                                 </div>
-                                    @Html.ValidationMessageFor(model => model.dtEnd, "", new { @class = "text-danger" })
-                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                @Html.DropDownListFor(model => model.endHH, (SelectList)ViewBag.endHHList, new { @class = "form-control", style = "width:70px;" })
+                            </div>
+                            <label class="control-label col-md-1">時</label>
+                            <div class="col-md-1">
+                                @Html.DropDownListFor(model => model.endMM, (SelectList)ViewBag.endMMList, new { @class = "form-control",style = "width:70px;"})
+                            </div>
+                            <label class="control-label col-md-1">分</label>                            
+                            @Html.ValidationMessageFor(model => model.dtEnd, "", new { @class = "text-danger" })
                         </div>
 
                         @*<div class="form-group">
@@ -73,25 +86,24 @@
 
                         <div class="form-group">
                             <label class="control-label col-md-2">部門</label>
-                            <div class="col-md-4">
-                                @Html.DropDownListFor(model => model.poNo, new List<SelectListItem>(), new { @class = "form-control" })
+                            <div class="col-md-10">
+                                @Html.DropDownListFor(model => model.poNo, new List<SelectListItem>(), new { @class = "form-control", style = "max-width:800px;width:100%;" })
                             </div>
+
+                        </div>
+
+                        <div class="form-group">
                             @Html.LabelFor(model => model.sType, htmlAttributes: new { @class = "control-label col-md-2" })
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 @Html.RadioButtonFor(model => model.sType, "平日", new { @class = "checkbox-inline" })
                                 平日
                                 @Html.RadioButtonFor(model => model.sType, "假日", new { @class = "checkbox-inline" })
                                 假日
                             </div>
-                        </div>
-
-                        <div class="form-group">
                             @Html.LabelFor(model => model.place, htmlAttributes: new { @class = "control-label col-md-2" })
-                            <div class="col-md-8">
-                                <div style="float:left;">
-                                    @Html.DropDownListFor(model => model.place, ViewBag.placelist as IEnumerable<SelectListItem>, new { @class = "form-control", style = "float: left;width: 220px;" })
-                                    @Html.TextBoxFor(model => model.otherPlace, new { @class = "form-control", style = "width:180px;float:left;margin-left:5px;" })
-                                </div>
+                            <div class="col-md-5" style="float:left;">
+                                @Html.DropDownListFor(model => model.place, ViewBag.placelist as IEnumerable<SelectListItem>, new { @class = "form-control", style = "float:left;width:160px;" })
+                                @Html.TextBoxFor(model => model.otherPlace, new { @class = "form-control", style = "width:120px;float:left;margin-left:5px;width:130px;" })
                             </div>
                         </div>
                         <div class="form-group">
@@ -130,24 +142,29 @@
 </div>
 
 @section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")    
-<script type="text/javascript" src="~/Scripts/moment-with-locales.min.js"></script>
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript" src="~/Scripts/moment-with-locales.min.js"></script>
     <script type="text/javascript" src="~/Scripts/bootstrap-datetimepicker.min.js"></script>
     <script type="text/javascript">
         function doSubmit() {
-            var dtend = new Date($('#dtEnd').val()).getTime();
-            var dtbegin = new Date($('#dtBegin').val()).getTime();
+            //var dtend = new Date($('#dtEnd').val()).getTime();
+            //var dtbegin = new Date($('#dtBegin').val()).getTime();
             //if ((dtend - dtbegin) < 0) {
             //    toastr["error"]("結束時間不得小於開始時間", "Error");
+            //    return false;
+            //}
+            //if ($('#place').val() == '')
+            //{
+            //    alert('請輸入工作地點');
             //    return false;
             //}
             return true;
         }
         $(function () {
             var pickerOption = {
-                format: 'YYYY-MM-DD HH:mm:ss',
+                format: 'YYYY-MM-DD',
                 locale:'zh-tw',
-                defaultDate: getLocalDateTimeStr()
+                defaultDate: getLocalDateStr()
             };
             $('#datetimepicker1').datetimepicker(pickerOption);
             $('#datetimepicker2').datetimepicker(pickerOption);
@@ -178,22 +195,29 @@
                     $('<option></option>').val(obj.poNo).html(obj.depNm)
                 );
             });
-            $(cboDepList).on("change", function (e) {
-                var depV = this.value;
-                $('#poNo option').remove();
-                $(cboPoList).append(
-                    $('<option></option>').val("").html("選擇職稱")
-                );
-                if (depV != "0") {
-                    $.each(poList, function (val, obj) {
-                        if (obj.depNo == depV) {
-                            $(cboPoList).append(
-                                $('<option></option>').val(obj.poNo).html(obj.poNm)
-                            );
-                        }
-                    });
-                }
-            });
+
+            if ($('#poNo option').length > 1)
+            {
+                $('#poNo').val($('#poNo option:nth-child(2)').val());
+            }
+
+
+            //$(cboDepList).on("change", function (e) {
+            //    var depV = this.value;
+            //    $('#poNo option').remove();
+            //    $(cboPoList).append(
+            //        $('<option></option>').val("").html("選擇職稱")
+            //    );
+            //    if (depV != "0") {
+            //        $.each(poList, function (val, obj) {
+            //            if (obj.depNo == depV) {
+            //                $(cboPoList).append(
+            //                    $('<option></option>').val(obj.poNo).html(obj.poNm)
+            //                );
+            //            }
+            //        });
+            //    }
+            //});
         });
     </script>
 }
