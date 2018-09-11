@@ -34,6 +34,7 @@ namespace eform.Models
         public DbSet<newsType> newsTypeList { get; set; }
         public DbSet<ReqOverTime> reqOverTimeList { get; set; }
         public DbSet<permission> permList { get; set; }
+        public DbSet<permMod> permModList { get; set; }
         public DbSet<salary> salaryList { get; set; }
 
         public List<vwSignType> signTypeList()

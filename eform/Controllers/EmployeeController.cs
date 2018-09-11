@@ -16,6 +16,13 @@ namespace eform.Controllers
 {
     public class EmployeeController : Controller
     {
+        private ApplicationDbContext ctx;
+
+        public EmployeeController()
+        {
+            ctx = new ApplicationDbContext();
+        }
+
         // GET: Employee
         [AdminAuthorize(Roles = "Admin")]
         public ActionResult Index(string Id = "")
@@ -83,7 +90,6 @@ namespace eform.Controllers
         [AdminAuthorize(Roles = "Admin")]
         public ActionResult Create()
         {
-            ApplicationDbContext context = new ApplicationDbContext();
             var user = new ApplicationUser();
             vwEmployee model = new vwEmployee
             {
@@ -93,14 +99,15 @@ namespace eform.Controllers
                 UserEName = "",
                 Title = "",
                 Password = "",
-                rePassword = ""
+                rePassword = "",
+                beginWorkDate=DateTime.Today
             };
 
             List<vwPoNo> poNoList = new List<vwPoNo>();
             ViewBag.currentPoList = poNoList;
 
-            setViewBagRoles(context, null);
-            setViewBagPo(context);
+            setViewBagRoles(ctx, null);
+            setViewBagPo(ctx);
 
             ViewBag.Title = "員工資料新增";
             ViewBag.EditMode = "Create";
@@ -149,24 +156,15 @@ namespace eform.Controllers
 
         }
 
-        // GET: Employee/Edit/5
-        [AdminAuthorize(Roles = "Admin")]
-        public ActionResult Edit(string id)
+        Tuple <List<string>,List<vwPoNo>> getUserTitle(ApplicationUser user,ApplicationDbContext ctx)
         {
-            ApplicationDbContext context = new ApplicationDbContext();
-            var store = new UserStore<ApplicationUser>(context);
-            var manager = new UserManager<ApplicationUser>(store);
-            var user = store.Users.Where(x => x.Id == id).FirstOrDefault();
-
+            ctx.Entry(user).Collection(x => x.poList).Load();
+            List<string> userTitle = new List<string>();
             List<vwPoNo> poNoList = new List<vwPoNo>();
-            List<string> usrTitle = new List<string>();
-
-            context.Entry(user).Collection(x => x.poList).Load();
-
             foreach (var po in user.poList)
             {
-                jobPo poObj = context.jobPos.Where(x => x.poNo == po.poNo).FirstOrDefault();
-                dep depObj = poObj == null ? null : context.deps.Where(x => x.depNo == poObj.depNo).FirstOrDefault<dep>();
+                jobPo poObj = ctx.jobPos.Where(x => x.poNo == po.poNo).FirstOrDefault();
+                dep depObj = poObj == null ? null : ctx.deps.Where(x => x.depNo == poObj.depNo).FirstOrDefault<dep>();
                 if (depObj != null)
                 {
                     poNoList.Add(new vwPoNo
@@ -176,11 +174,26 @@ namespace eform.Controllers
                         depNo = poObj.depNo,
                         depNm = depObj.depNm
                     });
-                    usrTitle.Add(depObj.depNm + "-" + poObj.poNm);
+                    userTitle.Add(depObj.depNm + "-" + poObj.poNm);
                 }
             }
+            return Tuple.Create(userTitle, poNoList);
+        }
 
-            ViewBag.currentPoList = poNoList;
+        // GET: Employee/Edit/5
+        [AdminAuthorize(Roles = "Admin")]
+        public ActionResult Edit(string id)
+        {
+            //ApplicationDbContext context = new ApplicationDbContext();
+            var store = new UserStore<ApplicationUser>(ctx);
+            var manager = new UserManager<ApplicationUser>(store);
+            var user = store.Users.Where(x => x.Id == id).FirstOrDefault();
+
+            //ctx.Entry(user).Collection(x => x.poList).Load();
+
+            var getUserTitleObj = getUserTitle(user,ctx);
+            List<string> usrTitle = getUserTitleObj.Item1;
+            ViewBag.currentPoList = getUserTitleObj.Item2;
 
             vwEmployee model = new vwEmployee
             {
@@ -188,12 +201,14 @@ namespace eform.Controllers
                 workNo = user.workNo,
                 UserCName = user.cName,
                 UserEName = user.eName,
+                Email = user.Email,
+                beginWorkDate = user.beginWorkDate,
                 Title = string.Join(",", usrTitle.ToArray())
             };
 
-            setViewBagRoles(context, user);
+            setViewBagRoles(ctx, user);
 
-            setViewBagPo(context);
+            setViewBagPo(ctx);
 
             ViewBag.Title = "員工資料編輯";
             ViewBag.EditMode = "Edit";
@@ -205,6 +220,22 @@ namespace eform.Controllers
         [AdminAuthorize(Roles = "Admin")]
         public ActionResult Edit(string id, vwEmployee model)
         {
+
+            try
+            {
+                DateTime checkdate = Convert.ToDateTime(model.beginWorkDate);
+                if (checkdate < new DateTime(1980,1,1))
+                {
+                    ModelState.AddModelError("beginWorkDate", "請輸入正確到職日");
+                }
+            }
+            catch(Exception ex)
+            {
+                ModelState.AddModelError("beginWorkDate", "請輸入到職日");
+            }
+
+            
+
 
             var context = new ApplicationDbContext();
 
@@ -233,9 +264,18 @@ namespace eform.Controllers
                     UserName = model.workNo,
                     workNo = model.workNo,
                     cName = model.UserCName,
-                    eName = model.UserEName
+                    eName = model.UserEName,
+                    Email=model.Email
                 };
 
+                try
+                {
+                    newuser.beginWorkDate = Convert.ToDateTime(model.beginWorkDate);
+                }
+                catch(Exception ex)
+                {
+                    newuser.beginWorkDate = DateTime.Today;
+                }
                 try
                 {
                     var r = manager.Create(newuser, model.Password);
@@ -316,22 +356,45 @@ namespace eform.Controllers
 
                     user.cName = model.UserCName;
                     user.eName = model.UserEName;
+                    user.Email = model.Email;
+                    try
+                    {
+                        user.beginWorkDate =Convert.ToDateTime(model.beginWorkDate);
+                    }
+                    catch(Exception ex)
+                    {
+                        user.beginWorkDate = DateTime.Today;
+                    }
                     context.SaveChanges();
                     return RedirectToAction("Index");
                 }
                 else
                 {
+                    if (user==null)
+                    {
+                        user = store.Users.Where(x => x.Id == model.Id).FirstOrDefault();
+                    }
+                    var getUserTitleList=getUserTitle(user, context);
+                    model.Title = string.Join(",", getUserTitleList.Item1.ToArray());
+                    ViewBag.currentPoList = getUserTitleList.Item2;
                     setViewBagPo(context);
-                    setViewBagRoles(context, user);
-                    return View();
+                    setViewBagRoles(context,user);
+                    return View(model);
                 }
             }
             catch (Exception ex)
             {
+                if (user == null)
+                {
+                    user = store.Users.Where(x => x.Id == model.Id).FirstOrDefault();
+                }
+                var getUserTitleList = getUserTitle(user,context);
+                model.Title = string.Join(",", getUserTitleList.Item1.ToArray());
+                ViewBag.currentPoList = getUserTitleList.Item2;
                 setViewBagPo(context);
                 setViewBagRoles(context, user);
                 ModelState.AddModelError("", ex.Message);
-                return View();
+                return View(model);
             }
         }
 

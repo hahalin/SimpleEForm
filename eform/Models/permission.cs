@@ -16,4 +16,11 @@ namespace eform.Models
         public string mod { get; set; }
         public string modItem { get; set; }
     }
+
+    public class permMod
+    {
+        [Key]
+        public string mod { get; set; }
+        public string modCname { get; set; }
+    }
 }

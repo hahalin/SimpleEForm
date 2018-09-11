@@ -1,9 +1,13 @@
 ﻿@model eform.Models.permission
+@using eform.Models
+    @{ 
+        permMod modObj = (permMod)ViewBag.modObj;
+    }
 <div class="row">
     <div class="col-md-6">
         <div class="box">
             <div class="box-header">
-                <a class="btn btn-default" href="@Url.Action("index",new { mod = Model.mod })"><i class="fa fa-list"></i>清單</a>
+                <a class="btn btn-default" href="@Url.Action("index",new { mod = modObj.mod })"><i class="fa fa-list"></i>清單</a>
                 <h3>@ViewBag.Title</h3>
             </div>
             <div class="box-body">
@@ -25,7 +29,7 @@
                         <div class="form-group">
                             <div class="col-md-offset-2 col-md-10">
                                 <input type="submit" value="儲存" class="btn btn-primary">
-                                <a class="btn btn-default" href="@Url.Action("index",new { mod = Model.mod})">取消</a>
+                                <a class="btn btn-default" href="@Url.Action("index",new { mod = modObj.mod})">取消</a>
                             </div>
                         </div>
                     </div>

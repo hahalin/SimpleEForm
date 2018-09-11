@@ -29,6 +29,13 @@ namespace eform.Controllers
             return View();
         }
 
+        List<string> getShowFields()
+        {
+            List<string> list= new List<string>();
+            list.Add("代扣款-退休金");
+            return list;
+        }
+
         List<string> getHiddenFields()
         {
             List<string> list = new List<string>();
@@ -106,7 +113,11 @@ namespace eform.Controllers
                         {
                             if (getHiddenFields().Where(x => prop.Name.Contains(x)).Count() > 0)
                             {
-                                removeList.Add(prop.Name);
+                                if (getShowFields().Where(x=>prop.Name.Equals(x)).Count()==0)
+                                {
+                                    removeList.Add(prop.Name);
+                                }
+                                
                             }
                         }
                         foreach (string propName in removeList)

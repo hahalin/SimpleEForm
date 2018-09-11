@@ -1,0 +1,49 @@
+﻿@model IEnumerable<eform.Models.permMod>
+
+<h3>@ViewBag.Title</h3>
+<div class="row">
+    <div class="col-md-6">
+        <div class="box">
+            <div class="box-header">
+                
+            </div>
+            <div class="box-body">
+                <table class="table table-bordered table-hover table-striped">
+                    <tr>
+                        <th>
+                            名稱
+                        </th>
+                        <th>
+                            
+                        </th>
+                        
+                    </tr>
+
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.HiddenFor(modelItem => item.mod)
+                                @Html.DisplayFor(modelItem => item.modCname)
+                            </td>
+                            <td>
+                                <a class="btn btn-info" href="@Url.Action("Index","Perm",new { mod = item.mod })">
+                                    <i class="fa fa-key"></i>
+                                    管理
+                                </a>
+                            </td>
+                        </tr>
+                    }
+
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script type="text/javascript">
+      
+    </script>
+}

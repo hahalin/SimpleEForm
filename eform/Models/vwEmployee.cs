@@ -35,8 +35,44 @@ namespace eform.Models
         [Display(Name = "職稱")]
         public string Title { get; set; }
 
+        [Display(Name = "到職日")]
+        //[Range(typeof(DateTime), "1980/1/1", "2030/12/31")]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        [Required]
+        public DateTime? beginWorkDate { get; set; }
+
+        public string sBeginWorkDate
+        {
+            get
+            {
+                string beginDate = "";
+                try
+                {
+                    beginDate = Convert.ToDateTime(beginWorkDate).ToString("yyyy-MM-dd");
+                }
+                catch (Exception ex)
+                {
+                    beginDate = "";
+                }
+                return beginDate;
+            }
+            set
+            {
+                try
+                { 
+                    beginWorkDate = Convert.ToDateTime(value);
+                }
+                catch
+                {
+
+                }
+            }
+        }
+
+        public string Email { get; set; }
+
         public ICollection<vwPoNo> poList { get; set; }
     }
 
-    
+
 }

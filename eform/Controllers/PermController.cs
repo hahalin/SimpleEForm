@@ -17,26 +17,36 @@ namespace eform.Controllers
 
     public class PermController : Controller
     {
+        ApplicationDbContext ctx;
+        public PermController()
+        {
+            ctx = new ApplicationDbContext();
+        }
+
+        [AdminAuthorize(Roles = "Admin")]
+        public ActionResult All(string mod = "")
+        {
+            ViewBag.Title = "權限管理總表";
+            var model = ctx.permModList.ToList<permMod>();
+            return View(model);
+        }
+
+
         [AdminAuthorize(Roles = "Admin")]
         public ActionResult Index(string mod = "")
         {
             //ReportSalary
 
-            ApplicationDbContext ctx = new ApplicationDbContext();
-
             List<string> userList = ctx.permList.Where(x => x.mod == mod).Select(x => x.workNo).ToList<string>();
 
-            List<ApplicationUser> permUserList = (from user in ctx.Users where userList.Contains(user.workNo) select user).ToList<ApplicationUser>();
+            List<ApplicationUser> permUserList = (from user in ctx.Users where userList.Contains(user.workNo) select user).OrderBy(x=>x.workNo).ToList<ApplicationUser>();
 
             ViewBag.Title = "權限管理";
-            ViewBag.Mod = mod;
-            if (mod == "ReportSalary")
+            permMod modObj= ctx.permModList.Where(x => x.mod == mod).FirstOrDefault();
+            if (modObj != null)
             {
-                ViewBag.Title = "薪資查詢特別權限";
-            }
-            if (mod == "ReportUpload")
-            {
-                ViewBag.Title = "薪資檔上傳權限";
+                ViewBag.Title = modObj.modCname;
+                ViewBag.mod = modObj.mod;
             }
             return View(permUserList);
         }
@@ -47,15 +57,18 @@ namespace eform.Controllers
         {
             permission model = new permission();
             model.mod = mod;
-            if (mod=="ReportSalary")
+
+            permMod modObj = ctx.permModList.Where(x => x.mod == mod).FirstOrDefault();
+            if (modObj != null)
             {
-                ViewBag.Title = "薪資查詢特別權限-新增";
+                ViewBag.Title = modObj.modCname + "-新增";
+                ViewBag.modObj = modObj;
+                return View(model);
             }
-            if (mod == "ReportUpload")
+            else
             {
-                ViewBag.Title = "薪資檔上傳權限-新增";
+                return RedirectToAction("All");
             }
-            return View(model);
         }
 
         [AdminAuthorize(Roles = "Admin")]

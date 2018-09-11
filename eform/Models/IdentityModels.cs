@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Collections.Generic;
+using System;
 
 namespace eform.Models
 {
@@ -21,6 +22,7 @@ namespace eform.Models
         public string cName { get; set; }
         public string eName { get; set; }
         public int status { get; set; } = 1;
+        public DateTime? beginWorkDate { get; set; }
         public ICollection<PoUser> poList { get; set; }
     }
 
