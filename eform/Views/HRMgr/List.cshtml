@@ -1,0 +1,132 @@
+﻿@using System.Data
+@{
+
+}
+<link href="~/Scripts/tabulator-master/dist/css/tabulator.min.css" rel="stylesheet" />
+
+<style>
+    .ui-datepicker-calendar {
+        display: none;
+    }
+
+    .ui-datepicker-month {
+        display: none;
+    }
+
+    .ui-datepicker-next, .ui-datepicker-prev {
+        display: none;
+    }
+</style>
+<h3>@ViewBag.Title</h3>
+<div>
+    @using (Html.BeginForm("List", "HrMgr", FormMethod.Post))
+    {
+        <div class="row">
+            <label>年:<input type="text" id="year" name="year" value="@ViewBag.y" autocomplete="off" style="width:60px;text-align:right;font-size:14px;" /></label>
+            <input type="submit" value="查詢" onclick="doclick();" />
+            <input type="button" value="儲存" onclick="dosave();" />
+        </div>
+    }
+    <div id="tbdivContainer">
+        <div id="tbdiv">
+        </div>
+    </div>
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+</div>
+<script src="~/Scripts/jquery.blockUI.js"></script>
+<script src="~/Scripts/tabulator-master/dist/js/tabulator.min.js"></script>
+@section Scripts
+{
+    <script type="text/javascript">
+        //https://stackoverflow.com/questions/34676752/can-i-use-an-html-input-type-date-to-collect-only-a-year
+        function doclick() {
+            $.blockUI({ message: '<h2>資料處理中...</h2>' });
+            return true;
+        }
+
+        function dosave()
+        {
+            var o = $('#tbdiv').tabulator('getRows');
+            console.log(o);
+            console.log(o.length);
+        }
+
+        $(function () {
+            $('#year').datepicker({
+                changeYear: true,
+                showButtonPanel: true,
+                dateFormat: 'yy',
+                onClose: function (dateText, inst) {
+                    var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+                    $(this).datepicker('setDate', new Date(year, 1));
+                }
+            });
+            $(".date-picker-year").focus(function () {
+                $(".ui-datepicker-month").hide();
+            });
+        })
+
+
+        var data = [];
+
+        @if (ViewBag.tb != null)
+        {
+            DataTable tb = (DataTable)ViewBag.tb;
+
+            foreach(DataRow r in tb.Rows)
+            {
+                @:obj = {};
+                foreach(DataColumn col in tb.Columns)
+                {
+                    @:obj["@col.ColumnName"] = "@r[col.ColumnName].ToString()";
+                }
+                @:data.push(obj);
+            }
+
+            @:console.log(data);
+        }
+        $("#tbdivContainer").css('left', '0px');
+        $("#tbdivContainer").css('right', '10px');
+        $("#tbdivContainer").css('position', 'relative');
+        $("#tbdivContainer").css('display', 'block');
+        $("#tbdivContainer").css('overflow', 'auto').css('width', '90%');
+
+        $("#tbdiv").tabulator({
+            height: "auto",
+            pagination: "local", 
+            paginationSize: 40, 
+            //layout: "fitColumns",
+            columns: [
+                { title: '工號', field: 'workNo' },
+                { title: '姓名', field: 'cName' },
+                { title: '1月前期轉入', field: '1月前期轉入', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
+                { title: '本期新增', field: '1月本期新增'},
+                { title: '2月前期轉入', field: '2月前期轉入', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
+                { title: '本期新增', field: '2月本期新增'},
+                { title: '3月前期轉入', field: '3月前期轉入', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
+                { title: '本期新增', field: '3月本期新增'},
+                { title: '4月前期轉入', field: '4月前期轉入', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
+                { title: '本期新增', field: '4月本期新增'},
+                { title: '5月前期轉入', field: '5月前期轉入', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
+                { title: '本期新增', field: '5月本期新增'},
+                { title: '6月前期轉入', field: '6月前期轉入', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
+                { title: '本期新增', field: '6月本期新增'},
+                { title: '7月前期轉入', field: '7月前期轉入', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
+                { title: '本期新增', field: '7月本期新增'},
+                { title: '8月前期轉入', field: '8月前期轉入', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
+                { title: '本期新增', field: '8月本期新增'},
+                { title: '9月前期轉入', field: '9月前期轉入', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
+                { title: '本期新增', field: '9月本期新增'},
+                { title: '10月前期轉入', field: '10月前期轉入', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
+                { title: '本期新增', field: '10月本期新增'},
+                { title: '11月前期轉入', field: '11月前期轉入', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
+                { title: '本期新增', field: '11月本期新增'},
+                { title: '12月前期轉入', field: '12月前期轉入', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
+                { title: '本期新增', field: '12月本期新增'}
+            ],
+            data: data
+        });
+        $('#tbdiv').css('width', '95%');
+
+    </script>
+}

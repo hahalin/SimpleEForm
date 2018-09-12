@@ -36,6 +36,7 @@ namespace eform.Models
         public DbSet<permission> permList { get; set; }
         public DbSet<permMod> permModList { get; set; }
         public DbSet<salary> salaryList { get; set; }
+        public DbSet<dayOffSum> dayOffSumList { get; set; }
 
         public List<vwSignType> signTypeList()
         {

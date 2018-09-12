@@ -50,6 +50,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Dapper, Version=1.50.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.1.50.5\lib\net451\Dapper.dll</HintPath>
+    </Reference>
     <Reference Include="EPPlus, Version=4.5.2.1, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
       <HintPath>..\packages\EPPlus.4.5.2.1\lib\net40\EPPlus.dll</HintPath>
     </Reference>
@@ -221,6 +224,7 @@
     <Compile Include="Controllers\FormMgrController.cs" />
     <Compile Include="Controllers\FormController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\HrMgrController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\NewsMgrController.cs" />
     <Compile Include="Controllers\PermController.cs" />
@@ -309,9 +313,14 @@
     <Compile Include="Migrations\201809111323556_addBeginWorkDate2Employee.Designer.cs">
       <DependentUpon>201809111323556_addBeginWorkDate2Employee.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201809121310366_addTableDayOffSum.cs" />
+    <Compile Include="Migrations\201809121310366_addTableDayOffSum.Designer.cs">
+      <DependentUpon>201809121310366_addTableDayOffSum.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ApplicationDbContext.cs" />
+    <Compile Include="Models\dayOffSum.cs" />
     <Compile Include="Models\dep.cs" />
     <Compile Include="Models\FlowDefMain.cs" />
     <Compile Include="Models\FlowMain.cs" />
@@ -422,6 +431,47 @@
     <Content Include="Content\tether\tether-theme-basic.min.css" />
     <Content Include="Content\tether\tether.css" />
     <Content Include="Content\tether\tether.min.css" />
+    <Content Include="Content\themes\base\accordion.css" />
+    <Content Include="Content\themes\base\all.css" />
+    <Content Include="Content\themes\base\autocomplete.css" />
+    <Content Include="Content\themes\base\base.css" />
+    <Content Include="Content\themes\base\button.css" />
+    <Content Include="Content\themes\base\core.css" />
+    <Content Include="Content\themes\base\datepicker.css" />
+    <Content Include="Content\themes\base\dialog.css" />
+    <Content Include="Content\themes\base\draggable.css" />
+    <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="Content\themes\base\images\ui-icons_222222_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_444444_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_454545_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_555555_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_777620_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_777777_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_888888_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_cc0000_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="Content\themes\base\jquery-ui.css" />
+    <Content Include="Content\themes\base\jquery-ui.min.css" />
+    <Content Include="Content\themes\base\menu.css" />
+    <Content Include="Content\themes\base\progressbar.css" />
+    <Content Include="Content\themes\base\resizable.css" />
+    <Content Include="Content\themes\base\selectable.css" />
+    <Content Include="Content\themes\base\selectmenu.css" />
+    <Content Include="Content\themes\base\slider.css" />
+    <Content Include="Content\themes\base\sortable.css" />
+    <Content Include="Content\themes\base\spinner.css" />
+    <Content Include="Content\themes\base\tabs.css" />
+    <Content Include="Content\themes\base\theme.css" />
+    <Content Include="Content\themes\base\tooltip.css" />
     <Content Include="Content\toastr.css" />
     <Content Include="Content\toastr.min.css" />
     <Content Include="favicon.ico" />
@@ -672,6 +722,8 @@
     <Content Include="Content\_bootstrap-datetimepicker.less" />
     <Content Include="Content\bootstrap-datetimepicker-build.less" />
     <Content Include="20180822.xlsx" />
+    <Content Include="Scripts\.gitignore" />
+    <Content Include="Scripts\bower.json" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Scripts\ckeditor\ckeditor.php" />
     <Content Include="Scripts\ckeditor\ckeditor_basic.js" />
@@ -1017,11 +1069,14 @@
     <Content Include="Scripts\ckeditor\skins\v2\templates.css" />
     <Content Include="Scripts\ckeditor\themes\default\theme.js" />
     <Content Include="Scripts\DateUtil.js" />
+    <Content Include="Scripts\gulpfile.js" />
     <Content Include="Scripts\jquery-3.3.1.js" />
     <Content Include="Scripts\jquery-3.3.1.min.js" />
     <Content Include="Scripts\jquery-3.3.1.slim.js" />
     <Content Include="Scripts\jquery-3.3.1.slim.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery-ui-1.12.1.js" />
+    <Content Include="Scripts\jquery-ui-1.12.1.min.js" />
     <Content Include="Scripts\jquery.blockUI.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
@@ -1032,6 +1087,64 @@
     <Content Include="Scripts\moment-with-locales.min.js" />
     <Content Include="Scripts\moment.js" />
     <Content Include="Scripts\moment.min.js" />
+    <Content Include="Scripts\tabulator-master\dist\css\bootstrap\tabulator_bootstrap.css" />
+    <Content Include="Scripts\tabulator-master\dist\css\bootstrap\tabulator_bootstrap.min.css" />
+    <Content Include="Scripts\tabulator-master\dist\css\bootstrap\tabulator_bootstrap4.css" />
+    <Content Include="Scripts\tabulator-master\dist\css\bootstrap\tabulator_bootstrap4.min.css" />
+    <Content Include="Scripts\tabulator-master\dist\css\semantic-ui\tabulator_semantic-ui.css" />
+    <Content Include="Scripts\tabulator-master\dist\css\semantic-ui\tabulator_semantic-ui.min.css" />
+    <Content Include="Scripts\tabulator-master\dist\css\tabulator.css" />
+    <Content Include="Scripts\tabulator-master\dist\css\tabulator.min.css" />
+    <Content Include="Scripts\tabulator-master\dist\css\tabulator_midnight.css" />
+    <Content Include="Scripts\tabulator-master\dist\css\tabulator_midnight.min.css" />
+    <Content Include="Scripts\tabulator-master\dist\css\tabulator_modern.css" />
+    <Content Include="Scripts\tabulator-master\dist\css\tabulator_modern.min.css" />
+    <Content Include="Scripts\tabulator-master\dist\css\tabulator_simple.css" />
+    <Content Include="Scripts\tabulator-master\dist\css\tabulator_simple.min.css" />
+    <Content Include="Scripts\tabulator-master\dist\css\tabulator_site.css" />
+    <Content Include="Scripts\tabulator-master\dist\css\tabulator_site.min.css" />
+    <Content Include="Scripts\tabulator-master\dist\js\tabulator.js" />
+    <Content Include="Scripts\tabulator-master\dist\js\tabulator.min.js" />
+    <Content Include="Scripts\tabulator-master\gulpfile.js" />
+    <Content Include="Scripts\tabulator-master\src\js\cell.js" />
+    <Content Include="Scripts\tabulator-master\src\js\column.js" />
+    <Content Include="Scripts\tabulator-master\src\js\column_manager.js" />
+    <Content Include="Scripts\tabulator-master\src\js\core.js" />
+    <Content Include="Scripts\tabulator-master\src\js\extensions\accessor.js" />
+    <Content Include="Scripts\tabulator-master\src\js\extensions\ajax.js" />
+    <Content Include="Scripts\tabulator-master\src\js\extensions\calculation_colums.js" />
+    <Content Include="Scripts\tabulator-master\src\js\extensions\clipboard.js" />
+    <Content Include="Scripts\tabulator-master\src\js\extensions\comms.js" />
+    <Content Include="Scripts\tabulator-master\src\js\extensions\download.js" />
+    <Content Include="Scripts\tabulator-master\src\js\extensions\edit.js" />
+    <Content Include="Scripts\tabulator-master\src\js\extensions\filter.js" />
+    <Content Include="Scripts\tabulator-master\src\js\extensions\format.js" />
+    <Content Include="Scripts\tabulator-master\src\js\extensions\frozen_columns.js" />
+    <Content Include="Scripts\tabulator-master\src\js\extensions\frozen_rows.js" />
+    <Content Include="Scripts\tabulator-master\src\js\extensions\group_rows.js" />
+    <Content Include="Scripts\tabulator-master\src\js\extensions\history.js" />
+    <Content Include="Scripts\tabulator-master\src\js\extensions\html_table_import.js" />
+    <Content Include="Scripts\tabulator-master\src\js\extensions\keybindings.js" />
+    <Content Include="Scripts\tabulator-master\src\js\extensions\layout.js" />
+    <Content Include="Scripts\tabulator-master\src\js\extensions\localize.js" />
+    <Content Include="Scripts\tabulator-master\src\js\extensions\moveable_columns.js" />
+    <Content Include="Scripts\tabulator-master\src\js\extensions\moveable_rows.js" />
+    <Content Include="Scripts\tabulator-master\src\js\extensions\mutator.js" />
+    <Content Include="Scripts\tabulator-master\src\js\extensions\page.js" />
+    <Content Include="Scripts\tabulator-master\src\js\extensions\persistence.js" />
+    <Content Include="Scripts\tabulator-master\src\js\extensions\resize_columns.js" />
+    <Content Include="Scripts\tabulator-master\src\js\extensions\resize_rows.js" />
+    <Content Include="Scripts\tabulator-master\src\js\extensions\resize_table.js" />
+    <Content Include="Scripts\tabulator-master\src\js\extensions\responsive_layout.js" />
+    <Content Include="Scripts\tabulator-master\src\js\extensions\select_row.js" />
+    <Content Include="Scripts\tabulator-master\src\js\extensions\sort.js" />
+    <Content Include="Scripts\tabulator-master\src\js\extensions\validate.js" />
+    <Content Include="Scripts\tabulator-master\src\js\extensions_enabled.js" />
+    <Content Include="Scripts\tabulator-master\src\js\footer_manager.js" />
+    <Content Include="Scripts\tabulator-master\src\js\jquery_wrapper.js" />
+    <Content Include="Scripts\tabulator-master\src\js\polyfills.js" />
+    <Content Include="Scripts\tabulator-master\src\js\row.js" />
+    <Content Include="Scripts\tabulator-master\src\js\row_manager.js" />
     <Content Include="Scripts\tether.js" />
     <Content Include="Scripts\tether.min.js" />
     <Content Include="Scripts\toastr.js" />
@@ -1113,6 +1226,36 @@
     <Content Include="Views\Salary\Index.cshtml" />
     <Content Include="Views\Account\onWorking.cshtml" />
     <Content Include="Views\Perm\All.cshtml" />
+    <Content Include="Views\HRMgr\List.cshtml" />
+    <Content Include="Scripts\LICENSE" />
+    <Content Include="Scripts\package.json" />
+    <Content Include="Scripts\README.md" />
+    <Content Include="Scripts\tabulator-master\.gitignore" />
+    <Content Include="Scripts\tabulator-master\bower.json" />
+    <Content Include="Scripts\tabulator-master\dist\css\bootstrap\tabulator_bootstrap.min.css.map" />
+    <Content Include="Scripts\tabulator-master\dist\css\bootstrap\tabulator_bootstrap4.min.css.map" />
+    <Content Include="Scripts\tabulator-master\dist\css\semantic-ui\tabulator_semantic-ui.min.css.map" />
+    <Content Include="Scripts\tabulator-master\dist\css\tabulator.min.css.map" />
+    <Content Include="Scripts\tabulator-master\dist\css\tabulator_midnight.min.css.map" />
+    <Content Include="Scripts\tabulator-master\dist\css\tabulator_modern.min.css.map" />
+    <Content Include="Scripts\tabulator-master\dist\css\tabulator_simple.min.css.map" />
+    <Content Include="Scripts\tabulator-master\dist\css\tabulator_site.min.css.map" />
+    <Content Include="Scripts\tabulator-master\LICENSE" />
+    <Content Include="Scripts\tabulator-master\package.json" />
+    <Content Include="Scripts\tabulator-master\README.md" />
+    <Content Include="Scripts\tabulator-master\src\scss\bootstrap\functions4.scss" />
+    <Content Include="Scripts\tabulator-master\src\scss\bootstrap\tabulator_bootstrap.scss" />
+    <Content Include="Scripts\tabulator-master\src\scss\bootstrap\tabulator_bootstrap4.scss" />
+    <Content Include="Scripts\tabulator-master\src\scss\bootstrap\variables.scss" />
+    <Content Include="Scripts\tabulator-master\src\scss\bootstrap\variables4.scss" />
+    <Content Include="Scripts\tabulator-master\src\scss\semantic-ui\tabulator_semantic-ui.scss" />
+    <Content Include="Scripts\tabulator-master\src\scss\semantic-ui\variables.scss" />
+    <Content Include="Scripts\tabulator-master\src\scss\semantic-ui\variables_table.scss" />
+    <Content Include="Scripts\tabulator-master\src\scss\tabulator.scss" />
+    <Content Include="Scripts\tabulator-master\src\scss\tabulator_midnight.scss" />
+    <Content Include="Scripts\tabulator-master\src\scss\tabulator_modern.scss" />
+    <Content Include="Scripts\tabulator-master\src\scss\tabulator_simple.scss" />
+    <Content Include="Scripts\tabulator-master\src\scss\tabulator_site.scss" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1190,6 +1333,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201809111323556_addBeginWorkDate2Employee.resx">
       <DependentUpon>201809111323556_addBeginWorkDate2Employee.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201809121310366_addTableDayOffSum.resx">
+      <DependentUpon>201809121310366_addTableDayOffSum.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
