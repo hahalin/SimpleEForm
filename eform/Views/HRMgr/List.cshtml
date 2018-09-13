@@ -22,7 +22,7 @@
     @using (Html.BeginForm("List", "HrMgr", FormMethod.Post))
     {
         <div class="row">
-            <label>年:<input type="text" id="year" name="year" value="@ViewBag.y" autocomplete="off" style="width:60px;text-align:right;font-size:14px;" /></label>
+            <label>年:<input type="number" id="year" name="year" value="@ViewBag.y" autocomplete="off" style="width:60px;text-align:right;font-size:14px;" /></label>
             <input type="submit" value="查詢" onclick="doclick();" />
             <input type="button" value="儲存" onclick="dosave();" />
         </div>
@@ -59,7 +59,7 @@
             let promise =
                 $.ajax({
                     url: "@Url.Action("SaveList", "HrMgr")",
-                    method: "post",
+                    method: "POST",
                     contentType: 'application/json',
                     data: JSON.stringify({ year: $('#year').val(),data:list})
                 });
@@ -76,18 +76,18 @@
         }
 
         $(function () {
-            $('#year').datepicker({
-                changeYear: true,
-                showButtonPanel: true,
-                dateFormat: 'yy',
-                onClose: function (dateText, inst) {
-                    var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
-                    $(this).datepicker('setDate', new Date(year, 1));
-                }
-            });
-            $(".date-picker-year").focus(function () {
-                $(".ui-datepicker-month").hide();
-            });
+            //$('#year').datepicker({
+            //    changeYear: true,
+            //    showButtonPanel: true,
+            //    dateFormat: 'yy',
+            //    onClose: function (dateText, inst) {
+            //        var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+            //        $(this).datepicker('setDate', new Date(year, 1));
+            //    }
+            //});
+            //$(".date-picker-year").focus(function () {
+            //    $(".ui-datepicker-month").hide();
+            //});
         })
 
 
@@ -118,7 +118,7 @@
         $("#tbdiv").tabulator({
             height: "auto",
             pagination: "local",
-            paginationSize: 40,
+            paginationSize: 12,
             //layout: "fitColumns",
             columns: [
                 { title: '工號', field: 'workNo' },

@@ -46,7 +46,7 @@ namespace eform.Controllers
             var sumList = cn.Query("select id from dayOffSums where y=@y", new { y = year });
             if (sumList.Count() == 0)
             {
-                var userList = cn.Query("select workNo from AspNetUsers u where u.status=1 and u.workNo not in (select workNo from dayOffSums where y=@y)", new { y = year });
+                var userList = cn.Query("select workNo from AspNetUsers u where u.status=1 and u.workNo not in (select workNo from dayOffSums where y=@y) and u.workNo !='sadmin' and u.workNo !='admin'", new { y = year });
                 foreach (var user in userList)
                 {
                     for (int i = 0; i <= 12; i++)
@@ -98,7 +98,7 @@ namespace eform.Controllers
                                 [m7a],[m7b],[m8a],[m8b],[m9a],[m9b],
                                 [m10a],[m10b],[m11a],[m11b],[m12a],[m12b]
                             )
-                        ) p
+                        ) p order by workNo
                     ",
                     new { y = year }
                 )
@@ -111,8 +111,15 @@ namespace eform.Controllers
         [HttpPost]
         public ActionResult SaveList(int year, List<vwDayOffSum> data)
         {
-            var cn = new SqlConnection(constring);
-            foreach(vwDayOffSum item in data)
+            dbHelper dbh = new dbHelper();
+                
+
+            DataTable tb = new DataTable();
+            tb=dbh.sql2tb("select workNo,m,v1 from dayOffSums where y = " + year.ToString() + " and sType='a'");
+
+            List<string> sqlList = new List<string>();
+
+            foreach (vwDayOffSum item in data)
             {
                 List<decimal> vlist = new List<decimal>();
                 vlist.Add(item.m0a);
@@ -121,19 +128,43 @@ namespace eform.Controllers
                 vlist.Add(item.m7a); vlist.Add(item.m8a); vlist.Add(item.m9a);
                 vlist.Add(item.m10a); vlist.Add(item.m11a); vlist.Add(item.m12a);
 
+                
+
                 for(int i=0;i<vlist.Count;i++)
                 {
-                    cn.Execute(@"update dayOffSums set v1=@v1 where y=@y and m=@m and sType='a' and workNo=@workNo",
-                        new[]
+                    foreach(DataRow row in tb.Rows)
+                    {
+                        if(row["workNo"].ToString()==item.workNo 
+                            && row["m"].ToString()==i.ToString() 
+                            && ( (Convert.ToDecimal(row["v1"]) -vlist[i]) !=0)
+                        )
                         {
-                            new {y=year,v1=vlist[i],m=i,workNo=item.workNo}
+                            sqlList.Add(
+                                string.Format(
+                                    "update dayOffSums set v1 = {0} where y = {1} and m = {2} and sType = 'a' and workNo = '{3}';",
+                                    vlist[i], year, i, item.workNo
+                                )
+                            );
+                            break;
                         }
-                    );
+
+                        if (sqlList.Count ==10)
+                        {
+                            dbh.execSql(string.Join(" ", sqlList));
+                            sqlList.Clear();
+                        }
+                    }
                 }
             }
+            if (sqlList.Count > 0)
+            {
+                dbh.execSql(string.Join(" ", sqlList));
+            }
+
 
             dynamic r = new ExpandoObject();
             r.success = true;
+            r.sql = sqlList;
             return Content(JsonConvert.SerializeObject(r), "application /json");
         }
 
