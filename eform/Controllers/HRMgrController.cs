@@ -8,6 +8,8 @@ using System.Configuration;
 using Dapper;
 using eform.Models;
 using System.Data.SqlClient;
+using System.Dynamic;
+using Newtonsoft.Json;
 
 namespace eform.Controllers
 {
@@ -83,25 +85,18 @@ namespace eform.Controllers
                 cn.ExecuteReader(
                     @"
                         select * from (
-                            select a.workNo,b.cName,convert(varchar(2),a.m)+'月'+case a.stype when 'a' then '前期轉入'  when 'b' then '本期新增' end m,a.v1
+                            select a.workNo,b.cName,'m'+convert(varchar(2),a.m)+a.stype m,a.v1
                             from dayOffSums a left join AspNetUsers b on a.workNo=b.workNo where a.y=@y
                         ) t
                         pivot
                            (
                             sum(v1)
                             for [m] in (
-                                [1月前期轉入],[1月本期新增],
-                                [2月前期轉入],[2月本期新增],
-                                [3月前期轉入],[3月本期新增],
-                                [4月前期轉入],[4月本期新增],
-                                [5月前期轉入],[5月本期新增],
-                                [6月前期轉入],[6月本期新增],
-                                [7月前期轉入],[7月本期新增],
-                                [8月前期轉入],[8月本期新增],
-                                [9月前期轉入],[9月本期新增],
-                                [10月前期轉入],[10月本期新增],
-                                [11月前期轉入],[11月本期新增],
-                                [12月前期轉入],[12月本期新增]
+                                [m0a],
+                                [m1a],[m1b],[m2a],[m2b],[m3a],[m3b],
+                                [m4a],[m4b],[m5a],[m5b],[m6a],[m6b],
+                                [m7a],[m7b],[m8a],[m8b],[m9a],[m9b],
+                                [m10a],[m10b],[m11a],[m11b],[m12a],[m12b]
                             )
                         ) p
                     ",
@@ -112,5 +107,35 @@ namespace eform.Controllers
             ViewBag.tb = tb;
             return View();
         }
+
+        [HttpPost]
+        public ActionResult SaveList(int year, List<vwDayOffSum> data)
+        {
+            var cn = new SqlConnection(constring);
+            foreach(vwDayOffSum item in data)
+            {
+                List<decimal> vlist = new List<decimal>();
+                vlist.Add(item.m0a);
+                vlist.Add(item.m1a); vlist.Add(item.m2a); vlist.Add(item.m3a);
+                vlist.Add(item.m4a); vlist.Add(item.m5a); vlist.Add(item.m6a);
+                vlist.Add(item.m7a); vlist.Add(item.m8a); vlist.Add(item.m9a);
+                vlist.Add(item.m10a); vlist.Add(item.m11a); vlist.Add(item.m12a);
+
+                for(int i=0;i<vlist.Count;i++)
+                {
+                    cn.Execute(@"update dayOffSums set v1=@v1 where y=@y and m=@m and sType='a' and workNo=@workNo",
+                        new[]
+                        {
+                            new {y=year,v1=vlist[i],m=i,workNo=item.workNo}
+                        }
+                    );
+                }
+            }
+
+            dynamic r = new ExpandoObject();
+            r.success = true;
+            return Content(JsonConvert.SerializeObject(r), "application /json");
+        }
+
     }
 }

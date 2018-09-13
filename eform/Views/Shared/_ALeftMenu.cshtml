@@ -139,6 +139,14 @@
                                 <i class="fa fa-circle-o"></i>查詢表單
                             </a>
                         </li>
+                        @if (permList.Where(x => x.mod == "HRImportDayOff").Count() > 0)
+                        {
+                            <li>
+                                <a href="@Url.Action("List", "HrMgr", new { y = DateTime.Today.Year })" hrefa="#">
+                                    <i class="fa fa-list"></i>人資主管特休補修登錄
+                                </a>
+                            </li>
+                        }
                     </ul>
                 </li>
 

@@ -332,6 +332,7 @@
     <Compile Include="Models\permission.cs" />
     <Compile Include="Models\ReqOverTime.cs" />
     <Compile Include="Models\salary.cs" />
+    <Compile Include="Models\vwDayOffSum.cs" />
     <Compile Include="Models\vwFlowMain.cs" />
     <Compile Include="Models\vwFlowRequest.cs" />
     <Compile Include="Models\vwSignResult.cs" />
@@ -1149,9 +1150,6 @@
     <Content Include="Scripts\tether.min.js" />
     <Content Include="Scripts\toastr.js" />
     <Content Include="Scripts\toastr.min.js" />
-    <Content Include="upload\foo.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -1259,6 +1257,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="upload\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

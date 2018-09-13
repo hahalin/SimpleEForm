@@ -2,7 +2,7 @@
 @{
 
 }
-<link href="~/Scripts/tabulator-master/dist/css/tabulator.min.css" rel="stylesheet" />
+
 
 <style>
     .ui-datepicker-calendar {
@@ -34,6 +34,8 @@
     <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
 </div>
 <script src="~/Scripts/jquery.blockUI.js"></script>
+
+<link href="~/Scripts/tabulator-master/dist/css/tabulator.min.css" rel="stylesheet" />
 <script src="~/Scripts/tabulator-master/dist/js/tabulator.min.js"></script>
 @section Scripts
 {
@@ -47,8 +49,30 @@
         function dosave()
         {
             var o = $('#tbdiv').tabulator('getRows');
-            console.log(o);
-            console.log(o.length);
+            var list = [];
+            for (var i = 0; i < o.length; i++)
+            {
+                list.push(o[i].row.data);
+            }
+            $.blockUI({ message: '<h2>資料儲存中...</h2>' });
+
+            let promise =
+                $.ajax({
+                    url: "@Url.Action("SaveList", "HrMgr")",
+                    method: "post",
+                    contentType: 'application/json',
+                    data: JSON.stringify({ year: $('#year').val(),data:list})
+                });
+            promise.done(function (data)
+            {
+                //顯示Server端回傳的資料
+                console.log(data);
+                $.unblockUI();
+                if (data.success) {
+                    alert('儲存完成');
+                }
+            });
+
         }
 
         $(function () {
@@ -93,36 +117,37 @@
 
         $("#tbdiv").tabulator({
             height: "auto",
-            pagination: "local", 
-            paginationSize: 40, 
+            pagination: "local",
+            paginationSize: 40,
             //layout: "fitColumns",
             columns: [
                 { title: '工號', field: 'workNo' },
                 { title: '姓名', field: 'cName' },
-                { title: '1月前期轉入', field: '1月前期轉入', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
-                { title: '本期新增', field: '1月本期新增'},
-                { title: '2月前期轉入', field: '2月前期轉入', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
-                { title: '本期新增', field: '2月本期新增'},
-                { title: '3月前期轉入', field: '3月前期轉入', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
-                { title: '本期新增', field: '3月本期新增'},
-                { title: '4月前期轉入', field: '4月前期轉入', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
-                { title: '本期新增', field: '4月本期新增'},
-                { title: '5月前期轉入', field: '5月前期轉入', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
-                { title: '本期新增', field: '5月本期新增'},
-                { title: '6月前期轉入', field: '6月前期轉入', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
-                { title: '本期新增', field: '6月本期新增'},
-                { title: '7月前期轉入', field: '7月前期轉入', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
-                { title: '本期新增', field: '7月本期新增'},
-                { title: '8月前期轉入', field: '8月前期轉入', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
-                { title: '本期新增', field: '8月本期新增'},
-                { title: '9月前期轉入', field: '9月前期轉入', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
-                { title: '本期新增', field: '9月本期新增'},
-                { title: '10月前期轉入', field: '10月前期轉入', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
-                { title: '本期新增', field: '10月本期新增'},
-                { title: '11月前期轉入', field: '11月前期轉入', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
-                { title: '本期新增', field: '11月本期新增'},
-                { title: '12月前期轉入', field: '12月前期轉入', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
-                { title: '本期新增', field: '12月本期新增'}
+                { title: '上年度轉入', field: 'm0a', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
+                { title: '1月前期轉入', field: 'm1a', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
+                { title: '本期新增', field: 'm1b'},
+                { title: '2月前期轉入', field: 'm2a', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
+                { title: '本期新增', field: 'm2b'},
+                { title: '3月前期轉入', field: 'm3b', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
+                { title: '本期新增', field: 'm3b'},
+                { title: '4月前期轉入', field: 'm4a', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
+                { title: '本期新增', field: 'm4b'},
+                { title: '5月前期轉入', field: 'm5a', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
+                { title: '本期新增', field: 'm5b'},
+                { title: '6月前期轉入', field: 'm6a', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
+                { title: '本期新增', field: 'm6b'},
+                { title: '7月前期轉入', field: 'm7a', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
+                { title: '本期新增', field: 'm7b'},
+                { title: '8月前期轉入', field: 'm8a', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
+                { title: '本期新增', field: 'm8b'},
+                { title: '9月前期轉入', field: 'm9a', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
+                { title: '本期新增', field: 'm9b'},
+                { title: '10月前期轉入', field: 'm10a', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
+                { title: '本期新增', field: 'm10b'},
+                { title: '11月前期轉入', field: 'm11a', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
+                { title: '本期新增', field: 'm11b'},
+                { title: '12月前期轉入', field: 'm12a', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
+                { title: '本期新增', field: 'm12b'}
             ],
             data: data
         });
