@@ -19,7 +19,7 @@ namespace eform.Controllers
         {
             var context = new ApplicationDbContext();
 
-            var model = context.FlowDefMainList;
+            var model = context.FlowDefMainList.OrderBy(x => x.seq);
 
             return View(model);
         }

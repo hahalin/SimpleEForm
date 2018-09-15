@@ -1,0 +1,153 @@
+﻿@model eform.Models.vwDayOffForm
+@using Newtonsoft.Json;
+@using eform.Models;
+
+@{
+    ViewBag.Title = "請假單申請";
+}
+
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap-datetimepicker.min.css" />
+<div class="row">
+    <div class="col-md-10">
+        <div class="box">
+            <div class="box-header">
+                <div class="box-title">
+                    <h3><span class="label label-success">@Model.user.Company-@ViewBag.Title</span></h3>
+                </div>
+            </div>
+            <div class="box-body>">
+                @using (Html.BeginForm("CreateDayOffForm", "Form", FormMethod.Post, new { id = "fmMain" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-horizontal col-md-10">
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger", style = "font-size:15px;font-weight:bold;" })
+
+                        <div class="form-group">
+                            <label class="control-label col-md-2">申請人</label>
+                            <div class="col-md-4">
+                                <div class="form-control">@Model.user.Company @Model.user.UserCName</div>
+                                <input type="hidden" name="userId" value="@Model.user.Id" />
+                            </div>
+                            @Html.LabelFor(model => model.billDate, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                @Html.EditorFor(model => model.billDate, new { htmlAttributes = new { @class = "form-control", type = "date", @readonly = "readonly" } })
+                                @Html.ValidationMessageFor(model => model.billDate, "", new { @class = "text-danger," })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.dayOffForm.dtBegin, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-3">
+                                <div class='input-group date' id='datetimepicker1'>
+                                    @Html.EditorFor(model => model.dayOffForm.dtBegin, new { htmlAttributes = new { @class = "form-control", type = "text" } })
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                @Html.DropDownListFor(model => model.dayOffForm.beginHH, (SelectList)ViewBag.beginHHList, new { @class = "form-control", style = "width:70px;" })
+                            </div>
+                            <label class="control-label col-md-1">時</label>
+                            @Html.ValidationMessageFor(model => model.dayOffForm.dtBegin, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.dayOffForm.dtEnd, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-3">
+                                <div class='input-group date' id='datetimepicker2'>
+                                    @Html.EditorFor(model => model.dayOffForm.dtEnd, new { htmlAttributes = new { @class = "form-control", type = "text" } })
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                @Html.DropDownListFor(model => model.dayOffForm.endHH, (SelectList)ViewBag.endHHList, new { @class = "form-control", style = "width:70px;" })
+                            </div>
+                            <label class="control-label col-md-1">時</label>
+                            @Html.ValidationMessageFor(model => model.dayOffForm.dtEnd, "", new { @class = "text-danger" })
+                        </div>
+
+                        
+                        @*<div class="form-group">
+                            <label class="control-label col-md-2">部門</label>
+                            <div class="col-md-10">
+                                @Html.DropDownListFor(model => model.poNo, new List<SelectListItem>(), new { @class = "form-control", style = "max-width:800px;width:100%;" })
+                            </div>
+
+                        </div>*@
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.dayOffForm.sMemo, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10" style="margin-bottom:10px;">
+                                @Html.TextAreaFor(model => model.dayOffForm.sMemo, htmlAttributes: new { @class = "form-control", rows = "2", style = "width:630px;" })
+                            </div>
+                            <br />
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-10 text-center">
+                                <input type="submit" value="送出" class="btn-lg btn-primary" onclick="return doSubmit();" />
+                            </div>
+                        </div>
+                    </div>
+                }
+
+            </div>
+            <div class="box-footer">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript" src="~/Scripts/moment-with-locales.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap-datetimepicker.min.js"></script>
+    <script type="text/javascript">
+        function doSubmit() {
+            return true;
+        }
+        $(function () {
+            return;
+            var pickerOption = {
+                format: 'YYYY-MM-DD',
+                locale:'zh-tw',
+                defaultDate: getLocalDateStr()
+            };
+            $('#datetimepicker1').datetimepicker(pickerOption);
+            $('#datetimepicker2').datetimepicker(pickerOption);
+
+            $('textarea').css('max-width', '700px');
+            $('#prjId').css('max-width', '700px');
+
+            if ($($('.validation-summary-errors')[0]).text() == "")
+            {
+                $('#billDate').val(getLocalDateStr());
+            }
+
+            var depList = @Html.Raw(JsonConvert.SerializeObject(ViewBag.depList));
+            var poList = @Html.Raw(JsonConvert.SerializeObject(ViewBag.poList));
+            var cboDepList = $('#depNo');
+            var cboPoList = $('#poNo');
+
+            $(cboDepList).append(
+                $('<option></option>').val("").html("選擇部門")
+            );
+            $(cboPoList).append(
+                $('<option></option>').val("").html("選擇部門")
+            );
+            $.each(poList, function (val, obj) {
+                $(cboPoList).append(
+                    $('<option></option>').val(obj.poNo).html(obj.depNm)
+                );
+            });
+
+            if ($('#poNo option').length > 1)
+            {
+                $('#poNo').val($('#poNo option:nth-child(2)').val());
+            }
+        });
+    </script>
+}

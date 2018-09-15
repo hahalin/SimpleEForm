@@ -317,9 +317,14 @@
     <Compile Include="Migrations\201809121310366_addTableDayOffSum.Designer.cs">
       <DependentUpon>201809121310366_addTableDayOffSum.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201809141237146_addDayOffEntities.cs" />
+    <Compile Include="Migrations\201809141237146_addDayOffEntities.Designer.cs">
+      <DependentUpon>201809141237146_addDayOffEntities.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ApplicationDbContext.cs" />
+    <Compile Include="Models\dayOff.cs" />
     <Compile Include="Models\dayOffSum.cs" />
     <Compile Include="Models\dep.cs" />
     <Compile Include="Models\FlowDefMain.cs" />
@@ -332,6 +337,7 @@
     <Compile Include="Models\permission.cs" />
     <Compile Include="Models\ReqOverTime.cs" />
     <Compile Include="Models\salary.cs" />
+    <Compile Include="Models\vwDayOffForm.cs" />
     <Compile Include="Models\vwDayOffSum.cs" />
     <Compile Include="Models\vwFlowMain.cs" />
     <Compile Include="Models\vwFlowRequest.cs" />
@@ -1254,6 +1260,7 @@
     <Content Include="Scripts\tabulator-master\src\scss\tabulator_modern.scss" />
     <Content Include="Scripts\tabulator-master\src\scss\tabulator_simple.scss" />
     <Content Include="Scripts\tabulator-master\src\scss\tabulator_site.scss" />
+    <Content Include="Views\Form\CreateDayOffForm.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1335,6 +1342,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201809121310366_addTableDayOffSum.resx">
       <DependentUpon>201809121310366_addTableDayOffSum.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201809141237146_addDayOffEntities.resx">
+      <DependentUpon>201809141237146_addDayOffEntities.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

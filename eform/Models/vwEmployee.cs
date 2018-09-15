@@ -71,6 +71,30 @@ namespace eform.Models
 
         public string Email { get; set; }
 
+        public string Company
+        {
+            get
+            {
+                if (workNo.ToUpper().Substring(0,1)=="H")
+                {
+                    return "群翌能源股份有限公司";
+                }
+                if (workNo.ToUpper().Substring(0, 1) == "A")
+                {
+                    return "亞洲氫能股份有限公司";
+                }
+                if (workNo.ToUpper().Substring(0, 1) == "S")
+                {
+                    return "上海群羿能源有限公司";
+                }
+                else
+                {
+                    return "群翌能源股份有限公司";
+                }
+                
+            }
+        }
+
         public ICollection<vwPoNo> poList { get; set; }
     }
 

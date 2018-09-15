@@ -164,7 +164,6 @@ namespace eform.Controllers
 
             dynamic r = new ExpandoObject();
             r.success = true;
-            r.sql = sqlList;
             return Content(JsonConvert.SerializeObject(r), "application /json");
         }
 

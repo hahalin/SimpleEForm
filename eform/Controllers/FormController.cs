@@ -13,6 +13,12 @@ namespace eform.Controllers
     [AdminAuthorize(Roles = "Admin,Employee")]
     public class FormController : Controller
     {
+        ApplicationDbContext ctx;
+        public FormController()
+        {
+            ctx = new ApplicationDbContext();
+        }
+
         // GET: Form
         public ActionResult Index()
         {
@@ -41,6 +47,50 @@ namespace eform.Controllers
             return View(list);
         }
 
+        void getOverTime(FlowMain fmain)
+        {
+            string id = fmain.id;
+            ReqOverTime reqOverTimeObj = ctx.reqOverTimeList.Where(x => x.flowId == id).FirstOrDefault();
+            vwReqOverTime vwReqOverTimeObj = null;
+            if (reqOverTimeObj != null)
+            {
+                vwReqOverTimeObj = new vwReqOverTime
+                {
+                    billDate = fmain.billDate,
+                    dtBegin = reqOverTimeObj.dtBegin,
+                    dtEnd = reqOverTimeObj.dtEnd,
+                    hours = reqOverTimeObj.hours,
+                    sMemo = reqOverTimeObj.sMemo
+                };
+
+                JObject jobjext = null;
+                try
+                {
+                    jobjext = JObject.Parse(reqOverTimeObj.jext);
+                    vwReqOverTimeObj.sType = jobjext["stype"] == null ? "" : jobjext["stype"].ToString();
+                    vwReqOverTimeObj.place = jobjext["place"] == null ? "" : jobjext["place"].ToString();
+                    vwReqOverTimeObj.otherPlace = jobjext["otherPlace"] == null ? "" : jobjext["otherPlace"].ToString();
+                    vwReqOverTimeObj.prjId = jobjext["prjId"] == null ? "" : jobjext["prjId"].ToString();
+                    vwReqOverTimeObj.sMemo2 = jobjext["sMemo2"] == null ? "" : jobjext["sMemo2"].ToString();
+                    vwReqOverTimeObj.worker = jobjext["worker"] == null ? "" : jobjext["worker"].ToString();
+                    vwReqOverTimeObj.depNo = jobjext["depNo"] == null ? "" : jobjext["depNo"].ToString();
+
+                    vwReqOverTimeObj.poNo = jobjext["poNo"] == null ? "" : jobjext["poNo"].ToString();
+                    vwReqOverTimeObj.poNm = jobjext["poNo"] == null ? "" : ctx.jobPos.Where(x => x.poNo.Equals(vwReqOverTimeObj.poNo)).FirstOrDefault().poNm;
+
+                    jobPo poObj = ctx.jobPos.Where(x => x.poNo == vwReqOverTimeObj.poNo).First();
+                    string depNo = poObj.depNo;
+                    string depNm = ctx.getParentDeps(depNo, ctx) + " : " + poObj.poNm;
+                    vwReqOverTimeObj.depNm = depNm;
+
+                }
+                catch (Exception ex)
+                {
+                }
+            }
+            ViewBag.SubModel = vwReqOverTimeObj;
+        }
+
         // GET: Form/Details/5
         public ActionResult Details(string id)
         {
@@ -65,79 +115,118 @@ namespace eform.Controllers
             }
 
             FlowMain fmain = context.FlowMainList.Where(x => x.id == id).FirstOrDefault();
-            ViewBag.flowMain = fmain;
 
-            ReqOverTime reqOverTimeObj = context.reqOverTimeList.Where(x => x.flowId == id).FirstOrDefault();
-            vwReqOverTime vwReqOverTimeObj = null;
-            if (reqOverTimeObj != null)
+            ViewBag.Employee = ctx.getCurrentUser(User.Identity.Name);
+
+            if (null != fmain )
             {
-                vwReqOverTimeObj = new vwReqOverTime
-                {
-                    billDate = fmain.billDate,
-                    dtBegin = reqOverTimeObj.dtBegin,
-                    dtEnd = reqOverTimeObj.dtEnd,
-                    hours = reqOverTimeObj.hours,
-                    sMemo = reqOverTimeObj.sMemo
-                };
-
-                JObject jobjext= null;
-                try
-                {
-                    jobjext=JObject.Parse(reqOverTimeObj.jext);
-                    vwReqOverTimeObj.sType= jobjext["stype"] == null ? "" : jobjext["stype"].ToString();
-                    vwReqOverTimeObj.place = jobjext["place"] == null ? "" : jobjext["place"].ToString();
-                    vwReqOverTimeObj.otherPlace = jobjext["otherPlace"] == null ? "" : jobjext["otherPlace"].ToString();
-                    vwReqOverTimeObj.prjId = jobjext["prjId"] == null ? "" : jobjext["prjId"].ToString();
-                    //vwReqOverTimeObj.sMemo = jobjext["sMemo"] == null ? "" : jobjext["sMemo"].ToString();
-                    vwReqOverTimeObj.sMemo2 = jobjext["sMemo2"] == null ? "" : jobjext["sMemo2"].ToString();
-                    vwReqOverTimeObj.worker= jobjext["worker"] == null ? "" : jobjext["worker"].ToString();
-                    vwReqOverTimeObj.depNo = jobjext["depNo"] == null ? "" : jobjext["depNo"].ToString();
-
-                    vwReqOverTimeObj.poNo = jobjext["poNo"] == null ? "" : jobjext["poNo"].ToString();
-                    vwReqOverTimeObj.poNm = jobjext["poNo"] == null ? "" : context.jobPos.Where(x => x.poNo.Equals(vwReqOverTimeObj.poNo)).FirstOrDefault().poNm;
-
-                    jobPo poObj = context.jobPos.Where(x => x.poNo == vwReqOverTimeObj.poNo).First();
-                    string depNo = poObj.depNo;
-                    string depNm =context.getParentDeps(depNo, context) + " : " + poObj.poNm;
-                    vwReqOverTimeObj.depNm = depNm;
-
+                ViewBag.flowMain = fmain;
+                if (fmain.defId == "OverTime")
+                { 
+                    getOverTime(fmain);
                 }
-                catch (Exception ex)
-                {
-                    //vwReqOverTimeObj.sMemo = ex.Message;
-                }
+
 
 
             }
-            ViewBag.SubModel = vwReqOverTimeObj;
+
             return View(list);
         }
-
-        // GET: Form/Create
-        [AdminAuthorize(Roles = "Employee,Admin")]
-        public ActionResult CreateOverTimeForm()
+        void initCreateOverTimeFormViewBag(ApplicationDbContext context)
         {
-            //ViewBag.Title = "加班申請單";
-            //return RedirectToAction("onWorking", "Account");
+            List<SelectListItem> placelist = new List<SelectListItem>();
+            placelist.Add(new SelectListItem { Value = "", Text = "選擇工作地點" });
+            placelist.Add(new SelectListItem { Value = "測試區", Text = "測試區" });
+            placelist.Add(new SelectListItem { Value = "組裝區", Text = "組裝區" });
+            placelist.Add(new SelectListItem { Value = "加工區", Text = "加工區" });
+            placelist.Add(new SelectListItem { Value = "倉庫區", Text = "倉庫區" });
+            placelist.Add(new SelectListItem { Value = "辦公區", Text = "辦公區" });
+            placelist.Add(new SelectListItem { Value = "其他", Text = "其他" });
+            ViewBag.placelist = placelist;
 
-            string UserName = User.Identity.Name;
-            var context = new ApplicationDbContext();
-            var user = context.Users.Where(x => x.workNo == UserName).FirstOrDefault();
-            ViewBag.UserName = user.cName;
-            initViewBag(context);
-            vwReqOverTime Model = new vwReqOverTime();
-            Model.sType = "平日";
-            return View(Model);
+            var user = context.Users.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
+            string workno = user.workNo;
+            dbHelper dbh = new dbHelper();
+            string sql = @"select a.poNo,b.depNo,b.poNm,c.depNm
+                            from PoUsers a inner join jobPoes b on a.poNO=b.poNo 
+                                           inner join deps c on b.depNo=c.depNo
+                            where a.UserId='@workno' and a.applicationUser_id is not null";
+            sql = sql.Replace("@workno", workno);
+            DataTable tbpo = dbh.sql2tb(sql);
+            List<vwPoNo> polist = new List<vwPoNo>();
+            List<dep> deplist = new List<dep>();
+            foreach (DataRow r in tbpo.Rows)
+            {
+                if (deplist.Where(x => x.depNo == r["depNo"].ToString()).Count() == 0)
+                {
+                    deplist.Add(new dep
+                    {
+                        depNo = r["depNo"].ToString(),
+                        depNm = r["depNm"].ToString()
+                    });
+                }
+
+                polist.Add(new vwPoNo
+                {
+                    depNo = r["depNo"].ToString(),
+                    depNm = r["depNm"].ToString(),
+                    poNo = r["poNo"].ToString(),
+                    poNm = r["poNm"].ToString()
+                });
+            }
+
+            foreach (var item in polist)
+            {
+                string depParentName = "";
+                if (item.depNo == "001")
+                {
+                    depParentName = item.depNm;
+                }
+                else
+                {
+                    depParentName = context.getParentDeps(item.depNo, context);
+                }
+
+                item.depNm = depParentName + ":" + item.poNm;
+            }
+
+            setHMList();
+            ViewBag.depList = deplist;
+            ViewBag.poList = polist;
         }
 
-        List<string> getDepSigner(ApplicationDbContext ctx, dep depObj,string senderWorkNo,List<string> signerList)
+        void setHMList()
         {
-            if (signerList==null)
+            List<SelectListItem> beginHH = new List<SelectListItem>();
+            List<SelectListItem> beginMM = new List<SelectListItem>();
+            List<SelectListItem> endHH = new List<SelectListItem>();
+            List<SelectListItem> endMM = new List<SelectListItem>();
+
+            for (int i = 0; i <= 24; i++)
+            {
+                beginHH.Add(new SelectListItem { Text = i.ToString(), Value = i.ToString() });
+                endHH.Add(new SelectListItem { Text = i.ToString(), Value = i.ToString() });
+            }
+            for (int i = 0; i <= 60; i++)
+            {
+                beginMM.Add(new SelectListItem { Text = i.ToString(), Value = i.ToString() });
+                endMM.Add(new SelectListItem { Text = i.ToString(), Value = i.ToString() });
+            }
+            ViewBag.beginHH = beginHH;
+            ViewBag.beginMM = beginMM;
+            ViewBag.endHH = endHH;
+            ViewBag.endMM = endMM;
+
+        }
+
+        List<string> getDepSigner(ApplicationDbContext ctx, dep depObj, string senderWorkNo, List<string> signerList)
+        {
+            if (signerList == null)
             {
                 signerList = new List<string>();
             }
             dbHelper dbh = new dbHelper();
-            if (depObj==null)
+            if (depObj == null)
             {
                 return signerList;
             }
@@ -152,19 +241,33 @@ namespace eform.Controllers
                     signerList.Add(mgrNo);
                 }
             }
-            if (depObj.depLevel==1)
+            if (depObj.depLevel == 1)
             {
                 return signerList;
             }
             else
             {
                 dep parentDepObj = ctx.deps.Where(x => x.depNo == depObj.parentDepNo).First();
-                signerList= getDepSigner(ctx, parentDepObj, senderWorkNo, signerList);
+                signerList = getDepSigner(ctx, parentDepObj, senderWorkNo, signerList);
                 return signerList;
             }
         }
 
-        // POST: Form/CreateOverTimeForm
+        [AdminAuthorize(Roles = "Employee,Admin")]
+        public ActionResult CreateOverTimeForm()
+        {
+            //ViewBag.Title = "加班申請單";
+            //return RedirectToAction("onWorking", "Account");
+
+            string UserName = User.Identity.Name;
+            var context = new ApplicationDbContext();
+            var user = context.Users.Where(x => x.workNo == UserName).FirstOrDefault();
+            ViewBag.UserName = user.cName;
+            initCreateOverTimeFormViewBag(context);
+            vwReqOverTime Model = new vwReqOverTime();
+            Model.sType = "平日";
+            return View(Model);
+        }
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult CreateOverTimeForm(vwReqOverTime Model)
@@ -228,7 +331,7 @@ namespace eform.Controllers
 
             if (!ModelState.IsValid)
             {
-                initViewBag(context);
+                initCreateOverTimeFormViewBag(context);
                 return View(Model);
             }
 
@@ -335,92 +438,21 @@ namespace eform.Controllers
             catch (Exception ex)
             {
                 ModelState.AddModelError("", ex.Message);
-                initViewBag(context);
+                initCreateOverTimeFormViewBag(context);
                 ViewBag.UserName = Request.Form["worker"].ToString();
                 return View(Model);
             }
         }
 
-        void initViewBag(ApplicationDbContext context)
+        [HttpGet]
+        [AdminAuthorize(Roles = "Employee,Admin")]
+        public ActionResult CreateDayOffForm()
         {
-            List<SelectListItem> placelist = new List<SelectListItem>();
-            placelist.Add(new SelectListItem { Value = "", Text = "選擇工作地點" });
-            placelist.Add(new SelectListItem { Value = "測試區", Text = "測試區" });
-            placelist.Add(new SelectListItem { Value = "組裝區", Text = "組裝區" });
-            placelist.Add(new SelectListItem { Value = "加工區", Text = "加工區" });
-            placelist.Add(new SelectListItem { Value = "倉庫區", Text = "倉庫區" });
-            placelist.Add(new SelectListItem { Value = "辦公區", Text = "辦公區" });
-            placelist.Add(new SelectListItem { Value = "其他", Text = "其他" });
-            ViewBag.placelist = placelist;
-
-            var user = context.Users.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
-            string workno = user.workNo;
-            dbHelper dbh = new dbHelper();
-            string sql = @"select a.poNo,b.depNo,b.poNm,c.depNm
-                            from PoUsers a inner join jobPoes b on a.poNO=b.poNo 
-                                           inner join deps c on b.depNo=c.depNo
-                            where a.UserId='@workno' and a.applicationUser_id is not null";
-            sql = sql.Replace("@workno", workno);
-            DataTable tbpo = dbh.sql2tb(sql);
-            List<vwPoNo> polist = new List<vwPoNo>();
-            List<dep> deplist = new List<dep>();
-            foreach (DataRow r in tbpo.Rows)
-            {
-                if (deplist.Where(x => x.depNo == r["depNo"].ToString()).Count() == 0)
-                {
-                    deplist.Add(new dep
-                    {
-                        depNo = r["depNo"].ToString(),
-                        depNm = r["depNm"].ToString()
-                    });
-                }
-
-                polist.Add(new vwPoNo
-                {
-                    depNo = r["depNo"].ToString(),
-                    depNm = r["depNm"].ToString(),
-                    poNo = r["poNo"].ToString(),
-                    poNm = r["poNm"].ToString()
-                });
-            }
-
-            foreach(var item in polist)
-            {
-                string depParentName = "";
-                if (item.depNo=="001")
-                {
-                    depParentName = item.depNm;
-                }
-                else
-                { 
-                    depParentName = context.getParentDeps(item.depNo,context);
-                }
-
-                item.depNm = depParentName + ":" + item.poNm;
-            }
-
-            List<SelectListItem> beginHH = new List<SelectListItem>();
-            List<SelectListItem> beginMM = new List<SelectListItem>();
-            List<SelectListItem> endHH = new List<SelectListItem>();
-            List<SelectListItem> endMM = new List<SelectListItem>();
-
-            for (int i=0;i<=24;i++)
-            {
-                beginHH.Add(new SelectListItem { Text = i.ToString(), Value = i.ToString() });
-                endHH.Add(new SelectListItem { Text = i.ToString(), Value = i.ToString() });
-            }
-            for (int i = 0; i <= 60; i++)
-            {
-                beginMM.Add(new SelectListItem { Text = i.ToString(), Value = i.ToString() });
-                endMM.Add(new SelectListItem { Text = i.ToString(), Value = i.ToString() });
-            }
-
-            ViewBag.depList = deplist;
-            ViewBag.poList = polist;
-            ViewBag.beginHH = beginHH;
-            ViewBag.beginMM = beginMM;
-            ViewBag.endHH = endHH;
-            ViewBag.endMM = endMM;
+            vwDayOffForm model = new vwDayOffForm(ctx.getCurrentUser(User.Identity.Name));
+            model.createForm();
+            setHMList();
+            return View(model);
         }
+
     }
 }

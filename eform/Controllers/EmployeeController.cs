@@ -184,12 +184,9 @@ namespace eform.Controllers
         [AdminAuthorize(Roles = "Admin")]
         public ActionResult Edit(string id)
         {
-            //ApplicationDbContext context = new ApplicationDbContext();
             var store = new UserStore<ApplicationUser>(ctx);
             var manager = new UserManager<ApplicationUser>(store);
             var user = store.Users.Where(x => x.Id == id).FirstOrDefault();
-
-            //ctx.Entry(user).Collection(x => x.poList).Load();
 
             var getUserTitleObj = getUserTitle(user,ctx);
             List<string> usrTitle = getUserTitleObj.Item1;
@@ -233,9 +230,6 @@ namespace eform.Controllers
             {
                 ModelState.AddModelError("beginWorkDate", "請輸入到職日");
             }
-
-            
-
 
             var context = new ApplicationDbContext();
 
@@ -297,7 +291,6 @@ namespace eform.Controllers
                     setViewBagPo(context);
                     return View(model);
                 }
-
                 #endregion
             }
 

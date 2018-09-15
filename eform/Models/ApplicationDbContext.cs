@@ -36,7 +36,11 @@ namespace eform.Models
         public DbSet<permission> permList { get; set; }
         public DbSet<permMod> permModList { get; set; }
         public DbSet<salary> salaryList { get; set; }
+
+        public DbSet<dayOffType> dayOffTypeList { get; set; }
+        public DbSet<dayOff> dayOffList { get; set; }
         public DbSet<dayOffSum> dayOffSumList { get; set; }
+
 
         public List<vwSignType> signTypeList()
         {
@@ -58,7 +62,6 @@ namespace eform.Models
             });
             return list;
         }
-        
         public List<vwFlowStatus> flowStatusList()
         {
             List<vwFlowStatus> list = new List<vwFlowStatus>();
@@ -127,6 +130,20 @@ namespace eform.Models
             }
 
             return r;
+        }
+
+        public vwEmployee getCurrentUser(string  Name)
+        {
+            ApplicationUser user=this.Users.Where(x => x.UserName == Name).FirstOrDefault();
+            vwEmployee employee = new vwEmployee{
+                Id = user.Id,
+                UserCName = user.cName,
+                UserEName = user.eName,
+                workNo = user.workNo,
+                Email = user.Email,
+                beginWorkDate=user.beginWorkDate
+            };
+            return employee;
         }
     }
 }

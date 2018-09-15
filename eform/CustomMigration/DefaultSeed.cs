@@ -92,6 +92,25 @@ namespace eform.CustomMigration
                     seedingNewsTypeList(context);
                 }
 
+                if (context.dayOffTypeList.Count() == 0)
+                {
+                    context.dayOffTypeList.Add(new dayOffType { k = 1, v = "事假" });
+                    context.dayOffTypeList.Add(new dayOffType { k = 2, v = "家庭照顧假" });
+                    context.dayOffTypeList.Add(new dayOffType { k = 3, v = "家庭照顧假" });
+                    context.dayOffTypeList.Add(new dayOffType { k = 4, v = "普通傷病假" });
+                    context.dayOffTypeList.Add(new dayOffType { k = 5, v = "生理假" });
+                    context.dayOffTypeList.Add(new dayOffType { k = 6, v = "公傷病假" });
+                    context.dayOffTypeList.Add(new dayOffType { k = 7, v = "婚假" });
+                    context.dayOffTypeList.Add(new dayOffType { k = 8, v = "喪假" });
+                    context.dayOffTypeList.Add(new dayOffType { k = 9, v = "陪產假" });
+                    context.dayOffTypeList.Add(new dayOffType { k = 10, v = "產檢假" });
+                    context.dayOffTypeList.Add(new dayOffType { k = 11, v = "產假" });
+                    context.dayOffTypeList.Add(new dayOffType { k = 12, v = "安胎假" });
+                    context.dayOffTypeList.Add(new dayOffType { k = 13, v = "公假" });
+                    context.dayOffTypeList.Add(new dayOffType { k = 14, v = "特別休假" });
+                    context.dayOffTypeList.Add(new dayOffType { k = 15, v = "補休" });
+                    context.SaveChanges();
+                }
             }
             return true;
         }
