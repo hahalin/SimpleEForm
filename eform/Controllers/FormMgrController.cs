@@ -31,7 +31,7 @@ namespace eform.Controllers
                                  select item.id;
 
             var mySignSubList = (from item in context.FlowSubList
-                                 where item.workNo == user.workNo
+                                 where item.workNo == user.workNo && item.signResult==0
                                  && unSignMainList.Contains(item.pid)
                                  select item.pid).ToList<string>();
 
@@ -89,6 +89,7 @@ namespace eform.Controllers
         public ActionResult Details(string id, string FlowPageType = "")
         {
             var context = new ApplicationDbContext();
+            ViewBag.FlowPageType = FlowPageType;
 
             List<vwFlowSub> list = new List<vwFlowSub>();
             List<FlowSub> fsubList = context.FlowSubList.Where(x => x.pid == id).OrderBy(x => x.seq).ToList<FlowSub>();
@@ -104,7 +105,7 @@ namespace eform.Controllers
                     signDate = sitem.signDate,
                     signResult = signResultObj == null ? "" : signResultObj.nm,
                     signType = signTypeObj == null ? "會簽" : signTypeObj.nm,
-                    signer = signUser == null ? "" : signUser.cName,
+                    signer = signUser == null ? "" : signUser.workNo + "-" + signUser.cName,
                     comment = sitem.comment
                 };
                 list.Add(item);
@@ -155,13 +156,12 @@ namespace eform.Controllers
                     }
                 }
                 ViewBag.SubModel = vwReqOverTimeObj;
-                ViewBag.FlowPageType = FlowPageType;
                 return View(list);
             }
             #endregion
 
             #region "請假單"
-            if (fmain.defId=="DayOff")
+            if (fmain.defId == "DayOff")
             {
                 vwDayOffForm subModel = new vwDayOffForm();
                 dayOff dayOffObj = ctx.dayOffList.Where(x => x.flowId == fmain.id).FirstOrDefault();
@@ -176,7 +176,6 @@ namespace eform.Controllers
                     jobAgent = dayOffObj.jobAgent
                 };
                 ViewBag.SubModel = subModel;
-                ViewBag.FlowPageType = "";
                 return View("Details", list);
             }
             #endregion
@@ -196,26 +195,60 @@ namespace eform.Controllers
             string workNo = context.Users.Where(x => x.UserName == User.Identity.Name).FirstOrDefault().workNo;
 
             FlowSub fsub = context.FlowSubList.Where(x => x.pid == id && x.workNo == workNo).FirstOrDefault();
-            if (fsub != null)
+            FlowMain fmain = ctx.FlowMainList.Where(x => x.id == id).FirstOrDefault();
+            if (fsub != null && fmain != null)
             {
-                fsub.signDate = context.getLocalTiime();
-                fsub.signResult = Convert.ToInt16(signValue);
-                fsub.comment = signMemo;
-                context.SaveChanges();
-
-                dbHelper dbh = new dbHelper();
-                if (fsub.signResult == 1)
+                if (fmain.defId == "OverTime")
                 {
-                    dbh.execSql("update FlowMains set flowStatus=2 where id='" + id + "'");
-                }
+                    fsub.signDate = context.getLocalTiime();
+                    fsub.signResult = Convert.ToInt16(signValue);
+                    fsub.comment = signMemo;
+                    context.SaveChanges();
 
-                if (fsub.signResult == 2)
-                {
-                    int allDenyCnt = context.FlowSubList.Where(x => x.pid == id && x.signResult == 2).Count();
-                    int allCnt = context.FlowSubList.Where(x => x.pid == id).Count();
-                    //if (allCnt == allDenyCnt)
+                    dbHelper dbh = new dbHelper();
+                    if (fsub.signResult == 1)
                     {
-                        dbh.execSql("update FlowMains set flowStatus=3 where id='" + id + "'");
+                        dbh.execSql("update FlowMains set flowStatus=2 where id='" + id + "'");
+                    }
+
+                    if (fsub.signResult == 2)
+                    {
+                        int allDenyCnt = context.FlowSubList.Where(x => x.pid == id && x.signResult == 2).Count();
+                        int allCnt = context.FlowSubList.Where(x => x.pid == id).Count();
+                        //if (allCnt == allDenyCnt)
+                        {
+                            dbh.execSql("update FlowMains set flowStatus=3 where id='" + id + "'");
+                        }
+                    }
+                }
+                if (fmain.defId == "DayOff")
+                {
+                    List<FlowSub> qPriorSigner = ctx.FlowSubList.Where(x => x.pid == id && x.seq < fsub.seq && x.signResult == 0).ToList<FlowSub>();
+                    if (qPriorSigner.Count()>0)
+                    {
+                        TempData["error"] = "上一位簽核人尚未簽核";
+                        return RedirectToAction("Details", "FormMgr",new { id = fmain.id });
+                    }
+                    fsub.signDate = context.getLocalTiime();
+                    fsub.signResult = Convert.ToInt16(signValue);
+                    fsub.comment = signMemo;
+                    context.SaveChanges();
+
+                    dbHelper dbh = new dbHelper();
+                    var fsublist = ctx.FlowSubList.Where(x => x.pid == id);
+                    if (fsub.signResult == 1 && 
+                        fsublist.Where(x=>x.signResult==1).Count()==fsublist.Count()
+                    )
+                    {
+                        dbh.execSql("update FlowMains set flowStatus=2 where id='" + id + "'");
+                    }
+
+                    if (fsub.signResult == 2)
+                    {
+                        int allCnt = context.FlowSubList.Where(x => x.pid == id).Count();
+                        {
+                            dbh.execSql("update FlowMains set flowStatus=3 where id='" + id + "'");
+                        }
                     }
                 }
             }
@@ -230,16 +263,22 @@ namespace eform.Controllers
 
             var user = context.Users.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
 
-            var unSignMainList = from item in context.FlowMainList
-                                 where item.flowStatus != 1 && item.flowStatus != 99
-                                 select item.id;
+            //var unSignMainList = (from item in context.FlowMainList
+            //                      where item.flowStatus != 1 && item.flowStatus != 99 && item.defId == "OverTime"
+            //                      select item.id);
+
+            var signOkSubList = from item in context.FlowSubList
+                                      where item.signResult !=0 && item.signResult != 99 && item.workNo == user.workNo
+                                      select item.pid;
+
 
             var mySignSubList = (from item in context.FlowSubList
                                  where item.workNo == user.workNo
-                                 && unSignMainList.Contains(item.pid)
+                                 && signOkSubList.Contains(item.pid)
                                  select item.pid).ToList<string>();
 
-            var mySignMainList = context.FlowMainList.Where(x => mySignSubList.Contains(x.id)).ToList<FlowMain>();
+            var mySignMainList = context.FlowMainList.Where(x => mySignSubList.Contains(x.id))
+                .OrderByDescending(x=>x.billDate).ToList<FlowMain>();
 
             List<vwFlowMain> list = new List<vwFlowMain>();
 

@@ -18,11 +18,11 @@
             </div>
             @if (flowMain.defId== "OverTime")
             { 
-                @Html.Partial("_OverTimeForm", (vwReqOverTime)ViewBag.SubModel)
+                @Html.Partial("Form/_OverTimeForm", (vwReqOverTime)ViewBag.SubModel)
             }
             @if (flowMain.defId == "DayOff")
             {
-                @Html.Partial("_DayOffForm", (vwDayOffForm)ViewBag.SubModel)
+                @Html.Partial("Form/_DayOffForm", (vwDayOffForm)ViewBag.SubModel)
             }
         </div>
     </div>

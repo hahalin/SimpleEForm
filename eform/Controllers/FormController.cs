@@ -362,7 +362,7 @@ namespace eform.Controllers
             var sender = context.Users.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
             fmain.id = Guid.NewGuid().ToString();
             fmain.defId = "OverTime";
-            fmain.flowName = "加班單";
+            fmain.flowName = fDefMain.nm;
             fmain.flowStatus = 1;
             fmain.senderNo = sender.workNo;
             fmain.billDate = context.getLocalTiime();//Model.billDate;

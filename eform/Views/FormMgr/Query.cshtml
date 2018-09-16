@@ -50,7 +50,7 @@
                                 @Html.DisplayFor(modelItem => item.flowStatus)
                             </td>
                             <td>
-                                <a href="@Url.Action("Details",new {id=item.id,FlowPageType=ViewBag.FlowPageType})" class="btn btn-info">表單明細</a>
+                                <a href="@Url.Action("Details",new {id=item.id,FlowPageType="1"})" class="btn btn-info">表單明細</a>
                             </td>
                         </tr>
                     }

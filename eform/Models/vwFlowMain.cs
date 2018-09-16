@@ -18,7 +18,7 @@ namespace eform.Models
         public DateTime? billDate { get; set; }
         [DisplayName("表單名稱")]
         public string flowName { get; set; }
-        [DisplayName("簽核狀態")]
+        [DisplayName("表單狀態")]
         public string flowStatus { get; set; } 
     }
 

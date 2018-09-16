@@ -8,59 +8,57 @@
 }
 
 <style>
-    textarea
-    {
-        max-width:1200px;
+    textarea {
+        max-width: 1200px;
     }
 </style>
 
 <div class="row">
-    @if (ViewBag.FlowPageType == "")
-            {
-
-        <div class="col-md-10">
-            <div class="box">
-                <div class="box-header text-center">
-                    <div class="box-title">
-                        <h3><span class="label label-default">@employee.Company</span></h3>
-                        <h3><span class="label label-info">@flowMain.flowName-簽核</span></h3>
-                    </div>
+    <div class="col-md-10">
+        <div class="box">
+            <div class="box-header text-center">
+                <div class="box-title">
+                    <h3><span class="label label-default">@employee.Company</span></h3>
+                    <h3><span class="label label-info">@flowMain.flowName-簽核</span></h3>
                 </div>
+            </div>
+            @if (ViewBag.FlowPageType == "")
+                {
                 <div class="box-body">
                     @using (Html.BeginForm("SignIt", "FormMgr", FormMethod.Post, new { id = "fmMain" }))
                     {
-                        @Html.AntiForgeryToken()
-                        <div class="form-horizontal col-md-10">
-                            <div class="form-group">
-                                <label class="control-label col-md-2">簽核: </label>
-                                <input type="hidden" name="hid" value="@flowMain.id" />
-                                <div class="col-md-10">
-                                    <input type="radio" name="signValue" value="1" checked="checked" />同意
-                                    &nbsp;&nbsp;&nbsp;
-                                    <input type="radio" name="signValue" value="2" />不同意
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="control-label col-md-2">簽核意見: </label>
-                                <div class="col-md-10">
-                                    <textarea rows="3" class="col-md-10"  name="signMemo"></textarea>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="col-md-offset-2 col-md-10 text-center">
-                                    <button type="submit" class="btn btn-primary">送出</button>
-                                </div>
+                    @Html.AntiForgeryToken()
+                    <div class="form-horizontal col-md-10">
+                        <div class="form-group">
+                            <label class="control-label col-md-2">簽核: </label>
+                            <input type="hidden" name="hid" value="@flowMain.id" />
+                            <div class="col-md-10">
+                                <input type="radio" name="signValue" value="1" checked="checked" />同意
+                                &nbsp;&nbsp;&nbsp;
+                                <input type="radio" name="signValue" value="2" />不同意
                             </div>
                         </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-2">簽核意見: </label>
+                            <div class="col-md-10">
+                                <textarea rows="3" class="col-md-10" name="signMemo"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-10 text-center">
+                                <button type="submit" class="btn btn-primary">送出</button>
+                            </div>
+                        </div>
+                    </div>
                     }
 
                 </div>
-                <div class="box-footer">
-                    <a href="@Request.UrlReferrer" class="btn btn-default">返回表單清單</a>
-                </div>
+                }
+            <div class="box-footer">
+                <a href="@Url.Action("Index")" class="btn btn-default">返回表單清單</a>
             </div>
         </div>
-    }
+    </div>
     <div class="col-md-10">
         <div class="box">
             @if (flowMain.defId == "OverTime")
@@ -128,8 +126,21 @@
                 </table>
             </div>
             <div class="box-footer">
-                <a href="@Request.UrlReferrer" class="btn btn-default">返回表單清單</a>
+                <a href="@Url.Action("Index")" class="btn btn-default">返回表單清單</a>
             </div>
         </div>
     </div>
 </div>
+<script type="text/javascript">
+    $(function () {
+
+        var msg = "";
+        @if(TempData["error"]!=null)
+        {
+            @:msg = "@TempData["error"]";
+            @:alert(msg);
+        }
+    })
+
+
+</script>
