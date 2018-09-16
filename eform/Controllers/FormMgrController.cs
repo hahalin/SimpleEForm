@@ -12,6 +12,12 @@ namespace eform.Controllers
 {
     public class FormMgrController : Controller
     {
+        ApplicationDbContext ctx;
+
+        public FormMgrController()
+        {
+            ctx = new ApplicationDbContext();
+        }
         // GET: FlowMgr
         [AdminAuthorize(Roles = "Admin,Employee")]
         public ActionResult Index()
@@ -83,6 +89,7 @@ namespace eform.Controllers
         public ActionResult Details(string id, string FlowPageType = "")
         {
             var context = new ApplicationDbContext();
+
             List<vwFlowSub> list = new List<vwFlowSub>();
             List<FlowSub> fsubList = context.FlowSubList.Where(x => x.pid == id).OrderBy(x => x.seq).ToList<FlowSub>();
             foreach (FlowSub sitem in fsubList)
@@ -105,45 +112,75 @@ namespace eform.Controllers
 
             FlowMain fmain = context.FlowMainList.Where(x => x.id == id).FirstOrDefault();
             ViewBag.flowMain = fmain;
+            vwEmployee employee = ctx.getUserByWorkNo(fmain.senderNo);
+            ViewBag.Employee = employee;
 
-            ReqOverTime reqOverTimeObj = context.reqOverTimeList.Where(x => x.flowId == id).FirstOrDefault();
-            vwReqOverTime vwReqOverTimeObj = null;
-            if (reqOverTimeObj != null)
+            #region "加班預填單"
+            if (fmain.defId == "OverTime")
             {
-                vwReqOverTimeObj = new vwReqOverTime
+                ReqOverTime reqOverTimeObj = context.reqOverTimeList.Where(x => x.flowId == id).FirstOrDefault();
+                vwReqOverTime vwReqOverTimeObj = null;
+                if (reqOverTimeObj != null)
                 {
-                    dtBegin = reqOverTimeObj.dtBegin,
-                    dtEnd = reqOverTimeObj.dtEnd,
-                    hours = reqOverTimeObj.hours,
-                    sMemo = reqOverTimeObj.sMemo
-                };
-                JObject jobjext = null;
-                try
-                {
-                    jobjext = JObject.Parse(reqOverTimeObj.jext);
-                    vwReqOverTimeObj.sType = jobjext["stype"] == null ? "" : jobjext["stype"].ToString();
-                    vwReqOverTimeObj.place = jobjext["place"] == null ? "" : jobjext["place"].ToString();
-                    vwReqOverTimeObj.otherPlace = jobjext["otherPlace"] == null ? "" : jobjext["otherPlace"].ToString();
-                    vwReqOverTimeObj.prjId = jobjext["prjId"] == null ? "" : jobjext["prjId"].ToString();
+                    vwReqOverTimeObj = new vwReqOverTime
+                    {
+                        dtBegin = reqOverTimeObj.dtBegin,
+                        dtEnd = reqOverTimeObj.dtEnd,
+                        hours = reqOverTimeObj.hours,
+                        sMemo = reqOverTimeObj.sMemo
+                    };
+                    JObject jobjext = null;
+                    try
+                    {
+                        jobjext = JObject.Parse(reqOverTimeObj.jext);
+                        vwReqOverTimeObj.sType = jobjext["stype"] == null ? "" : jobjext["stype"].ToString();
+                        vwReqOverTimeObj.place = jobjext["place"] == null ? "" : jobjext["place"].ToString();
+                        vwReqOverTimeObj.otherPlace = jobjext["otherPlace"] == null ? "" : jobjext["otherPlace"].ToString();
+                        vwReqOverTimeObj.prjId = jobjext["prjId"] == null ? "" : jobjext["prjId"].ToString();
 
-                    vwReqOverTimeObj.sMemo2 = jobjext["sMemo2"] == null ? "" : jobjext["sMemo2"].ToString();
-                    vwReqOverTimeObj.worker = jobjext["worker"] == null ? "" : jobjext["worker"].ToString();
-                    vwReqOverTimeObj.depNo = jobjext["depNo"] == null ? "" : jobjext["depNo"].ToString();
+                        vwReqOverTimeObj.sMemo2 = jobjext["sMemo2"] == null ? "" : jobjext["sMemo2"].ToString();
+                        vwReqOverTimeObj.worker = jobjext["worker"] == null ? "" : jobjext["worker"].ToString();
+                        vwReqOverTimeObj.depNo = jobjext["depNo"] == null ? "" : jobjext["depNo"].ToString();
 
-                    vwReqOverTimeObj.poNo = jobjext["poNo"] == null ? "" : jobjext["poNo"].ToString();
-                    vwReqOverTimeObj.poNm = jobjext["poNo"] == null ? "" : context.jobPos.Where(x => x.poNo.Equals(vwReqOverTimeObj.poNo)).FirstOrDefault().poNm;
+                        vwReqOverTimeObj.poNo = jobjext["poNo"] == null ? "" : jobjext["poNo"].ToString();
+                        vwReqOverTimeObj.poNm = jobjext["poNo"] == null ? "" : context.jobPos.Where(x => x.poNo.Equals(vwReqOverTimeObj.poNo)).FirstOrDefault().poNm;
 
-                    jobPo poObj = context.jobPos.Where(x => x.poNo == vwReqOverTimeObj.poNo).First();
-                    string depNo = poObj.depNo;
-                    string depNm = context.getParentDeps(depNo, context) + " : " + poObj.poNm;
-                    vwReqOverTimeObj.depNm = depNm;
+                        jobPo poObj = context.jobPos.Where(x => x.poNo == vwReqOverTimeObj.poNo).First();
+                        string depNo = poObj.depNo;
+                        string depNm = context.getParentDeps(depNo, context) + " : " + poObj.poNm;
+                        vwReqOverTimeObj.depNm = depNm;
+                    }
+                    catch (Exception ex)
+                    {
+                    }
                 }
-                catch (Exception ex)
-                {
-                }
+                ViewBag.SubModel = vwReqOverTimeObj;
+                ViewBag.FlowPageType = FlowPageType;
+                return View(list);
             }
-            ViewBag.SubModel = vwReqOverTimeObj;
-            ViewBag.FlowPageType = FlowPageType;
+            #endregion
+
+            #region "請假單"
+            if (fmain.defId=="DayOff")
+            {
+                vwDayOffForm subModel = new vwDayOffForm();
+                dayOff dayOffObj = ctx.dayOffList.Where(x => x.flowId == fmain.id).FirstOrDefault();
+                subModel.dayOffForm = new vwdayOff
+                {
+                    id = dayOffObj.id,
+                    dtBegin = dayOffObj.dtBegin,
+                    dtEnd = dayOffObj.dtEnd,
+                    hours = dayOffObj.hours,
+                    dType = dayOffObj.dType,
+                    sMemo = dayOffObj.sMemo,
+                    jobAgent = dayOffObj.jobAgent
+                };
+                ViewBag.SubModel = subModel;
+                ViewBag.FlowPageType = "";
+                return View("Details", list);
+            }
+            #endregion
+
             return View(list);
         }
 

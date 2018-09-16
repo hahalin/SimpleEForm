@@ -17,8 +17,6 @@ namespace eform.Models
         public DateTime? dtBegin { get; set; }
         [DisplayName("結束時間")]
         public DateTime? dtEnd { get; set; }
-        public decimal beginHH { get; set; } = 0;
-        public decimal endHH { get; set; } = 0;
         [DisplayName("假別")]
         public string dType { get; set; }
         [DisplayName("小時數")]
@@ -28,7 +26,6 @@ namespace eform.Models
         [DisplayName("請假事由")]
         public string sMemo { get; set; }
         public string jext { get; set; }
-
     }
 
     public class dayOffType

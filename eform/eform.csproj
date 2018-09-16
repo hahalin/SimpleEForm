@@ -1261,6 +1261,8 @@
     <Content Include="Scripts\tabulator-master\src\scss\tabulator_simple.scss" />
     <Content Include="Scripts\tabulator-master\src\scss\tabulator_site.scss" />
     <Content Include="Views\Form\CreateDayOffForm.cshtml" />
+    <Content Include="Views\Shared\Form\_OverTimeForm.cshtml" />
+    <Content Include="Views\Shared\Form\_DayOffForm.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

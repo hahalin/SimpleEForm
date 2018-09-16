@@ -96,7 +96,7 @@ namespace eform.Controllers
         {
             var context = new ApplicationDbContext();
             List<vwFlowSub> list = new List<vwFlowSub>();
-            List<FlowSub> fsubList = context.FlowSubList.Where(x => x.pid == id).OrderBy(x => x.seq).ToList<FlowSub>();
+            List<FlowSub> fsubList = ctx.FlowSubList.Where(x => x.pid == id).OrderBy(x => x.seq).ToList<FlowSub>();
             foreach (FlowSub sitem in fsubList)
             {
                 var signResultObj = context.signResultList().Where(x => x.id == sitem.signResult).FirstOrDefault();
@@ -114,9 +114,10 @@ namespace eform.Controllers
                 list.Add(item);
             }
 
-            FlowMain fmain = context.FlowMainList.Where(x => x.id == id).FirstOrDefault();
+            FlowMain fmain = ctx.FlowMainList.Where(x => x.id == id).FirstOrDefault();
 
-            ViewBag.Employee = ctx.getCurrentUser(User.Identity.Name);
+            vwEmployee employee= ctx.getUserByWorkNo(fmain.senderNo);
+            ViewBag.Employee = employee;
 
             if (null != fmain )
             {
@@ -124,10 +125,25 @@ namespace eform.Controllers
                 if (fmain.defId == "OverTime")
                 { 
                     getOverTime(fmain);
+                    return View("Details",list);
                 }
-
-
-
+                if (fmain.defId == "DayOff")
+                {
+                    vwDayOffForm subModel = new vwDayOffForm();
+                    dayOff dayOffObj= ctx.dayOffList.Where(x => x.flowId == fmain.id).FirstOrDefault();
+                    subModel.dayOffForm = new vwdayOff
+                    {
+                        id = dayOffObj.id,
+                        dtBegin = dayOffObj.dtBegin,
+                        dtEnd = dayOffObj.dtEnd,
+                        hours = dayOffObj.hours,
+                        dType = dayOffObj.dType,
+                        sMemo = dayOffObj.sMemo,
+                        jobAgent = dayOffObj.jobAgent
+                    };
+                    ViewBag.SubModel = subModel;
+                    return View("Details", list);
+                }
             }
 
             return View(list);
@@ -256,9 +272,6 @@ namespace eform.Controllers
         [AdminAuthorize(Roles = "Employee,Admin")]
         public ActionResult CreateOverTimeForm()
         {
-            //ViewBag.Title = "加班申請單";
-            //return RedirectToAction("onWorking", "Account");
-
             string UserName = User.Identity.Name;
             var context = new ApplicationDbContext();
             var user = context.Users.Where(x => x.workNo == UserName).FirstOrDefault();
@@ -272,7 +285,6 @@ namespace eform.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult CreateOverTimeForm(vwReqOverTime Model)
         {
-
 
             #region "checkinput"
             List<string> errList = new List<string>();
@@ -444,15 +456,169 @@ namespace eform.Controllers
             }
         }
 
+
+        void initCreateDayOffFormViewBag(vwDayOffForm model)
+        {
+            model.user = ctx.getCurrentUser(User.Identity.Name);
+            setHMList();
+            List<SelectListItem> dTypeList = new List<SelectListItem>();
+
+            foreach (var item in ctx.dayOffTypeList)
+            {
+                dTypeList.Add(new SelectListItem { Text = item.v, Value = item.v });
+            }
+            ViewBag.dTypeList = dTypeList;
+            ViewBag.userlist = ctx.getUserList();
+        }
         [HttpGet]
         [AdminAuthorize(Roles = "Employee,Admin")]
         public ActionResult CreateDayOffForm()
         {
-            vwDayOffForm model = new vwDayOffForm(ctx.getCurrentUser(User.Identity.Name));
-            model.createForm();
-            setHMList();
+            vwDayOffForm model = new vwDayOffForm();
+            initCreateDayOffFormViewBag(model);
             return View(model);
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [AdminAuthorize(Roles = "Employee,Admin")]
+        public ActionResult CreateDayOffForm(vwDayOffForm Model)
+        {
+            Model.dayOffForm.dType = Model.dType;
+            Model.user = ctx.getCurrentUser(User.Identity.Name);
+            #region "checkinput"
+            List<string> errList = new List<string>();
 
+            DateTime dtBegin, dtEnd;
+            dtBegin = Convert.ToDateTime(Model.dayOffForm.dtBegin);
+            dtEnd = Convert.ToDateTime(Model.dayOffForm.dtEnd);
+            try
+            {
+                dtBegin = new DateTime(dtBegin.Year, dtBegin.Month, dtBegin.Day, Model.beginHH, Model.beginMM, 0);
+                dtEnd = new DateTime(dtEnd.Year, dtEnd.Month, dtEnd.Day, Model.endHH, Model.endMM, 0);
+
+                int icompare = DateTime.Compare(dtBegin, dtEnd);
+                if (icompare >= 0)
+                {
+                    errList.Add("結束時間必須大於開始時間");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                errList.Add("開始時間、結束時間必須是正確格式");
+            }
+            
+            if (string.IsNullOrEmpty(Model.dayOffForm.sMemo))
+            {
+                errList.Add("請輸入請假事由");
+            }
+
+            if (errList.Count > 0)
+            {
+                ViewBag.UserName = Request.Form["worker"];
+                ModelState.AddModelError("", string.Join(" , ", errList.ToArray<string>()));
+            }
+
+            #endregion
+
+            var context = new ApplicationDbContext();
+
+            if (!ModelState.IsValid)
+            {
+                initCreateDayOffFormViewBag(Model);
+                return View(Model);
+            }
+
+            string FlowDefKey = Model.defId;
+            FlowMain fmain = new FlowMain();
+            List<FlowSub> fsublist = new List<FlowSub>();
+            FlowDefMain fDefMain = context.FlowDefMainList.Where(x => x.enm == FlowDefKey).FirstOrDefault();
+            List<FlowDefSub> fDefSubList = new List<FlowDefSub>();
+            if (fDefMain != null)
+            {
+                fDefSubList = context.FlowDefSubList.Where(x => x.pid == fDefMain.id).OrderBy(x => x.seq).ToList<FlowDefSub>();
+            }
+
+            fmain.id = Guid.NewGuid().ToString();
+            fmain.defId = Model.defId;
+            fmain.flowName = ctx.FlowDefMainList.Where(x => x.enm == Model.defId).FirstOrDefault().nm;
+            fmain.flowStatus = 1;
+            fmain.senderNo = Model.user.workNo;
+            fmain.billDate = context.getLocalTiime();
+            context.FlowMainList.Add(fmain);
+
+            dayOff dayOffObj = new dayOff
+            {
+                dtBegin = dtBegin,
+                dtEnd = dtEnd,
+                hours = Model.dayOffForm.hours,
+                dType=Model.dType,
+                jobAgent=Model.dayOffForm.jobAgent,
+                sMemo = Model.dayOffForm.sMemo,
+                id = Model.dayOffForm.id,
+                flowId = fmain.id
+            };
+
+            context.dayOffList.Add(dayOffObj);
+
+            int flowSeq = 1;
+
+            dbHelper dbh = new dbHelper();
+            string senderPoNo = dbh.sql2Str("select poNo from PoUsers where UserId='" + Model.user.workNo + "' and ApplicationUser_Id is not null");
+            string senderMgrNo = "";
+
+            List<string> signerList = new List<string>();
+
+            if (!string.IsNullOrEmpty(senderPoNo))
+            {
+                string senderDepNo = dbh.sql2Str("select depNo from jobPoes where poNo='" + senderPoNo + "'");
+                if (!string.IsNullOrEmpty(senderDepNo))
+                {
+                    dep depObj = context.deps.Where(x => x.depNo == senderDepNo).FirstOrDefault();
+                    signerList = getDepSigner(context, depObj, Model.user.workNo, signerList);
+                }
+            }
+
+            foreach (string signer in signerList)
+            {
+                FlowSub fsub = new FlowSub();
+                fsub.pid = fmain.id;
+                fsub.id = Guid.NewGuid().ToString();
+                fsub.seq = flowSeq;
+                fsub.workNo = signer;
+                fsub.signType = 4;
+                fsub.signResult = 0;
+                flowSeq++;
+                context.FlowSubList.Add(fsub);
+            }
+
+            foreach (FlowDefSub defItem in fDefSubList)
+            {
+                if (defItem.workNo != senderMgrNo && signerList.Where(x => x == defItem.workNo).Count() == 0 && defItem.workNo != Model.user.workNo)
+                {
+                    FlowSub fsub = new FlowSub();
+                    fsub.pid = fmain.id;
+                    fsub.id = Guid.NewGuid().ToString();
+                    fsub.seq = flowSeq;
+                    fsub.workNo = defItem.workNo;
+                    fsub.signType = 4; //defItem.signType;
+                    fsub.signResult = 0;
+                    flowSeq++;
+                    context.FlowSubList.Add(fsub);
+                    signerList.Add(defItem.workNo);
+                }
+            }
+            try
+            {
+                context.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                initCreateDayOffFormViewBag(Model);
+                return View(Model);
+            }
+        }
     }
 }

@@ -10,12 +10,13 @@
 <div class="row">
     <div class="col-md-10">
         <div class="box">
-            <div class="box-header">
-                <div class="box-title">
-                    <h3><span class="label label-success">@Model.user.Company-@ViewBag.Title</span></h3>
+            <div class="box-header text-center">
+                <div class="box-title ">
+                    <h3><span class="label label-default">@Model.user.Company</span></h3>
+                    <h3><span class="label label-info">@ViewBag.Title</span></h3>
                 </div>
             </div>
-            <div class="box-body>">
+            <div class="box-body">
                 @using (Html.BeginForm("CreateDayOffForm", "Form", FormMethod.Post, new { id = "fmMain" }))
                 {
                     @Html.AntiForgeryToken()
@@ -26,13 +27,13 @@
                         <div class="form-group">
                             <label class="control-label col-md-2">申請人</label>
                             <div class="col-md-4">
-                                <div class="form-control">@Model.user.Company @Model.user.UserCName</div>
+                                <div class="form-control">@Model.user.workNo-@Model.user.UserCName</div>
                                 <input type="hidden" name="userId" value="@Model.user.Id" />
                             </div>
                             @Html.LabelFor(model => model.billDate, htmlAttributes: new { @class = "control-label col-md-2" })
                             <div class="col-md-4">
                                 @Html.EditorFor(model => model.billDate, new { htmlAttributes = new { @class = "form-control", type = "date", @readonly = "readonly" } })
-                                @Html.ValidationMessageFor(model => model.billDate, "", new { @class = "text-danger," })
+                                @Html.ValidationMessageFor(model => model.billDate, "", new { @class = "text-danger" })
                             </div>
                         </div>
 
@@ -47,9 +48,14 @@
                                 </div>
                             </div>
                             <div class="col-md-1">
-                                @Html.DropDownListFor(model => model.dayOffForm.beginHH, (SelectList)ViewBag.beginHHList, new { @class = "form-control", style = "width:70px;" })
+                                @Html.DropDownListFor(model => model.beginHH, (SelectList)ViewBag.beginHHList, new { @class = "form-control", style = "width:70px;" })
                             </div>
                             <label class="control-label col-md-1">時</label>
+                            <div class="col-md-1">
+                                @Html.DropDownListFor(model => model.beginMM, (SelectList)ViewBag.beginMMList, new { @class = "form-control", style = "width:70px;" })
+                            </div>
+                            <label class="control-label col-md-1">分</label>
+
                             @Html.ValidationMessageFor(model => model.dayOffForm.dtBegin, "", new { @class = "text-danger" })
                         </div>
                         <div class="form-group">
@@ -63,25 +69,38 @@
                                 </div>
                             </div>
                             <div class="col-md-1">
-                                @Html.DropDownListFor(model => model.dayOffForm.endHH, (SelectList)ViewBag.endHHList, new { @class = "form-control", style = "width:70px;" })
+                                @Html.DropDownListFor(model => model.endHH, (SelectList)ViewBag.endHHList, new { @class = "form-control", style = "width:70px;" })
                             </div>
                             <label class="control-label col-md-1">時</label>
+                            <div class="col-md-1">
+                                @Html.DropDownListFor(model => model.endMM, (SelectList)ViewBag.endMMList, new { @class = "form-control", style = "width:70px;" })
+                            </div>
+                            <label class="control-label col-md-1">分</label>
                             @Html.ValidationMessageFor(model => model.dayOffForm.dtEnd, "", new { @class = "text-danger" })
+                            <label class="control-label col-md-1" style="width:90px;">請假時數</label>
+                            <div class="col-md-1">
+                                @Html.TextBoxFor(model => model.dayOffForm.hours, htmlAttributes: new { @class = "form-control",type="number",style = "width:80px;"})
+                            </div>
                         </div>
 
-                        
-                        @*<div class="form-group">
-                            <label class="control-label col-md-2">部門</label>
-                            <div class="col-md-10">
-                                @Html.DropDownListFor(model => model.poNo, new List<SelectListItem>(), new { @class = "form-control", style = "max-width:800px;width:100%;" })
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.dayOffForm.dType, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                @Html.DropDownListFor(model => model.dType, (IEnumerable<SelectListItem>)ViewBag.dTypeList, new { @class = "form-control", style = "max-width:800px;width:100%;" })
+                                @Html.ValidationMessageFor(model => model.dType, "", new { @class = "text-danger" })
                             </div>
-
-                        </div>*@
+                            @Html.LabelFor(model => model.dayOffForm.jobAgent, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                @Html.DropDownListFor(model => model.dayOffForm.jobAgent, new List<SelectListItem>(), new { htmlAttributes = new { @class = "form-control select2-input select2"}, style = "max-width:800px;width:100%;" })
+                                @Html.ValidationMessageFor(model => model.dayOffForm.jobAgent, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
 
                         <div class="form-group">
                             @Html.LabelFor(model => model.dayOffForm.sMemo, htmlAttributes: new { @class = "control-label col-md-2" })
                             <div class="col-md-10" style="margin-bottom:10px;">
                                 @Html.TextAreaFor(model => model.dayOffForm.sMemo, htmlAttributes: new { @class = "form-control", rows = "2", style = "width:630px;" })
+                                @Html.ValidationMessageFor(model => model.dayOffForm.sMemo, "", new { @class = "text-danger" })
                             </div>
                             <br />
                         </div>
@@ -98,6 +117,13 @@
 
             </div>
         </div>
+
+        <div class="box">
+            <div class="box-title text-center">
+                <h3><span class="label label-success">請假累計清單</span></h3>
+            </div>
+            <div class="box-body"></div>
+        </div>
     </div>
 </div>
 
@@ -109,8 +135,10 @@
         function doSubmit() {
             return true;
         }
+        function formatRepoSelection(repo) {
+            return repo.id + "-" + repo.text;
+        }
         $(function () {
-            return;
             var pickerOption = {
                 format: 'YYYY-MM-DD',
                 locale:'zh-tw',
@@ -126,6 +154,15 @@
             {
                 $('#billDate').val(getLocalDateStr());
             }
+
+
+            var data = @Html.Raw((ViewBag.userlist));
+
+            $("#dayOffForm_jobAgent").select2({
+                data: data,
+                placeholder: '選擇職務代理人'
+                ,templateSelection: formatRepoSelection
+            });
 
             var depList = @Html.Raw(JsonConvert.SerializeObject(ViewBag.depList));
             var poList = @Html.Raw(JsonConvert.SerializeObject(ViewBag.poList));

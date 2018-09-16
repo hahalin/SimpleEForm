@@ -6,6 +6,8 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using System.Collections.Generic;
 using System;
 using System.Linq;
+using System.Dynamic;
+using Newtonsoft.Json;
 
 namespace eform.Models
 {
@@ -59,6 +61,11 @@ namespace eform.Models
             {
                 id = 3,
                 nm = "直接許可"
+            });
+            list.Add(new vwSignType
+            {
+                id = 4,
+                nm = "串簽"
             });
             return list;
         }
@@ -144,6 +151,37 @@ namespace eform.Models
                 beginWorkDate=user.beginWorkDate
             };
             return employee;
+        }
+        public vwEmployee getUserByWorkNo(string WorkNo)
+        {
+            ApplicationUser user = this.Users.Where(x => x.workNo == WorkNo).FirstOrDefault();
+            vwEmployee employee = new vwEmployee
+            {
+                Id = user.Id,
+                UserCName = user.cName,
+                UserEName = user.eName,
+                workNo = user.workNo,
+                Email = user.Email,
+                beginWorkDate = user.beginWorkDate
+            };
+            return employee;
+        }
+        public string getUserList()
+        {
+            var userlist0 = this.Users.Where(x => x.status == 1 && x.UserName.ToLower().Contains("admin") == false).OrderBy(x=>x.workNo).ToList();
+            List<dynamic> userlist = new List<dynamic>();
+            foreach (var user in userlist0)
+            {
+                dynamic obj = new ExpandoObject();
+                obj.id = user.workNo;
+                obj.text = user.cName;
+                userlist.Add(obj);
+            }
+            dynamic userSelTitle = new ExpandoObject();
+            userSelTitle.id = ""; userSelTitle.text = "請選擇人員";
+            userlist.Insert(0, userSelTitle);
+
+            return JsonConvert.SerializeObject(userlist);
         }
     }
 }

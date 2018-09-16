@@ -1,0 +1,60 @@
+﻿@using eform.Models;
+@{
+    vwDayOffForm subModel = (vwDayOffForm)ViewBag.SubModel;
+    FlowMain flowMain = (FlowMain)ViewBag.flowMain;
+    vwEmployee employee = (vwEmployee)ViewBag.Employee;
+}
+
+<div class="box-body">
+    <div class="form-horizontal col-md-10" style="margin-top:10px;">
+        <div class="form-group">
+            <label class="control-label col-md-2">申請人</label>
+            <div class="col-md-4">
+                <div class="form-control">@employee.UserCName</div>
+            </div>
+            @Html.LabelFor(model => flowMain.billDate, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-4">
+                @{
+                    string billdate = ((DateTime)flowMain.billDate).ToString("yyyy-MM-dd");
+                }
+                <div class="form-control">
+                    @billdate
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => subModel.dayOffForm.dtBegin, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-4">
+                <div class="form-control">@Convert.ToDateTime(subModel.dayOffForm.dtBegin).ToString("yyyy-MM-dd HH:mm")</div>
+            </div>
+            @Html.LabelFor(model => subModel.dayOffForm.dtEnd, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-4">
+                <div class="form-control">@Convert.ToDateTime(subModel.dayOffForm.dtEnd).ToString("yyyy-MM-dd HH:mm")</div>
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => subModel.dayOffForm.hours, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-4">
+                <div class="form-control">@Math.Round(subModel.dayOffForm.hours,1)</div>
+            </div>
+            @Html.LabelFor(model => subModel.dayOffForm.dType, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-4">
+                <div class="form-control">@subModel.dayOffForm.dType</div>
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => subModel.dayOffForm.jobAgent, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-4">
+                <div class="form-control">@subModel.dayOffForm.jobAgentUser.workNo-@subModel.dayOffForm.jobAgentUser.UserCName</div>
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => subModel.dayOffForm.sMemo, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="form-control">@subModel.dayOffForm.sMemo</div>
+            </div>
+        </div>
+    </div>
+</div>
+
