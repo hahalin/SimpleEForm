@@ -106,6 +106,32 @@
                             </div>
                             <br />
                         </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-2">申請程序說明</label>
+                            <div class="col-md-10 col-md-offset-1" style="margin-top:-20px;margin-left:95px;color:#3664bc;">
+                                <ol>
+                                    <li>
+                                        申請人填寫→部門主管簽核完成→職務代理人簽章完成→行政總務部歸檔。
+                                    </li>
+                                    <li>
+                                        如為不可抗拒之因素需臨時請假, 請第一時間電話通知代理人or部門主管, 並於事後補辦請假。
+                                    </li>
+                                    <li>
+                                        凡屬公假/婚假/產假/喪假/陪產假/病假..等皆需附證明文件, (事假/特休除外)。
+                                    </li>
+                                    <li>
+                                        申請人務必善盡職責告知職務代理人需協助之工作事項。
+                                    </li>
+                                    <li>
+                                        如因加班而補休, 請加註與何者&加班日期及由何者指派, 若無詳盡視為特休or事假。
+                                    </li>
+                                    <li>
+                                        補休請於年度結束前請畢。(於10月至12月發生的補休可遞延至下一年度請畢)
+                                    </li>
+                                </ol>
+                            </div>
+                        </div>
                         <div class="form-group">
                             <div class="col-md-offset-2 col-md-10 text-center">
                                 <input type="submit" value="送出" class="btn-lg btn-primary" onclick="return doSubmit();" />
@@ -143,7 +169,7 @@
                             時數
                         </th>
                     </tr>
-                    @foreach(var flow in dayOffFlowMainList)
+                    @foreach (var flow in dayOffFlowMainList)
                     {
                         var dayoff = dayOffList.Where(x => x.flowId == flow.id).FirstOrDefault();
                         <tr>
@@ -160,7 +186,7 @@
                                 @dayoff.dType
                             </td>
                             <td>
-                                @Math.Round(dayoff.hours,1)
+                                @Math.Round(dayoff.hours, 1)
                             </td>
                         </tr>
                     }

@@ -263,8 +263,11 @@ namespace eform.Controllers
             }
             else
             {
-                dep parentDepObj = ctx.deps.Where(x => x.depNo == depObj.parentDepNo).First();
-                signerList = getDepSigner(ctx, parentDepObj, senderWorkNo, signerList);
+                dep parentDepObj = ctx.deps.Where(x => x.depNo == depObj.parentDepNo).FirstOrDefault();
+                if (parentDepObj!=null)
+                { 
+                    signerList = getDepSigner(ctx, parentDepObj, senderWorkNo, signerList);
+                }
                 return signerList;
             }
         }
