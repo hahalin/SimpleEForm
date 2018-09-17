@@ -469,6 +469,10 @@ namespace eform.Controllers
             }
             ViewBag.dTypeList = dTypeList;
             ViewBag.userlist = ctx.getUserList();
+            List<FlowMain> dayOffFlowMainList= ctx.FlowMainList.Where(x => x.senderNo == model.user.workNo && x.defId == model.defId && x.flowStatus == 2).ToList<FlowMain>();
+            ViewBag.dayOffFlowMainList = dayOffFlowMainList;
+            var qdayOffFlowMainList = from item in dayOffFlowMainList select item.id;
+            ViewBag.dayOffList = ctx.dayOffList.Where(x => qdayOffFlowMainList.Contains(x.flowId)).ToList<dayOff>();
         }
         [HttpGet]
         [AdminAuthorize(Roles = "Employee,Admin")]

@@ -4,6 +4,8 @@
 
 @{
     ViewBag.Title = "請假單申請";
+    List<FlowMain> dayOffFlowMainList = (List<FlowMain>)ViewBag.dayOffFlowMainList;
+    List<dayOff> dayOffList = (List<dayOff>)ViewBag.dayOffList;
 }
 
 <link rel="stylesheet" type="text/css" href="~/Content/bootstrap-datetimepicker.min.css" />
@@ -79,7 +81,7 @@
                             @Html.ValidationMessageFor(model => model.dayOffForm.dtEnd, "", new { @class = "text-danger" })
                             <label class="control-label col-md-1" style="width:90px;">請假時數</label>
                             <div class="col-md-1">
-                                @Html.TextBoxFor(model => model.dayOffForm.hours, htmlAttributes: new { @class = "form-control",type="number",style = "width:80px;"})
+                                @Html.TextBoxFor(model => model.dayOffForm.hours, htmlAttributes: new { @class = "form-control", type = "number", style = "width:80px;" })
                             </div>
                         </div>
 
@@ -91,7 +93,7 @@
                             </div>
                             @Html.LabelFor(model => model.dayOffForm.jobAgent, htmlAttributes: new { @class = "control-label col-md-2" })
                             <div class="col-md-4">
-                                @Html.DropDownListFor(model => model.dayOffForm.jobAgent, new List<SelectListItem>(), new { htmlAttributes = new { @class = "form-control select2-input select2"}, style = "max-width:800px;width:100%;" })
+                                @Html.DropDownListFor(model => model.dayOffForm.jobAgent, new List<SelectListItem>(), new { htmlAttributes = new { @class = "form-control select2-input select2" }, style = "max-width:800px;width:100%;" })
                                 @Html.ValidationMessageFor(model => model.dayOffForm.jobAgent, "", new { @class = "text-danger" })
                             </div>
                         </div>
@@ -122,7 +124,48 @@
             <div class="box-title text-center">
                 <h3><span class="label label-success">請假累計清單</span></h3>
             </div>
-            <div class="box-body"></div>
+            <div class="box-body">
+                <table class="table table-bordered table-hover table-striped">
+                    <tr>
+                        <th>
+                            申請日期
+                        </th>
+                        <th>
+                            開始時間
+                        </th>
+                        <th>
+                            結束時間
+                        </th>
+                        <th>
+                            假別
+                        </th>
+                        <th>
+                            時數
+                        </th>
+                    </tr>
+                    @foreach(var flow in dayOffFlowMainList)
+                    {
+                        var dayoff = dayOffList.Where(x => x.flowId == flow.id).FirstOrDefault();
+                        <tr>
+                            <td>
+                                @Convert.ToDateTime(flow.billDate).ToString("yyyy-MM-dd")
+                            </td>
+                            <td>
+                                @Convert.ToDateTime(dayoff.dtBegin).ToString("yyyy-MM-dd HH:mm")
+                            </td>
+                            <td>
+                                @Convert.ToDateTime(dayoff.dtEnd).ToString("yyyy-MM-dd HH:mm")
+                            </td>
+                            <td>
+                                @dayoff.dType
+                            </td>
+                            <td>
+                                @Math.Round(dayoff.hours,1)
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
         </div>
     </div>
 </div>
