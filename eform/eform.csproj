@@ -228,6 +228,7 @@
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\NewsMgrController.cs" />
     <Compile Include="Controllers\PermController.cs" />
+    <Compile Include="Controllers\PrjController.cs" />
     <Compile Include="Controllers\RoleController.cs" />
     <Compile Include="Controllers\SalaryController.cs" />
     <Compile Include="CustomMigration\DefaultSeed.cs" />
@@ -1300,8 +1301,9 @@
     <Content Include="Views\Form\CreateDayOffForm.cshtml" />
     <Content Include="Views\Shared\Form\_OverTimeForm.cshtml" />
     <Content Include="Views\Shared\Form\_DayOffForm.cshtml" />
-    <Content Include="Views\Shared\_PrjLayout .cshtml" />
-    <Content Include="Views\Shared\_PrjNavRightMenu.cshtml" />
+    <Content Include="Views\Shared\_PrjLayout.cshtml" />
+    <Content Include="Views\Shared\_PrjLeftMenu.cshtml" />
+    <Content Include="Views\Prj\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

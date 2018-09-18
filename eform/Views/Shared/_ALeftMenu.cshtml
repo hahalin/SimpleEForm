@@ -99,7 +99,7 @@
                         </li>
                     </ul>
                 </li>
-
+                <!--薪資查詢區-->
                 <li class="treeview">
                     <a href="#">
                         <i class="fa fa-money"></i> <span>薪資查詢區</span> <i class="fa fa-angle-left pull-right"></i>
@@ -110,8 +110,8 @@
                                 <i class="fa fa-circle-o"></i>個人薪資查詢
                             </a>
                         </li>
-                        @if (permList.Where(x=>x.mod== "ReportSalary").Count()>0)
-                        { 
+                        @if (permList.Where(x => x.mod == "ReportSalary").Count() > 0)
+                        {
                             <li>
                                 <a href="@Url.Action("All", "Salary", null)" hrefa="#">
                                     <i class="fa fa-key"></i>薪資查詢(管理權限)
@@ -129,6 +129,14 @@
                     </ul>
                 </li>
 
+                <!--專案管理區-->
+                <li>
+                    <a href="@Url.Action("Index","Prj")">
+                        <i class="fa fa-calendar-check-o"></i> <span>專案管理區</span>
+                    </a>
+                </li>
+                
+                <!--主管管理區-->
                 <li class="treeview">
                     <a href="#">
                         <i class="fa fa-list-ol"></i> <span>主管管理區</span> <i class="fa fa-angle-left pull-right"></i>
@@ -155,6 +163,7 @@
                     </ul>
                 </li>
 
+                <!--系統管理區-->
                 if (isAdmin)
                 {
                     <li class="treeview">
@@ -166,21 +175,21 @@
                                 <a href="@Url.Action("All", "Perm")">
                                     <i class="fa fa-key"></i>權限管理
                                     @*<span class="pull-right-container">
-                                        <i class="fa fa-angle-left pull-right"></i>
-                                    </span>*@
+                                            <i class="fa fa-angle-left pull-right"></i>
+                                        </span>*@
                                 </a>
                                 @*<ul class="treeview-menu">
-                                    <li>
-                                        <a href="@Url.Action("Index", "Perm",new {mod="ReportSalary"})">
-                                            <i class="fa fa-circle-o"></i>薪資查詢主管權限
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="@Url.Action("Index", "Perm",new {mod="ReportUpload"})">
-                                            <i class="fa fa-circle-o"></i>薪資檔上傳主管權限
-                                        </a>
-                                    </li>
-                                </ul>*@
+                                        <li>
+                                            <a href="@Url.Action("Index", "Perm",new {mod="ReportSalary"})">
+                                                <i class="fa fa-circle-o"></i>薪資查詢主管權限
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="@Url.Action("Index", "Perm",new {mod="ReportUpload"})">
+                                                <i class="fa fa-circle-o"></i>薪資檔上傳主管權限
+                                            </a>
+                                        </li>
+                                    </ul>*@
                             </li>
                             <li class="treeview">
                                 <a href="#">
@@ -255,10 +264,10 @@
                 @:
                 <li><a href='@Url.Action("Login", "Account")'><i class="fa fa-sign-in"></i> <span>登入</span></a></li>
             }
-            </ul>
+        </ul>
 
-            }
-            <!-- /.sidebar-menu -->
-        </section>
-        <!-- /.sidebar -->
-    </aside>
+        }
+        <!-- /.sidebar-menu -->
+    </section>
+    <!-- /.sidebar -->
+</aside>
