@@ -421,11 +421,13 @@ a:focus {
   -o-transition: -o-transform 0.3s ease-in-out, width 0.3s ease-in-out;
   transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
 }
-@media (max-width: 767px) {
+
+/*frank 不須頭像*/
+/*@media (max-width: 767px) {
   .main-sidebar {
     padding-top: 100px;
   }
-}
+}*/
 @media (max-width: 767px) {
   .main-sidebar {
     -webkit-transform: translate(-230px, 0);
@@ -442,14 +444,15 @@ a:focus {
     transform: translate(-230px, 0);
   }
 }
-@media (max-width: 767px) {
+/*frank 手機版拉出側選單不要全滿*/
+/*@media (max-width: 767px) {
   .sidebar-open .main-sidebar {
     -webkit-transform: translate(0, 0);
     -ms-transform: translate(0, 0);
     -o-transform: translate(0, 0);
     transform: translate(0, 0);
   }
-}
+}*/
 .sidebar {
   padding-bottom: 10px;
 }
