@@ -8,6 +8,7 @@ using eform.Models;
 using eform.Repo;
 using eform.Attributes;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace eform.Controllers
 {
@@ -28,34 +29,53 @@ namespace eform.Controllers
             var emp=ctx.getCurrentUser(User.Identity.Name);
             prjObj.creator = emp.workNo;
             prjObj.creatorNm = emp.UserCName;
-            prjObj.beginDate = ctx.getLocalTiime();
+            prjObj.createDate = ctx.getLocalTiime();
 
 
             return View(prjObj);
+        }
+
+        public ActionResult prjList()
+        {
+            rep = new prjRep(User.Identity.Name);
+
+            return Content(JsonConvert.SerializeObject(rep.prjList()),"application/json");
         }
 
         [HttpPost]
         public ActionResult Create(FormCollection fm)
         {
             prj prjObj = new prj();
-            prjObj.creator = Request.Form["hcreator"].ToString();
-            prjObj.prjId = Request.Form["prjId"].ToString();
-            prjObj.nm = Request.Form["nm"].ToString();
-            prjObj.custId = Request.Form["custId"].ToString();
-            prjObj.custNm = Request.Form["custNm"].ToString();
-            prjObj.beginDate = Convert.ToDateTime(Request.Form["beginDate"].ToString());
-            prjObj.endDate = Convert.ToDateTime(Request.Form["endDate"].ToString());
-            prjObj.sMemo = Request.Form["sMemo"].ToString();
-            prjObj.dtMemo = Request.Form["dtMemo"].ToString();
-            prjObj.status = (prjStatus)Enum.Parse(typeof(prjStatus), Request.Form["status"].ToString(), false);
-            prjObj.id= Request.Form["id"].ToString();
+            prjObj.creator = fm["hcreator"].ToString();
+            prjObj.prjId = fm["prjId"].ToString();
+            prjObj.nm = fm["nm"].ToString();
+            prjObj.custId = fm["custId"].ToString();
+            prjObj.custNm = fm["custNm"].ToString();
+            prjObj.createDate = dateUtils.checkDate(fm["createDate"].ToString());
+            prjObj.beginDate = dateUtils.checkDate(fm["beginDate"].ToString());
+            prjObj.endDate = dateUtils.checkDate(fm["endDate"].ToString());
+            prjObj.sMemo = fm["sMemo"].ToString();
+            prjObj.dtMemo = fm["dtMemo"].ToString();
+            prjObj.status = prjStatus.active;
+            prjObj.id = fm["hid"].ToString();
+            prjObj.amt = numberUtils.getInt(fm["amt"]);
+            prjObj.grossProfit = numberUtils.getDecimal(fm["grossProfit"]);
             List<string> errList = new List<string>();
 
             if (string.IsNullOrEmpty(prjObj.id))
             {
                 prjObj.id = Guid.NewGuid().ToString();
                 rep = new prjRep(prjObj.creator);
-                string rExec=rep.createPrj(prjObj);
+                JArray userList = new JArray();
+                try
+                {
+                    userList = JArray.Parse(fm["userList"].ToString());
+                }
+                catch(Exception ex)
+                {
+                    userList = new JArray();
+                }
+                string rExec=rep.createPrj(prjObj,userList);
                 if (!string.IsNullOrEmpty(rExec))
                 {
                     errList.Add(rExec);
@@ -70,6 +90,7 @@ namespace eform.Controllers
             if (errList.Count()==0)
             {
                 r.success = true;
+                r.id = prjObj.id;
             }
             else
             {
@@ -83,6 +104,26 @@ namespace eform.Controllers
         public ActionResult CreateWeekRpt(int rType=1)
         {
             return View();
+        }
+
+        public ActionResult initEmpList()
+        {
+            rep = new prjRep(User.Identity.Name);
+
+            List<dynamic> list = new List<dynamic>();
+
+            int i = 1;
+            foreach(var item in rep.defaultOwnerList())
+            {
+                dynamic eitem = new ExpandoObject();
+                eitem.seq = i;
+                eitem.nm = item.Value;
+                eitem.workNo = "";
+                eitem.perm = "1.全部";
+                list.Add(eitem);
+                i++;
+            }
+            return Content(JsonConvert.SerializeObject(list), "application/json");
         }
 
         public ActionResult empList()

@@ -8,6 +8,7 @@ using System.Data.SqlClient;
 using System.Data;
 using Dapper;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Configuration;
 
 
@@ -45,7 +46,7 @@ namespace eform.Repo
         public string empList()
         {
             string sql = "select workNo,cName from AspNetUsers where status=@status order by workNo asc";
-            List<dynamic> list = con.Query<dynamic>(sql, new { status = 1}).ToList<dynamic>();
+            List<dynamic> list = con.Query<dynamic>(sql, new { status = 1 }).ToList<dynamic>();
             dynamic r = new ExpandoObject();
             r.data = list;
             return JsonConvert.SerializeObject(r);
@@ -53,7 +54,7 @@ namespace eform.Repo
 
         public string prjList(prjStatus status = prjStatus.active)
         {
-            string sql = "select * from prjs where status=@status order by beginDate asc";
+            string sql = "select * from prjs where status=@status order by createDate asc";
             List<prj> list = con.Query<prj>(sql, new { status = (int)status }).ToList<prj>();
             dynamic r = new ExpandoObject();
             r.data = list;
@@ -61,15 +62,97 @@ namespace eform.Repo
             return JsonConvert.SerializeObject(r);
         }
 
-        public string createPrj(prj prjObj)
+        public string createPrj(prj prjObj, JArray userList)
         {
             string r = "";
             string sql = "";
-            List<ExpandoObject> paramList = new List<ExpandoObject>();
-            dynamic param = new ExpandoObject();
+
+            if (string.IsNullOrEmpty(prjObj.prjId))
+            {
+                return "專案編號不得空白";
+            }
+
+            sql = "select count(prjId) as cnt from prjs where prjId=@prjId";
+            int icnt = (int)con.ExecuteScalar(sql, new { prjId = prjObj.prjId });
+            if (icnt > 0)
+            {
+                return "專案編號重複";
+            }
+
+            sql = "insert into prjs ";
+            sql += "(id,prjId,nm,custId,custNm,beginDate,endDate,sMemo,dtMemo,status,creator,createDate,amt,grossProfit) ";
+            sql += " values ";
+            sql += " (@id,@prjId,@nm,@custId,@custNm,@beginDate,@endDate,@sMemo,@dtMemo,@status,@creator,@createDate,@amt,@grossProfit)";
+
+            List<DynamicParameters> paramList = new List<DynamicParameters>();
+            DynamicParameters param = new DynamicParameters();
+            param.Add("@id", prjObj.id);
+            param.Add("@prjId", prjObj.prjId);
+            param.Add("@nm", prjObj.nm);
+            param.Add("@custId", prjObj.custId);
+            param.Add("@custNm", prjObj.custNm);
+            param.Add("@beginDate", prjObj.beginDate);
+            param.Add("@endDate", prjObj.endDate);
+            param.Add("@createDate", prjObj.createDate);
+            param.Add("@creator", prjObj.creator);
+            param.Add("@sMemo", prjObj.sMemo);
+            param.Add("@dtMemo", prjObj.dtMemo);
+            param.Add("@status", prjObj.status);
+            param.Add("@amt", prjObj.amt);
+            param.Add("@grossProfit", prjObj.grossProfit);
             paramList.Add(param);
-            con.Execute(sql, paramList);
-            return r;
+
+            try
+            {
+                con.Execute(sql, paramList);
+
+                sql = "insert into prjUsers (id,pid,seq,title,workNo,perm) values ";
+                sql += "( @id,@pid,@seq,@title,@workNo,@perm)";
+                int iseq = 1;
+                foreach (JObject user in userList)
+                {
+                    if (!user.ContainsKey("workNo"))
+                    {
+                        continue;
+                    }
+                    if (iseq > 8 && user["workNo"].ToString().Trim() == "")
+                    {
+                        continue;
+                    }
+
+                    string workNo, perm;
+                    workNo = user["workNo"].ToString();
+                    if (workNo.Split('-').Count() > 1)
+                    {
+                        workNo = workNo.Split('-')[1];
+                    }
+                    perm = user["perm"].ToString();
+                    if (perm.Split('.').Count() > 1)
+                    {
+                        perm = perm.Split('.')[1];
+                    }
+                    con.Execute(sql,
+                        new[] {
+                            new {
+                               id=Guid.NewGuid().ToString(),
+                               pid=prjObj.id,
+                               seq=user["seq"].ToString(),
+                               title=user["nm"].ToString(),
+                               workNo=workNo,
+                               perm=numberUtils.getInt(perm)
+                            }
+                        }
+                    );
+                    iseq++;
+                }
+                return "";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+
+
         }
 
     }

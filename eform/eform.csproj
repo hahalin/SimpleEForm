@@ -350,6 +350,8 @@
     <Compile Include="Models\vwFlowStatus.cs" />
     <Compile Include="Models\vwReqOverTime.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repo\dateUtils.cs" />
+    <Compile Include="Repo\numberUtils.cs" />
     <Compile Include="Repo\prjRep.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -1140,7 +1142,6 @@
     <None Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\jquery-ui-1.12.1.js" />
     <Content Include="Scripts\jquery-ui-1.12.1.min.js" />
-    <Content Include="Scripts\jquery-ui.theme.min.css" />
     <Content Include="Scripts\jquery.blockUI.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
