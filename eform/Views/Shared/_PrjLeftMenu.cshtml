@@ -39,20 +39,23 @@
         <ul class="sidebar-menu" data-widget="tree">
             @if (Request.IsAuthenticated)
             {
-                <li class="header">功能選單</li>
+                <li class="header">專案管理選單</li>
                 <li class="active">
                     <a href="@Url.Action("Index", "Home", null)"><i class="fa fa-undo"></i><span>返回上層</span></a>
                 </li>
                 <li>
                     <a href="#">
-                        <i class="fa fa-th-list"></i><span>工單號碼管理</span>
+                        <i class="fa fa-pencil-square-o"></i><span>工單號碼管理</span>
                     </a>
                     <a href="#">
                         <i class="fa fa-calendar-plus-o"></i><span>工時輸入</span>
                     </a>
                     <a href="#">
-                        <i class="fa fa-key"></i><span>專案權限設定</span>
+                        <i class="fa fa-th-list"></i><span>工時報表</span>
                     </a>
+                    @*<a href="#">
+                        <i class="fa fa-key"></i><span>專案權限設定</span>
+                    </a>*@
                 </li>
                 @*<li class="treeview">
                     <a href="#">

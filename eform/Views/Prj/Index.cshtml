@@ -1,8 +1,201 @@
-﻿
+﻿@model eform.Models.prj
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_PrjLayout.cshtml";
 }
 
+<div class="row col-md-10" >
+    
+    <div class="box col-md-10" style="">
+        <div class="box-header">
+            <button id="btn-add" class="btn btn-primary"><span class="fa fa-plus"></span>新增專案</button>        
+        </div>
+        <div class="box-body">
+            <table class="table table-bordered table-hover table-info">
+                <thead>
+                    <tr>
+                        <th>專案編號</th>
+                        <th>名稱</th>
+                        <th>客戶編號</th>
+                        <th>客戶名稱</th>
+                        <th>開始日期</th>
+                        <th>結束日期</th>
+                        <th>建立人員</th>
+                        <th>案件狀態</th>
+                        <th><button class="btn btn-default">明細</button></th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
+@*<div id="diva" class="tabulator" tabulator-layout="fitData"></div>*@
 
+<div id="winInput" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title text-center">建立專案</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-horizontal col-md-12">
+                    <form id="fmInput" name="fmInput" class="form-horizontal" method="post" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label class="control-label col-md-2">建立人員</label>
+                            <div class="col-md-4">
+                                <input type="hidden" id="hCreator" name="hCreator" value="@Model.creator" />
+                                <div class="form-control">@Model.creator-@Model.creatorNm</div>
+                            </div>
+                            @Html.Label("建立日期", htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                @*<input type="date" id="beginDate" name="beginDate" class="form-control" value="@Model.beginDate.ToString("yyyy-MM-dd")" />*@
+                                <input type="date" id="beginDate" name="beginDate" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-2">客戶編號</label>
+                            <div class="col-md-4">
+                                <input type="text" id="custId" name="custId" class="form-control" />
+                            </div>
+                            <label class="control-label col-md-2">客戶名稱</label>
+                            <div class="col-md-4">
+                                <input type="text" id="custNm" name="custNm" class="form-control" autocomplete="off" />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <div class="text-center col-md-12">
+                        <button id="btnSave" type="button" class="btn btn-primary">儲存</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    </div>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</div>
+
+<script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+<link href="~/Content/themes/base/jquery-ui.css" rel="stylesheet" />
+<link href="~/Scripts/tabulator-master/dist/css/tabulator.css" rel="stylesheet" />
+<script src="~/Scripts/tabulator-master/dist/js/tabulator.min.js"></script>
+<script src="~/Scripts/jquery.blockUI.js"></script>
+<script src="~/Scripts/moment.js"></script>
+<script src="~/Scripts/DateUtil.js"></script>
+<script src="~/Scripts/TabulatorEditors.js"></script>
+@section Scripts
+{
+    <script type="text/javascript">
+
+        $.blockUI({ message: '<h2>loading...</h2>' });
+        var empList = [];
+        $.ajax({
+            dataType: 'json',
+            url: "@Url.Action("empList")",
+            context: this,
+            async:false,
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(errorThrown);
+            },
+            success: function (r) {
+                r.data.forEach(function (obj) {
+                    empList.push(obj.emp);
+                });
+            }
+        });
+        console.log(empList);
+
+        var autocompEditor = function (cell, onRendered, success, cancel) {
+            var input = $("<input type='text'/>");
+            input.autocomplete({
+                source: empList
+            });
+
+            input.css({
+                "padding": "4px",
+                "width": "100%",
+                "box-sizing": "border-box",
+            })
+                .val(cell.getValue());
+
+            console.log("cell:" + $(input).val());
+
+            onRendered(function () {
+                input.focus();
+                input.css("height", "100%");
+            });
+
+            input.on("change blur", function (e) {
+                if (input.val() != cell.getValue()) {
+                    success(input.val());
+                } else {
+                    cancel();
+                }
+            });
+
+            input.on("keydown", function (e) {
+                if (e.keyCode == 13) {
+                    success(input.val());
+                }
+
+                if (e.keyCode == 27) {
+                    cancel();
+                }
+            });
+            return input;
+        };
+
+        $(function () {
+
+            $("#diva").tabulator({
+                height: "311px",
+                selectable: true,
+                columns: [
+                    { title: "Name", field: "name", width: 150, editor: "input" },
+                    { title: "Location", field: "location", width: 130, editor: autocompEditor },
+                    { title: "Progress", field: "progress", sorter: "number", align: "left", formatter: "progress", width: 140, editor: true },
+                    { title: "Gender", field: "gender", editor: "select", editorParams: { "male": "Male", "female": "Female" } },
+                    { title: "Rating", field: "rating", formatter: "star", align: "center", width: 100, editor: true },
+                    { title: "Date Of Birth", field: "dob", align: "center", sorter: "date", editor: dateEditor },
+                    { title: "Driver", field: "car", align: "center", editor: true, formatter: "tickCross" }
+                ],
+            });
+
+            //$("#diva").tabulator("addRow", {name:"abc"});
+            $("#btn-add").click(function () {
+                document.getElementById("fmInput").reset();
+                $('#beginDate').val(getLocalDateStr);
+                $('#winInput').modal('show');
+
+            });
+            $("#btnSave").click(function () {
+                var fData = new FormData(document.getElementById("fmInput"));
+                $.ajax({
+                    url: "@Url.Action("Create","Prj")",
+                    type: "POST",
+                    data: fData,
+                    processData: false,  // tell jQuery not to process the data
+                    contentType: false,   // tell jQuery not to set contentType
+                    success: function (r)
+                    {
+                        console.log(r);
+                        if (r.success)
+                        {
+                            $('#winInput').modal('hide');
+                        }
+                        else
+                        {
+                            alert(r.message);
+                        }
+                    }
+                });
+
+            });
+
+            $.unblockUI();
+        });
+
+    </script>
+}

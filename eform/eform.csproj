@@ -336,6 +336,7 @@
     <Compile Include="Models\news.cs" />
     <Compile Include="Models\newsType.cs" />
     <Compile Include="Models\permission.cs" />
+    <Compile Include="Models\prj.cs" />
     <Compile Include="Models\ReqOverTime.cs" />
     <Compile Include="Models\salary.cs" />
     <Compile Include="Models\vwDayOffForm.cs" />
@@ -349,6 +350,7 @@
     <Compile Include="Models\vwFlowStatus.cs" />
     <Compile Include="Models\vwReqOverTime.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repo\prjRep.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -484,6 +486,22 @@
     <Content Include="Content\themes\base\tabs.css" />
     <Content Include="Content\themes\base\theme.css" />
     <Content Include="Content\themes\base\tooltip.css" />
+    <Content Include="Content\themes\flat\images\animated-overlay.gif" />
+    <Content Include="Content\themes\flat\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="Content\themes\flat\images\ui-bg_flat_55_fbf9ee_40x100.png" />
+    <Content Include="Content\themes\flat\images\ui-bg_flat_65_ffffff_40x100.png" />
+    <Content Include="Content\themes\flat\images\ui-bg_flat_75_cccccc_40x100.png" />
+    <Content Include="Content\themes\flat\images\ui-bg_flat_75_dadada_40x100.png" />
+    <Content Include="Content\themes\flat\images\ui-bg_flat_75_e6e6e6_40x100.png" />
+    <Content Include="Content\themes\flat\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="Content\themes\flat\images\ui-bg_flat_95_fef1ec_40x100.png" />
+    <Content Include="Content\themes\flat\images\ui-icons_222222_256x240.png" />
+    <Content Include="Content\themes\flat\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Content\themes\flat\images\ui-icons_454545_256x240.png" />
+    <Content Include="Content\themes\flat\images\ui-icons_888888_256x240.png" />
+    <Content Include="Content\themes\flat\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="Content\themes\flat\jquery-ui-1.10.3.css" />
+    <Content Include="Content\themes\flat\jquery-ui-1.10.3.min.css" />
     <Content Include="Content\toastr.css" />
     <Content Include="Content\toastr.min.css" />
     <Content Include="favicon.ico" />
@@ -1122,6 +1140,7 @@
     <None Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\jquery-ui-1.12.1.js" />
     <Content Include="Scripts\jquery-ui-1.12.1.min.js" />
+    <Content Include="Scripts\jquery-ui.theme.min.css" />
     <Content Include="Scripts\jquery.blockUI.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
@@ -1190,6 +1209,7 @@
     <Content Include="Scripts\tabulator-master\src\js\polyfills.js" />
     <Content Include="Scripts\tabulator-master\src\js\row.js" />
     <Content Include="Scripts\tabulator-master\src\js\row_manager.js" />
+    <Content Include="Scripts\TabulatorEditors.js" />
     <Content Include="Scripts\tether.js" />
     <Content Include="Scripts\tether.min.js" />
     <Content Include="Scripts\toastr.js" />
