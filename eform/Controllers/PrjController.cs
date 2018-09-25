@@ -35,6 +35,18 @@ namespace eform.Controllers
             return View(prjObj);
         }
 
+        public ActionResult prjDetail(string prjId)
+        {
+            rep = new prjRep(User.Identity.Name);
+
+            dynamic r = new ExpandoObject();
+            r.prjId = prjId;
+            prj prjObj= rep.loadPrj(prjId);
+            r.prj = prjObj;
+            r.empList = rep.loadPrjEmpList(prjObj.id);
+            return Content(JsonConvert.SerializeObject(r), "application/json");
+        }
+
         public ActionResult prjList()
         {
             rep = new prjRep(User.Identity.Name);
@@ -83,7 +95,21 @@ namespace eform.Controllers
             }
             else
             {
-                //do update
+                rep = new prjRep(prjObj.creator);
+                JArray userList = new JArray();
+                try
+                {
+                    userList = JArray.Parse(fm["userList"].ToString());
+                }
+                catch (Exception ex)
+                {
+                    userList = new JArray();
+                }
+                string rExec = rep.updatePrj(prjObj, userList);
+                if (!string.IsNullOrEmpty(rExec))
+                {
+                    errList.Add(rExec);
+                }
             }
 
             dynamic r = new ExpandoObject();
@@ -117,7 +143,7 @@ namespace eform.Controllers
             {
                 dynamic eitem = new ExpandoObject();
                 eitem.seq = i;
-                eitem.nm = item.Value;
+                eitem.title = item.Value;
                 eitem.workNo = "";
                 eitem.perm = "1.全部";
                 list.Add(eitem);

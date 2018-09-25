@@ -42,9 +42,9 @@
 <div id="winInput" class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            @*<div class="modal-header" style="border-bottom-width:0px;">
-                    <h4 class="modal-title text-center">建立專案</h4>
-                </div>*@
+            <div class="modal-header" style="border-bottom-width:0px;">
+                <h4 class="modal-title text-center" id="winTitle">建立專案</h4>
+            </div>
             <div class="modal-body">
                 <div class="col-md-12" style="background-color:white;">
                     <ul class="nav nav-tabs" role="tablist" id="myTabs">
@@ -115,7 +115,7 @@
                                 <div class="form-group">
                                     <label class="control-label col-md-2">預算工作時間</label>
                                     <div class="col-md-10">
-                                        <textarea id="dtMemo" name="dtMemo" class="form-control col-md-10" style="max-width:800px;" rows="3"></textarea>
+                                        <textarea id="dtMemo" name="dtMemo" class="form-control col-md-10" style="max-width:800px;" rows="2"></textarea>
                                     </div>
                                 </div>
                             </form>
@@ -203,6 +203,64 @@
             return input;
         };
 
+        var editPrj = function ()
+        {
+            var prjId = $(event.target).attr('prjId');
+            $.blockUI({ message: '<h2>資料讀取中...</h2>' });
+            var param = {prjId:prjId};
+
+            $.ajax({
+                dataType: 'json',
+                data:param,
+                url: "@Url.Action("prjDetail")",
+                context: this,
+                async: true,
+                error: function (jqXHR, textStatus, errorThrown) {
+                    $.unblockUI();
+                    console.log(errorThrown);
+                },
+                success: function (r) {
+                    var prj = r.prj;
+                    console.log(prj);
+                    document.getElementById("fmInput").reset();
+
+                    $('#hid').val(prj.id);
+                    $('#prjId').val(prj.prjId);
+                    $('#nm').val(prj.nm);
+                    $('#creator').val(prj.creator);
+                    $('#beginDate').val(prj.sBeginDate.replace('/', '-').replace('/', '-'));
+                    $('#endDate').val(prj.sEndDate.replace('/', '-').replace('/', '-'));
+                    $('#createDate').val(prj.sCreateDate.replace('/', '-').replace('/', '-'));
+                    $('#custId').val(prj.custId);
+                    $('#custNm').val(prj.custNm);
+                    $('#dtMemo').val(prj.dtMemo);
+                    $('#sMemo').val(prj.sMemo);
+                    $('#grossProfit').val(prj.grossProfit);
+                    $('#amt').val(prj.amt);
+
+                    $('#winTitle').text('編輯專案');
+
+                    r.empList.forEach(function (obj) {
+                        if (obj.perm === 2)
+                        {
+                            obj.perm = '2.部分';
+                        }
+                        else {
+                            obj.perm = '1.全部';
+                        }
+                    });
+                    console.log(r.empList);
+                    $("#diva").tabulator("setData", r.empList);
+
+                    $('#myTabs a[href="#tab1"]').tab('show')
+                    $('#winInput').modal('show');
+
+                    $.unblockUI();
+
+                }
+            });
+        }
+
         var loadData = function () {
             $.blockUI({ message: '<h2>loading...</h2>' });
             $.ajax({
@@ -229,8 +287,8 @@
                         r += "<td>" + obj.custNm + "</td>";
                         r += "<td>" + obj.sBeginDate+ "</td>";
                         r += "<td>" + obj.sEndDate + "</td>";
-                        r += "<td>" + obj.creator + "</td>";
-                        r += "<td><button type='button' class='btn btn-info'>編輯</button></td>";
+                        r += "<td>" + obj.creator +"-"+obj.creatorNm+"</td>";
+                        r += "<td><button type='button' class='btn btn-info' prjId='"+obj.prjId+"' onclick='editPrj();'>編輯</button></td>";
                         r += "</tr>";
                         $('#tbPrj > tbody:last-child').append(r);
                         $.unblockUI();
@@ -245,7 +303,7 @@
                 height: "350px",
                 columns: [
                     { title: "序號", field: "seq", width: 80, editor: "input" },
-                    { title: "名稱", field: "nm", width: 130, editor: "input" },
+                    { title: "名稱", field: "title", width: 130, editor: "input" },
                     { title: "工號", field: "workNo", width: 150, editor: autocompEditor},
                     { title: "權限", field: "perm", width:100,editor: "select", editorParams: { "1.全部": "1.全部", "2.部分": "2.部分" } }
                 ]
@@ -260,7 +318,7 @@
                 $("#diva").tabulator("setData", "@Url.Action("initEmpList")");
 
                 $('#myTabs a[href="#tab1"]').tab('show')
-
+                $('#winTitle').text('建立專案');
                 $('#winInput').modal('show');
             });
 
