@@ -438,7 +438,6 @@
     <Content Include="Content\font-awesome-4.7.0\HELP-US-OUT.txt" />
     <Content Include="Content\font-awesome.css" />
     <Content Include="Content\font-awesome.min.css" />
-    <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Content\ionicons.min.css" />
     <Content Include="Content\select2.min.css" />
     <Content Include="Content\tether\tether-theme-arrows-dark.css" />
@@ -679,10 +678,6 @@
     <Content Include="Scripts\ckeditor\ckeditor.asp" />
     <Content Include="Scripts\ckeditor\ckeditor.js" />
     <Content Include="Scripts\ckeditor\ckeditor.pack" />
-    <Content Include="Content\fonts\glyphicons-halflings-regular.woff2" />
-    <Content Include="Content\fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="Content\fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="Content\fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Content\bootstrap\wells.less" />
     <Content Include="Content\bootstrap\variables.less" />
     <Content Include="Content\bootstrap\utilities.less" />
