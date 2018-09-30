@@ -20,6 +20,10 @@
             { 
                 @Html.Partial("Form/_OverTimeForm", (vwReqOverTime)ViewBag.SubModel)
             }
+            @if (flowMain.defId == "RealOverTime")
+            {
+                @Html.Partial("Form/_RealOverTimeForm", (vwRealOverTime)ViewBag.SubModel)
+            }
             @if (flowMain.defId == "DayOff")
             {
                 @Html.Partial("Form/_DayOffForm", (vwDayOffForm)ViewBag.SubModel)

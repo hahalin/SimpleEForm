@@ -55,7 +55,15 @@
                 </div>
                 }
             <div class="box-footer">
-                <a href="@Url.Action("Index")" class="btn btn-default">返回表單清單</a>
+                @if (!string.IsNullOrEmpty(ViewBag.ReturnAction))
+                {
+                    <a href="@Url.Action("ListAll")" class="btn btn-default">返回表單清單</a>
+                }
+                else
+                {
+                    <a href="@Url.Action("Index")" class="btn btn-default">返回表單清單</a>
+                }
+                
             </div>
         </div>
     </div>
@@ -64,6 +72,11 @@
             @if (flowMain.defId == "OverTime")
             {
                 @Html.Partial("Form/_OverTimeForm", (vwReqOverTime)ViewBag.SubModel)
+            }
+
+            @if (flowMain.defId == "RealOverTime")
+            {
+                @Html.Partial("Form/_RealOverTimeForm", (vwRealOverTime)ViewBag.SubModel)
             }
 
             @if (flowMain.defId == "DayOff")
@@ -126,7 +139,14 @@
                 </table>
             </div>
             <div class="box-footer">
-                <a href="@Url.Action("Index")" class="btn btn-default">返回表單清單</a>
+                @if (!string.IsNullOrEmpty(ViewBag.ReturnAction))
+                {
+                    <a href="@Url.Action("ListAll")" class="btn btn-default">返回表單清單</a>
+                }
+                else
+                {
+                    <a href="@Url.Action("Index")" class="btn btn-default">返回表單清單</a>
+                }
             </div>
         </div>
     </div>

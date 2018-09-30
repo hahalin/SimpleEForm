@@ -6,7 +6,7 @@
 
 <div class="row">
     <div class="col-md-10">
-        <div class="box">
+        <div class="box col-xs-10 col-md-10" style="margin:3px;padding:3px;">
             <div class="box-header">
                 <div class="box-title">
                     <h3><span class="label label-success">@ViewBag.Title</span></h3>
@@ -23,8 +23,8 @@
                     </p>
                 </div>
 
-                <div class="box-body>">
-                    <table class="table table-bordered table-hover table-striped">
+                <div class="box-body" style="overflow-x:auto;">
+                    <table class="table table-bordered table-hover table-striped table-responsive">
                         <tr>
                             <th>
 
@@ -69,7 +69,7 @@
                                     @Html.DisplayFor(modelItem => item.flowStatus)
                                 </td>
                                 <td>
-                                    <a href="@Url.Action("Details", new { id = item.id, FlowPageType = "Query" })" class="btn btn-info">表單明細</a>
+                                    <a href="@Url.Action("Details", new { id = item.id, FlowPageType = "Query",ReturnAction="ListAll" })" class="btn btn-info">表單明細</a>
                                 </td>
                             </tr>
                                         }

@@ -34,7 +34,7 @@ namespace eform.Models
         [DisplayName("加班時數")]
         //[Range(1,12,ErrorMessage ="加班時數必須於1到12小時間")]
         //[Required(ErrorMessage ="加班時數必須輸入")]
-        public int hours { get; set; } = 0;
+        public decimal hours { get; set; } = 0;
         [DisplayName("加班事由")]
         public string sMemo { get; set; }
         [DisplayName("加班類型")]
@@ -68,7 +68,7 @@ namespace eform.Models
         public int endMM { get; set; } = 0;
         [DisplayName("小時數")]
         [Required]
-        public int hours { get; set; } = 0;
+        public decimal hours { get; set; } = 0;
         [DisplayName("加班事由")]
         [Required]
         public string sMemo { get; set; }
@@ -76,5 +76,24 @@ namespace eform.Models
         public string prjId { get; set; }
         [DisplayName("備註")]
         public string sMemo2 { get; set; }
+        public string signer { get; set; }
+        public int flowStatus { get; set; }
+        public string  sflowStatus {
+            get {
+                if(flowStatus==2)
+                {
+                    return "核准";
+                }
+                if (flowStatus == 3)
+                {
+                    return "退回";
+                }
+                else
+                {
+                    return "簽核中";
+                }
+                
+            }
+        }
     }
 }

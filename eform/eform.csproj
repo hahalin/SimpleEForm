@@ -1325,6 +1325,7 @@
     <Content Include="Views\Shared\_PrjLeftMenu.cshtml" />
     <Content Include="Views\Prj\Index.cshtml" />
     <Content Include="Views\Form\RealOverTimeForm.cshtml" />
+    <Content Include="Views\Shared\Form\_RealOverTimeForm.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -18,7 +18,7 @@ namespace eform.Models
         [DisplayName("結束時間")]
         public DateTime? dtEnd { get; set; }
         [DisplayName("加班時數")]
-        public int hours { get; set; } = 0;
+        public decimal hours { get; set; } = 0;
         [DisplayName("加班事由")]
         public string sMemo { get; set; }
         public string jext { get; set; }

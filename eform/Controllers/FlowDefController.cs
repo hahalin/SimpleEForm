@@ -11,9 +11,14 @@ using Newtonsoft.Json;
 
 namespace eform.Controllers
 {
-    [AdminAuthorize(Roles ="Admin")]
+    [AdminAuthorize(Roles = "Admin")]
     public class FlowDefController : Controller
     {
+        ApplicationDbContext ctx;
+        public FlowDefController()
+        {
+            ctx = new ApplicationDbContext();
+        }
         // GET: FlowDef
         public ActionResult Index()
         {
@@ -133,6 +138,18 @@ namespace eform.Controllers
             {
                 ViewBag.EditMode = "Create";
                 model.id = Guid.NewGuid().ToString();
+
+                FlowDefMain fmain = ctx.FlowDefMainList.Where(x => x.id == model.pid).FirstOrDefault();
+
+                if(fmain.enm== "RealOverTime" && model.signType !=4)
+                {
+                    ModelState.AddModelError("signType", "加班單限定為串簽");
+                }
+
+                if (fmain.enm == "DayOff" && model.signType != 4)
+                {
+                    ModelState.AddModelError("signType", "請假單限定為串簽");
+                }
 
                 if (!string.IsNullOrEmpty(model.workNo))
                 {

@@ -86,10 +86,11 @@ namespace eform.Controllers
         }
 
         [AdminAuthorize(Roles = "Admin,Employee")]
-        public ActionResult Details(string id, string FlowPageType = "")
+        public ActionResult Details(string id, string FlowPageType = "", string ReturnAction="")
         {
             var context = new ApplicationDbContext();
             ViewBag.FlowPageType = FlowPageType;
+            ViewBag.ReturnAction = ReturnAction;
 
             List<vwFlowSub> list = new List<vwFlowSub>();
             List<FlowSub> fsubList = context.FlowSubList.Where(x => x.pid == id).OrderBy(x => x.seq).ToList<FlowSub>();
@@ -150,6 +151,36 @@ namespace eform.Controllers
                         string depNo = poObj.depNo;
                         string depNm = context.getParentDeps(depNo, context) + " : " + poObj.poNm;
                         vwReqOverTimeObj.depNm = depNm;
+                    }
+                    catch (Exception ex)
+                    {
+                    }
+                }
+                ViewBag.SubModel = vwReqOverTimeObj;
+                return View(list);
+            }
+            #endregion
+
+            #region "加班單"
+            if (fmain.defId == "RealOverTime")
+            {
+                ReqOverTime reqOverTimeObj = context.reqOverTimeList.Where(x => x.flowId == id).FirstOrDefault();
+                vwRealOverTime vwReqOverTimeObj = null;
+                if (reqOverTimeObj != null)
+                {
+                    vwReqOverTimeObj = new vwRealOverTime
+                    {
+                        user=ctx.getUserByWorkNo(fmain.senderNo),
+                        dtBegin = reqOverTimeObj.dtBegin,
+                        dtEnd = reqOverTimeObj.dtEnd,
+                        hours = reqOverTimeObj.hours,
+                        sMemo = reqOverTimeObj.sMemo
+                    };
+                    JObject jobjext = null;
+                    try
+                    {
+                        jobjext = JObject.Parse(reqOverTimeObj.jext);
+                        vwReqOverTimeObj.sMemo2 = jobjext["sMemo2"] == null ? "" : jobjext["sMemo2"].ToString();
                     }
                     catch (Exception ex)
                     {
@@ -362,7 +393,6 @@ namespace eform.Controllers
                     list.Add(vwItem);
                 }
             }
-
             return View(list);
         }
     }

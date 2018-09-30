@@ -93,6 +93,35 @@ namespace eform.Controllers
             }
             ViewBag.SubModel = vwReqOverTimeObj;
         }
+        void getRealOverTime(FlowMain fmain)
+        {
+            string id = fmain.id;
+            ReqOverTime reqOverTimeObj = ctx.reqOverTimeList.Where(x => x.flowId == id).FirstOrDefault();
+            vwRealOverTime vwReqOverTimeObj = null;
+            if (reqOverTimeObj != null)
+            {
+                vwReqOverTimeObj = new vwRealOverTime
+                {
+                    user=ctx.getUserByWorkNo(fmain.senderNo),
+                    billDate = fmain.billDate,
+                    dtBegin = reqOverTimeObj.dtBegin,
+                    dtEnd = reqOverTimeObj.dtEnd,
+                    hours = reqOverTimeObj.hours,
+                    sMemo = reqOverTimeObj.sMemo
+                };
+
+                JObject jobjext = null;
+                try
+                {
+                    jobjext = JObject.Parse(reqOverTimeObj.jext);
+                    vwReqOverTimeObj.sMemo2 = jobjext["sMemo2"] == null ? "" : jobjext["sMemo2"].ToString();
+                }
+                catch (Exception ex)
+                {
+                }
+            }
+            ViewBag.SubModel = vwReqOverTimeObj;
+        }
         // GET: Form/Details/5
         public ActionResult Details(string id)
         {
@@ -128,6 +157,11 @@ namespace eform.Controllers
                 { 
                     getOverTime(fmain);
                     return View("Details",list);
+                }
+                if (fmain.defId == "RealOverTime")
+                {
+                    getRealOverTime(fmain);
+                    return View("Details", list);
                 }
                 if (fmain.defId == "DayOff")
                 {
@@ -625,12 +659,22 @@ namespace eform.Controllers
             }
         }
 
+        void getRealOverTimeHistory()
+        {
+
+        }
         [AdminAuthorize(Roles = "Employee,Admin")]
         public ActionResult RealOverTimeForm()
         {
             vwRealOverTime Model = new vwRealOverTime();
             Model.user = ctx.getCurrentUser(User.Identity.Name);
             setHMList();
+
+            string sql = "select a.id,a.dtBegin,a.dtEnd,a.hours,a.sMemo,b.flowStatus ";
+            sql += " from ReqOverTimes a inner join FlowMains b on a.flowId=b.id ";
+            sql +=" where b.senderNo=@sender and b.flowStatus <> 99 and b.defId=@defId order by b.billDate desc";
+            List<vwRealOverTime> historyList=con.Query<vwRealOverTime>(sql, new {sender=Model.user.workNo,defId = "RealOverTime" }).ToList<vwRealOverTime>();
+            ViewBag.historyList = historyList;
             return View(Model);
         }
         [HttpPost]
@@ -660,9 +704,17 @@ namespace eform.Controllers
                 errList.Add("開始時間、結束時間必須是正確格式");
             }
 
+            if (string.IsNullOrEmpty(Model.prjId))
+            {
+                //errList.Add("請輸入專案號碼");
+            }
             if (string.IsNullOrEmpty(Model.sMemo))
             {
-                errList.Add("請輸入加班事由");
+                //errList.Add("請輸入加班事由");
+            }
+            if (string.IsNullOrEmpty(Model.sMemo2))
+            {
+                //errList.Add("請輸入備註");
             }
 
             if (Model.hours <=0)
@@ -682,13 +734,14 @@ namespace eform.Controllers
 
             if (!ModelState.IsValid)
             {
-                initCreateOverTimeFormViewBag(context);
+                Model.user = ctx.getCurrentUser(User.Identity.Name);
+                setHMList();
                 return View(Model);
             }
 
-            Model.hours = Convert.ToInt32(((DateTime)Model.dtEnd).Subtract((DateTime)Model.dtBegin).TotalHours);
+            Model.hours = Model.hours;  //Convert.ToInt32(((DateTime)Model.dtEnd).Subtract((DateTime)Model.dtBegin).TotalHours);
 
-            string FlowDefKey = "OverTime";
+            string FlowDefKey = "RealOverTime";
             FlowMain fmain = new FlowMain();
             List<FlowSub> fsublist = new List<FlowSub>();
             FlowDefMain fDefMain = context.FlowDefMainList.Where(x => x.enm == FlowDefKey).FirstOrDefault();
@@ -700,11 +753,11 @@ namespace eform.Controllers
 
             var sender = context.Users.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
             fmain.id = Guid.NewGuid().ToString();
-            fmain.defId = "OverTime";
+            fmain.defId = FlowDefKey;
             fmain.flowName = fDefMain.nm;
             fmain.flowStatus = 1;
             fmain.senderNo = sender.workNo;
-            fmain.billDate = context.getLocalTiime();//Model.billDate;
+            fmain.billDate = context.getLocalTiime();
             context.FlowMainList.Add(fmain);
 
             ReqOverTime fmOverTime = new ReqOverTime
@@ -744,7 +797,7 @@ namespace eform.Controllers
                 fsub.id = Guid.NewGuid().ToString();
                 fsub.seq = flowSeq;
                 fsub.workNo = signer;
-                fsub.signType = 1;
+                fsub.signType = 4;
                 fsub.signResult = 0;
                 flowSeq++;
                 context.FlowSubList.Add(fsub);
@@ -772,14 +825,7 @@ namespace eform.Controllers
                 context.SaveChanges();
 
                 JObject jobj = new JObject();
-                //jobj["worker"] = sender.cName;
-                //jobj["stype"] = Model.sType;
-                //jobj["place"] = Model.place;
-                //jobj["otherPlace"] = Model.otherPlace;
-                //jobj["prjId"] = Model.prjId;
-                //jobj["sMemo2"] = Model.sMemo2;
-                //jobj["depNo"] = Model.depNo;
-                //jobj["poNo"] = Model.poNo;
+                jobj["sMemo2"] = Model.sMemo2;
 
                 dbh.execSql("update ReqOverTimes set jext =N'" + jobj.ToString() + "' where flowId='" + fmain.id + "'");
 
@@ -788,8 +834,8 @@ namespace eform.Controllers
             catch (Exception ex)
             {
                 ModelState.AddModelError("", ex.Message);
-                initCreateOverTimeFormViewBag(context);
-                ViewBag.UserName = Request.Form["worker"].ToString();
+                Model.user = ctx.getCurrentUser(User.Identity.Name);
+                setHMList();
                 return View(Model);
             }
         }
