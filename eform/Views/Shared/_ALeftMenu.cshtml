@@ -140,7 +140,7 @@
                         <i class="fa fa-calendar"></i> <span>專案管理區</span>
                     </a>
                 </li>
-                
+
                 <!--主管管理區-->
                 <li class="treeview">
                     <a href="#">
@@ -231,23 +231,31 @@
                                     <i class="fa fa-user-plus"></i>員工
                                 </a>
                             </li>
-                            <li>
-                                <a href="@Url.Action("Index", "NewsMgr", null)">
-                                    <i class="fa fa-newspaper-o"></i>公告管理
+                            <li class="treeview">
+                                <a href="#">
+                                    <i class="fa fa-book"></i>表單管理
+                                    <span class="pull-right-container">
+                                        <i class="fa fa-angle-left pull-right"></i>
+                                    </span>
                                 </a>
-                            </li>
+                                <ul class="treeview-menu">
+                                    <li>
+                                        <a href="@Url.Action("Index", "FlowDef", null)">
+                                            <i class="fa fa-gear"></i>表單設定
+                                        </a>
+                                    </li>
 
-                            <li>
-                                <a href="@Url.Action("Index", "FlowDef", null)">
-                                    <i class="fa fa-book"></i>表單設定
-                                </a>
-                            </li>
-
-                            <li>
-                                <a href="@Url.Action("ListAll", "FormMgr", null)">
-                                    <i class="fa fa-book"></i>表單查詢
-                                </a>
-                            </li>
+                                    <li>
+                                        <a href="@Url.Action("ListAll", "FormMgr", null)">
+                                            <i class="fa fa-search"></i>表單查詢
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="@Url.Action("Index", "NewsMgr", null)">
+                                            <i class="fa fa-newspaper-o"></i>公告管理
+                                        </a>
+                                    </li>
+                                </ul>
                         </ul>
                     </li>
                 }

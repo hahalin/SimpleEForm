@@ -6,85 +6,93 @@
     IEnumerable<news> newslist = ViewBag.newslist;
 }
 
+<style>
+    th {
+        font-family: 微軟正黑體,新細明體;
+        font-size:15px;
+    }
+</style>
+
+
 @if (User.Identity.IsAuthenticated)
 {
     <div class="row">
-        <div class="col-xs-10 col-md-10">
-            <div class="box">
-                <div class="box-header">
-                    <table class="table table-hover table-bordered table-striped">
-                        <tr>
-                            <th style="width:110px;">
-                                公告日期
-                            </th>
-                            <th style="width:120px;">
-                                公告類別
-                            </th>
-                            <th>
-                                標題
-                            </th>
-                            <th>
-                                附檔
-                            </th>
-                        </tr>
-                        <tbody>
+            <div class="col-md-10">
+                <div class="box col-xs-10 col-md-10" style="padding:2px;">
+                    <div class="box-header">
+                        <table class="table table-hover table-bordered table-striped">
+                            <tr>
+                                <th style="width:110px;">
+                                    公告日期
+                                </th>
+                                <th style="width:120px;">
+                                    公告類別
+                                </th>
+                                <th>
+                                    標題
+                                </th>
+                                <th>
+                                    附檔
+                                </th>
+                            </tr>
+                            <tbody>
 
-                            @foreach (var item in newslist)
-                            {
-                                <tr>
-                                    <td>
-                                        @{
-                                            string ndate = Convert.ToDateTime(item.ndate).ToString("yyyy-MM-dd");
-                                        }
+                                @foreach (var item in newslist)
+                                {
+                                    <tr>
+                                        <td>
+                                            @{
+                                                string ndate = Convert.ToDateTime(item.ndate).ToString("yyyy-MM-dd");
+                                            }
 
-                                        @ndate
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.newsType)
-                                    </td>
-                                    <td>
-                                        <a href="@Url.Action("NewsDetail", "Home", new { id = item.id })" class="text text-info">
-                                            @Html.DisplayFor(modelItem => item.title)
-                                        </a>
-                                    </td>
-                                    <td style="font-size:12px;">
-                                        @if (!string.IsNullOrEmpty(item.fileUrl))
-                                        {
-                                            JArray list = new JArray();
-                                            if (!string.IsNullOrEmpty(item.fileUrl))
+                                            @ndate
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.newsType)
+                                        </td>
+                                        <td>
+                                            <a href="@Url.Action("NewsDetail", "Home", new { id = item.id })" class="text text-info">
+                                                @Html.DisplayFor(modelItem => item.title)
+                                            </a>
+                                        </td>
+                                        <td style="font-size:12px;">
+                                            @if (!string.IsNullOrEmpty(item.fileUrl))
                                             {
-                                                try
+                                                JArray list = new JArray();
+                                                if (!string.IsNullOrEmpty(item.fileUrl))
                                                 {
-                                                    list = JArray.Parse(item.fileUrl);
+                                                    try
+                                                    {
+                                                        list = JArray.Parse(item.fileUrl);
+                                                    }
+                                                    catch (Exception ex)
+                                                    {
+                                                    }
                                                 }
-                                                catch (Exception ex)
-                                                {
-                                                }
+
+                                                <ul>
+
+                                                    @foreach (JObject jobj in list)
+                                                    {
+                                                        string fileName = jobj["fileName"].ToString();
+                                                        string fileUrl = jobj["fileUrl"].ToString();
+
+                                                        <li style="padding-bottom:3px;">
+                                                            <a href="@Url.Content("/upload/"+HttpUtility.UrlDecode(fileUrl))" target="_blank">
+                                                                @fileName
+                                                            </a>
+                                                        </li>
+                                                    }
+
+                                                </ul>
                                             }
-
-                                        <ul>
-
-                                            @foreach (JObject jobj in list)
-                                                {
-                                                string fileName = jobj["fileName"].ToString();
-                                                string fileUrl = jobj["fileUrl"].ToString();
-
-                                                <li style="padding-bottom:3px;">
-                                                    <a href="@Url.Content("/upload/"+HttpUtility.UrlDecode(fileUrl))" target="_blank">
-                                                        @fileName
-                                                    </a>
-                                                </li>
+                                        </td>
+                                    </tr>
                                                 }
-
-                                        </ul>
-                                        }
-                                    </td>
-                                </tr>
-                                            }
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
         </div>
     </div>
                                             }
