@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Data;
+using System.Data.SqlClient;
+using Newtonsoft.Json.Linq;
+using Dapper;
 using eform.Attributes;
 using eform.Models;
-using System.Data;
-using Newtonsoft.Json.Linq;
 
 namespace eform.Controllers
 {
@@ -14,11 +17,12 @@ namespace eform.Controllers
     public class FormController : Controller
     {
         ApplicationDbContext ctx;
+        SqlConnection con;
         public FormController()
         {
             ctx = new ApplicationDbContext();
+            con=new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString);
         }
-
         // GET: Form
         public ActionResult Index()
         {
@@ -46,7 +50,6 @@ namespace eform.Controllers
 
             return View(list);
         }
-
         void getOverTime(FlowMain fmain)
         {
             string id = fmain.id;
@@ -90,7 +93,6 @@ namespace eform.Controllers
             }
             ViewBag.SubModel = vwReqOverTimeObj;
         }
-
         // GET: Form/Details/5
         public ActionResult Details(string id)
         {
@@ -210,7 +212,6 @@ namespace eform.Controllers
             ViewBag.depList = deplist;
             ViewBag.poList = polist;
         }
-
         void setHMList()
         {
             List<SelectListItem> beginHH = new List<SelectListItem>();
@@ -234,7 +235,6 @@ namespace eform.Controllers
             ViewBag.endMM = endMM;
 
         }
-
         List<string> getDepSigner(ApplicationDbContext ctx, dep depObj, string senderWorkNo, List<string> signerList)
         {
             if (signerList == null)
@@ -271,7 +271,6 @@ namespace eform.Controllers
                 return signerList;
             }
         }
-
         [AdminAuthorize(Roles = "Employee,Admin")]
         public ActionResult CreateOverTimeForm()
         {
@@ -458,8 +457,6 @@ namespace eform.Controllers
                 return View(Model);
             }
         }
-
-
         void initCreateDayOffFormViewBag(vwDayOffForm model)
         {
             model.user = ctx.getCurrentUser(User.Identity.Name);
@@ -627,5 +624,175 @@ namespace eform.Controllers
                 return View(Model);
             }
         }
+
+        [AdminAuthorize(Roles = "Employee,Admin")]
+        public ActionResult RealOverTimeForm()
+        {
+            vwRealOverTime Model = new vwRealOverTime();
+            Model.user = ctx.getCurrentUser(User.Identity.Name);
+            setHMList();
+            return View(Model);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult RealOverTimeForm(vwRealOverTime Model)
+        {
+            #region "checkinput"
+            List<string> errList = new List<string>();
+
+            DateTime dtBegin, dtEnd;
+            dtBegin = Convert.ToDateTime(Model.dtBegin);
+            dtEnd = Convert.ToDateTime(Model.dtEnd);
+            try
+            {
+                dtBegin = new DateTime(dtBegin.Year, dtBegin.Month, dtBegin.Day, Model.beginHH, Model.beginMM, 0);
+                dtEnd = new DateTime(dtEnd.Year, dtEnd.Month, dtEnd.Day, Model.endHH, Model.endMM, 0);
+
+                int icompare = DateTime.Compare(dtBegin, dtEnd);
+                if (icompare >= 0)
+                {
+                    errList.Add("結束時間必須大於開始時間");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                errList.Add("開始時間、結束時間必須是正確格式");
+            }
+
+            if (string.IsNullOrEmpty(Model.sMemo))
+            {
+                errList.Add("請輸入加班事由");
+            }
+
+            if (Model.hours <=0)
+            {
+                errList.Add("小時數必須大於0");
+            }
+
+            if (errList.Count > 0)
+            {
+                ViewBag.UserName = Request.Form["worker"];
+                ModelState.AddModelError("", string.Join(" , ", errList.ToArray<string>()));
+            }
+
+            #endregion
+
+            var context = new ApplicationDbContext();
+
+            if (!ModelState.IsValid)
+            {
+                initCreateOverTimeFormViewBag(context);
+                return View(Model);
+            }
+
+            Model.hours = Convert.ToInt32(((DateTime)Model.dtEnd).Subtract((DateTime)Model.dtBegin).TotalHours);
+
+            string FlowDefKey = "OverTime";
+            FlowMain fmain = new FlowMain();
+            List<FlowSub> fsublist = new List<FlowSub>();
+            FlowDefMain fDefMain = context.FlowDefMainList.Where(x => x.enm == FlowDefKey).FirstOrDefault();
+            List<FlowDefSub> fDefSubList = new List<FlowDefSub>();
+            if (fDefMain != null)
+            {
+                fDefSubList = context.FlowDefSubList.Where(x => x.pid == fDefMain.id).OrderBy(x => x.seq).ToList<FlowDefSub>();
+            }
+
+            var sender = context.Users.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
+            fmain.id = Guid.NewGuid().ToString();
+            fmain.defId = "OverTime";
+            fmain.flowName = fDefMain.nm;
+            fmain.flowStatus = 1;
+            fmain.senderNo = sender.workNo;
+            fmain.billDate = context.getLocalTiime();//Model.billDate;
+            context.FlowMainList.Add(fmain);
+
+            ReqOverTime fmOverTime = new ReqOverTime
+            {
+                dtBegin = dtBegin,
+                dtEnd = dtEnd,
+                hours = Model.hours,
+                sMemo = Model.sMemo,
+                id = Guid.NewGuid().ToString(),
+                flowId = fmain.id
+            };
+
+            context.reqOverTimeList.Add(fmOverTime);
+
+            int flowSeq = 1;
+
+            dbHelper dbh = new dbHelper();
+            string senderPoNo = dbh.sql2Str("select poNo from PoUsers where UserId='" + sender.workNo + "' and ApplicationUser_Id is not null");
+            string senderMgrNo = "";
+
+            List<string> signerList = new List<string>();
+
+            if (!string.IsNullOrEmpty(senderPoNo))
+            {
+                string senderDepNo = dbh.sql2Str("select depNo from jobPoes where poNo='" + senderPoNo + "'");
+                if (!string.IsNullOrEmpty(senderDepNo))
+                {
+                    dep depObj = context.deps.Where(x => x.depNo == senderDepNo).FirstOrDefault();
+                    signerList = getDepSigner(context, depObj, sender.workNo, signerList);
+                }
+            }
+
+            foreach (string signer in signerList)
+            {
+                FlowSub fsub = new FlowSub();
+                fsub.pid = fmain.id;
+                fsub.id = Guid.NewGuid().ToString();
+                fsub.seq = flowSeq;
+                fsub.workNo = signer;
+                fsub.signType = 1;
+                fsub.signResult = 0;
+                flowSeq++;
+                context.FlowSubList.Add(fsub);
+            }
+
+            foreach (FlowDefSub defItem in fDefSubList)
+            {
+                if (defItem.workNo != senderMgrNo && signerList.Where(x => x == defItem.workNo).Count() == 0 && defItem.workNo != sender.workNo)
+                {
+                    FlowSub fsub = new FlowSub();
+                    fsub.pid = fmain.id;
+                    fsub.id = Guid.NewGuid().ToString();
+                    fsub.seq = flowSeq;
+                    fsub.workNo = defItem.workNo;
+                    fsub.signType = defItem.signType;
+                    fsub.signResult = 0;
+                    flowSeq++;
+                    context.FlowSubList.Add(fsub);
+                    signerList.Add(defItem.workNo);
+                }
+            }
+
+            try
+            {
+                context.SaveChanges();
+
+                JObject jobj = new JObject();
+                //jobj["worker"] = sender.cName;
+                //jobj["stype"] = Model.sType;
+                //jobj["place"] = Model.place;
+                //jobj["otherPlace"] = Model.otherPlace;
+                //jobj["prjId"] = Model.prjId;
+                //jobj["sMemo2"] = Model.sMemo2;
+                //jobj["depNo"] = Model.depNo;
+                //jobj["poNo"] = Model.poNo;
+
+                dbh.execSql("update ReqOverTimes set jext =N'" + jobj.ToString() + "' where flowId='" + fmain.id + "'");
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                initCreateOverTimeFormViewBag(context);
+                ViewBag.UserName = Request.Form["worker"].ToString();
+                return View(Model);
+            }
+        }
+
     }
 }

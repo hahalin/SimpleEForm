@@ -63,13 +63,13 @@
                 </li>
                 <li class="treeview">
                     <a href="#">
-                        <i class="fa fa-pencil-square-o"></i><span>個人工作區</span>
+                        <i class="fa fa-desktop"></i><span>個人工作區</span>
                         <i class="fa fa-angle-left pull-right"></i>
                     </a>
                     <ul class="treeview-menu">
                         <li class="treeview">
                             <a href="#">
-                                <i class="fa fa-circle-o"></i>表單申請
+                                <i class="fa fa-list-alt"></i>表單申請
                                 <span class="pull-right-container">
                                     <i class="fa fa-angle-left pull-right"></i>
                                 </span>
@@ -77,24 +77,29 @@
                             <ul class="treeview-menu">
                                 <li>
                                     <a href="@Url.Action("CreateOverTimeForm", "Form", null)">
-                                        <i class="fa fa-circle-o"></i>加班預填單
+                                        <i class="fa fa-pencil-square-o"></i>加班預填單
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("RealOverTimeForm", "Form", null)">
+                                        <i class="fa fa-pencil-square"></i>加班單
                                     </a>
                                 </li>
                                 <li>
                                     <a href="@Url.Action("CreateDayOffForm", "Form", null)">
-                                        <i class="fa fa-circle-o"></i>請假單
+                                        <i class="fa fa-pencil-square-o"></i>請假單
                                     </a>
                                 </li>
                             </ul>
                         </li>
                         <li>
                             <a href="@Url.Action("Index", "Form", null)">
-                                <i class="fa fa-circle-o"></i>表單紀錄
+                                <i class="fa fa-list"></i>表單紀錄
                             </a>
                         </li>
                         <li>
                             <a href="@Url.Action("ChangeMyPassword", "Employee", null)">
-                                <i class="fa fa-circle-o"></i>修改個人密碼
+                                <i class="fa fa-key"></i>修改個人密碼
                             </a>
                         </li>
                     </ul>
@@ -139,7 +144,7 @@
                 <!--主管管理區-->
                 <li class="treeview">
                     <a href="#">
-                        <i class="fa fa-list-ol"></i> <span>主管管理區</span> <i class="fa fa-angle-left pull-right"></i>
+                        <i class="fa fa-users"></i> <span>主管管理區</span> <i class="fa fa-angle-left pull-right"></i>
                     </a>
                     <ul class="treeview-menu">
                         <li>

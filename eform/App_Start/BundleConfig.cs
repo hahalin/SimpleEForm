@@ -24,7 +24,8 @@ namespace eform
                       "~/Content/select2.min.css",
                       "~/Content/themes/base/jquery-ui.css",
                       "~/Scripts/tabulator-master/dist/css/tabulator.min.css",
-                      "~/Scripts/tabulator-master/dist/css/tabulator_site.min.css"
+                      "~/Scripts/tabulator-master/dist/css/tabulator_site.min.css",
+                      "~/Content/bootstrap-datetimepicker.min.css"
             ));
 
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
@@ -45,12 +46,13 @@ namespace eform
             bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
                       "~/Scripts/bootstrap.min.js"));
 
-
             bundles.Add(new ScriptBundle("~/start").Include(
                 "~/admin-lte/js/adminlte.js",
                 "~/Scripts/toastr.min.js",
                 "~/Scripts/bootstrap-select.min.js",
                 "~/Scripts/select2.full.js",
+                "~/Scripts/moment-with-locales.min.js",
+                "~/Scripts/bootstrap-datetimepicker.min.js",
                 "~/Scripts/tabulator-master/dist/js/tabulator.min.js",
                 "~/Scripts/TabulatorEditors.js",
                 "~/Scripts/DateUtil.js"

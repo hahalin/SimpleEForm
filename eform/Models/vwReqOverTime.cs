@@ -48,4 +48,33 @@ namespace eform.Models
         [DisplayName("水電氣使用說明")]
         public string sMemo2 { get; set; }
     }
+
+
+    public class vwRealOverTime
+    {
+        public string id { get; set; }
+        public vwEmployee user { get; set; }
+        public string flowId { get; set; }
+        public string worker { get; set; }
+        [DisplayName("申請日期")]
+        public DateTime? billDate { get; set; }
+        [DisplayName("開始時間")]
+        public DateTime? dtBegin { get; set; }
+        [DisplayName("結束時間")]
+        public DateTime? dtEnd { get; set; }
+        public int beginHH { get; set; } = 0;
+        public int beginMM { get; set; } = 0;
+        public int endHH { get; set; } = 0;
+        public int endMM { get; set; } = 0;
+        [DisplayName("小時數")]
+        [Required]
+        public int hours { get; set; } = 0;
+        [DisplayName("加班事由")]
+        [Required]
+        public string sMemo { get; set; }
+        [DisplayName("專案號碼")]
+        public string prjId { get; set; }
+        [DisplayName("備註")]
+        public string sMemo2 { get; set; }
+    }
 }
