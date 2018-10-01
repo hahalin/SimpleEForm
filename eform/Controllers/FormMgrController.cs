@@ -117,7 +117,7 @@ namespace eform.Controllers
             vwEmployee employee = ctx.getUserByWorkNo(fmain.senderNo);
             ViewBag.Employee = employee;
 
-            #region "加班預填單"
+            #region "非工作時間廠務申請單"
             if (fmain.defId == "OverTime")
             {
                 ReqOverTime reqOverTimeObj = context.reqOverTimeList.Where(x => x.flowId == id).FirstOrDefault();

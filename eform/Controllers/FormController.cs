@@ -193,6 +193,7 @@ namespace eform.Controllers
             placelist.Add(new SelectListItem { Value = "加工區", Text = "加工區" });
             placelist.Add(new SelectListItem { Value = "倉庫區", Text = "倉庫區" });
             placelist.Add(new SelectListItem { Value = "辦公區", Text = "辦公區" });
+            placelist.Add(new SelectListItem { Value = "公道路辦公室", Text = "公道路辦公室" });
             placelist.Add(new SelectListItem { Value = "其他", Text = "其他" });
             ViewBag.placelist = placelist;
 
@@ -255,14 +256,20 @@ namespace eform.Controllers
 
             for (int i = 0; i <= 24; i++)
             {
-                beginHH.Add(new SelectListItem { Text = i.ToString(), Value = i.ToString() });
-                endHH.Add(new SelectListItem { Text = i.ToString(), Value = i.ToString() });
+                beginHH.Add(new SelectListItem { Text = i.ToString("0#"), Value = i.ToString("0#") });
+                endHH.Add(new SelectListItem { Text = i.ToString("0#"), Value = i.ToString("0#") });
             }
-            for (int i = 0; i <= 60; i++)
-            {
-                beginMM.Add(new SelectListItem { Text = i.ToString(), Value = i.ToString() });
-                endMM.Add(new SelectListItem { Text = i.ToString(), Value = i.ToString() });
-            }
+
+            beginMM.Add(new SelectListItem { Text = "00", Value = "00" });
+            endMM.Add(new SelectListItem { Text = "00", Value = "00" });
+            beginMM.Add(new SelectListItem { Text = "30", Value = "30" });
+            endMM.Add(new SelectListItem { Text = "30", Value = "30" });
+
+            //for (int i = 0; i <= 60; i++)
+            //{
+            //    beginMM.Add(new SelectListItem { Text = i.ToString(), Value = i.ToString() });
+            //    endMM.Add(new SelectListItem { Text = i.ToString(), Value = i.ToString() });
+            //}
             ViewBag.beginHH = beginHH;
             ViewBag.beginMM = beginMM;
             ViewBag.endHH = endHH;

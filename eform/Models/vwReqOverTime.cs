@@ -35,9 +35,9 @@ namespace eform.Models
         //[Range(1,12,ErrorMessage ="加班時數必須於1到12小時間")]
         //[Required(ErrorMessage ="加班時數必須輸入")]
         public decimal hours { get; set; } = 0;
-        [DisplayName("加班事由")]
+        [DisplayName("申請事由")]
         public string sMemo { get; set; }
-        [DisplayName("加班類型")]
+        [DisplayName("申請類型")]
         public string sType { get; set; } = "平日";
         [DisplayName("工作地點")]
         //[Required(ErrorMessage ="請選擇工作地點")]

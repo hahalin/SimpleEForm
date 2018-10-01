@@ -57,13 +57,13 @@ namespace eform.Models
                 switch(signType)
                 {
                     case 1:
-                        return "1.會簽";
+                        return "會簽";
                     case 2:
-                        return "2.會簽-全部同意";
+                        return "會簽-全部同意";
                     case 3:
-                        return "3.直接許可";
+                        return "直接許可";
                     case 4:
-                        return "4.串簽";
+                        return "串簽";
                     default:
                         return "1.會簽";
                 }
