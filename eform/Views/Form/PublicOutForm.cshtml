@@ -1,0 +1,144 @@
+﻿@model eform.Models.vwPublicOut
+@using Newtonsoft.Json;
+@using eform.Models;
+@{
+    ViewBag.Title = "外出申請單";
+    List<vwRealOverTime> historyList = (List<vwRealOverTime>)ViewBag.historyList;
+}
+<style>
+    span, label, button, th {
+        font-family: 微軟正黑體;
+    }
+
+    th {
+        text-align: center;
+    }
+</style>
+<div class="row">
+    <div class="col-md-10">
+        <div class="box">
+            <div class="box-header text-center">
+                <div class="box-title ">
+                    <h3><span class="label label-info">@ViewBag.Title</span></h3>
+                    <h3><span class="" style="font-weight:bold;">@Model.user.Company</span></h3>
+                    <h5><label>工號：</label>@Model.user.workNo<label style="margin-left:10px;">到職日：</label>@Model.user.sBeginWorkDate</h5>
+                </div>
+            </div>
+            <div class="box-body>">
+                @using (Html.BeginForm("PublicOutForm", "Form", FormMethod.Post, new { id = "fmMain" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-horizontal col-md-10">
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger", style = "font-size:15px;font-weight:bold;" })
+
+                        <div class="form-group">
+                            <label class="control-label col-md-2">出差人員</label>
+                            <div class="col-md-4">
+                                <div class="form-control">@Model.user.workNo-@Model.user.UserCName</div>
+                                <input type="hidden" name="worker" value="@Model.user.workNo" />
+                            </div>
+                            @Html.LabelFor(model => model.billDate, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                @Html.EditorFor(model => model.billDate, new { htmlAttributes = new { @class = "form-control", type = "date", @readonly = "readonly" } })
+                                @Html.ValidationMessageFor(model => model.billDate, "", new { @class = "text-danger," })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.subject, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.subject, new { htmlAttributes = new { @class = "form-control", type = "text", style = "width:630px;" } })
+                                @Html.ValidationMessageFor(model => model.subject, "", new { @class = "text-danger," })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.dtBegin, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-3">
+                                <div class='input-group date' id='datetimepicker1'>
+                                    @Html.EditorFor(model => model.dtBegin, new { htmlAttributes = new { @class = "form-control", type = "text" } })
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                @Html.DropDownListFor(model => model.beginHH, (SelectList)ViewBag.beginHHList, new { @class = "form-control", style = "width:70px;" })
+                            </div>
+                            <label class="control-label col-md-1">時</label>
+                            <div class="col-md-1">
+                                @Html.DropDownListFor(model => model.beginMM, (SelectList)ViewBag.beginMMList, new { @class = "form-control", style = "width:70px;" })
+                            </div>
+                            <label class="control-label col-md-1">分</label>
+                            @Html.ValidationMessageFor(model => model.dtBegin, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.dtEnd, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-3">
+                                <div class='input-group date' id='datetimepicker2'>
+                                    @Html.EditorFor(model => model.dtEnd, new { htmlAttributes = new { @class = "form-control", type = "text" } })
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                @Html.DropDownListFor(model => model.endHH, (SelectList)ViewBag.endHHList, new { @class = "form-control", style = "width:70px;" })
+                            </div>
+                            <label class="control-label col-md-1">時</label>
+                            <div class="col-md-1">
+                                @Html.DropDownListFor(model => model.endMM, (SelectList)ViewBag.endMMList, new { @class = "form-control", style = "width:70px;" })
+                            </div>
+                            <label class="control-label col-md-1">分</label>
+                            @Html.ValidationMessageFor(model => model.dtEnd, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.transport, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.transport, new { htmlAttributes = new { @class = "form-control", type = "text", style = "width:630px;" } })
+                                @Html.ValidationMessageFor(model => model.transport, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.destination, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-8">
+                                <div class="label label-warning" style="font-size:13px;">由出發地填寫至結束地</div>
+                                @Html.TextAreaFor(model => model.destination, new { @class = "form-control", style = "width:630px;",rows=3 })
+                            </div>
+                        </div>
+                        <div class="col-md-offset-2 col-md-10 text-center">
+                            <input type="submit" value="送出" class="btn-lg btn-primary" onclick="return doSubmit();" />
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="box-footer">
+            </div>
+        </div>
+    </div>
+    </div>
+
+    @section Scripts {
+        <script type="text/javascript">
+            function doSubmit() {
+                alert("系統開發中...");
+                return false;
+            }
+            $(function () {
+                var pickerOption = {
+                    format: 'YYYY-MM-DD',
+                    locale: 'zh-tw',
+                    defaultDate: getLocalDateStr()
+                };
+                $('#datetimepicker1').datetimepicker(pickerOption);
+                $('#datetimepicker2').datetimepicker(pickerOption);
+
+                $('textarea').css('max-width', '700px');
+                $('input[type=text]').css('max-width', '700px');
+
+                if ($($('.validation-summary-errors')[0]).text() == "") {
+                    $('#billDate').val(getLocalDateStr());
+                }
+
+            });
+        </script>
+    }

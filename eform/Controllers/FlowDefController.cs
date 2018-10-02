@@ -90,7 +90,7 @@ namespace eform.Controllers
 
             getFlowMainData(context, id);
 
-            List<FlowDefSub> list = context.FlowDefSubList.Where(x => x.pid == id).ToList<FlowDefSub>();
+            List<FlowDefSub> list = context.FlowDefSubList.Where(x => x.pid == id).OrderBy(x=>x.seq).ToList<FlowDefSub>();
 
             List<vwFlowDefSub> vwList = new List<vwFlowDefSub>();
 

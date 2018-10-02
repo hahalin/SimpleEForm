@@ -151,9 +151,9 @@
         </div>
     </div>
 </div>
+@section scripts{
 <script type="text/javascript">
     $(function () {
-
         var msg = "";
         @if(TempData["error"]!=null)
         {
@@ -161,6 +161,5 @@
             @:alert(msg);
         }
     })
-
-
 </script>
+}

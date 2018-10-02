@@ -252,6 +252,38 @@ namespace eform.Controllers
                         }
                     }
                 }
+
+                if (fmain.defId == "RealOverTime")
+                {
+                    List<FlowSub> qPriorSigner = ctx.FlowSubList.Where(x => x.pid == id && x.seq < fsub.seq && x.signResult == 0).ToList<FlowSub>();
+                    if (qPriorSigner.Count() > 0)
+                    {
+                        TempData["error"] = "上一位簽核人尚未簽核";
+                        return RedirectToAction("Details", "FormMgr", new { id = fmain.id });
+                    }
+                    fsub.signDate = context.getLocalTiime();
+                    fsub.signResult = Convert.ToInt16(signValue);
+                    fsub.comment = signMemo;
+                    context.SaveChanges();
+
+                    dbHelper dbh = new dbHelper();
+                    var fsublist = ctx.FlowSubList.Where(x => x.pid == id);
+                    if (fsub.signResult == 1 &&
+                        fsublist.Where(x => x.signResult == 1).Count() == fsublist.Count()
+                    )
+                    {
+                        dbh.execSql("update FlowMains set flowStatus=2 where id='" + id + "'");
+                    }
+
+                    if (fsub.signResult == 2)
+                    {
+                        int allCnt = context.FlowSubList.Where(x => x.pid == id).Count();
+                        {
+                            dbh.execSql("update FlowMains set flowStatus=3 where id='" + id + "'");
+                        }
+                    }
+                }
+
                 if (fmain.defId == "DayOff")
                 {
                     List<FlowSub> qPriorSigner = ctx.FlowSubList.Where(x => x.pid == id && x.seq < fsub.seq && x.signResult == 0).ToList<FlowSub>();

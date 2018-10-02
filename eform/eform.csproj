@@ -337,6 +337,7 @@
     <Compile Include="Models\newsType.cs" />
     <Compile Include="Models\permission.cs" />
     <Compile Include="Models\prj.cs" />
+    <Compile Include="Models\publicOut.cs" />
     <Compile Include="Models\ReqOverTime.cs" />
     <Compile Include="Models\salary.cs" />
     <Compile Include="Models\vwDayOffForm.cs" />
@@ -1310,6 +1311,7 @@
     <Content Include="Views\Prj\Index.cshtml" />
     <Content Include="Views\Form\RealOverTimeForm.cshtml" />
     <Content Include="Views\Shared\Form\_RealOverTimeForm.cshtml" />
+    <Content Include="Views\Form\PublicOutForm.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -666,10 +666,6 @@ namespace eform.Controllers
             }
         }
 
-        void getRealOverTimeHistory()
-        {
-
-        }
         [AdminAuthorize(Roles = "Employee,Admin")]
         public ActionResult RealOverTimeForm()
         {
@@ -847,5 +843,13 @@ namespace eform.Controllers
             }
         }
 
+        [AdminAuthorize(Roles = "Employee,Admin")]
+        public ActionResult PublicOutForm()
+        {
+            vwPublicOut Model = new vwPublicOut();
+            Model.user = ctx.getCurrentUser(User.Identity.Name);
+            setHMList();
+            return View(Model);
+        }
     }
 }
