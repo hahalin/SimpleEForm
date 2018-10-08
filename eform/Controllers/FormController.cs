@@ -180,6 +180,23 @@ namespace eform.Controllers
                     ViewBag.SubModel = subModel;
                     return View("Details", list);
                 }
+                if (fmain.defId == "PublicOut")
+                { 
+                    publicOut publicOutObj = ctx.publicOutList.Where(x => x.flowId == fmain.id).FirstOrDefault();
+                    vwPublicOut subModel = new vwPublicOut
+                    {
+                        id = publicOutObj.id,
+                        user=ctx.getUserByWorkNo(fmain.senderNo),
+                        requestDate = publicOutObj.requestDate,
+                        dtBegin = publicOutObj.dtBegin,
+                        dtEnd = publicOutObj.dtEnd,
+                        subject=publicOutObj.subject,
+                        destination = publicOutObj.destination,
+                        transport=publicOutObj.transport
+                    };
+                    ViewBag.SubModel = subModel;
+                    return View("Details", list);
+                }
             }
 
             return View(list);
@@ -847,9 +864,155 @@ namespace eform.Controllers
         public ActionResult PublicOutForm()
         {
             vwPublicOut Model = new vwPublicOut();
+            Model.requestDate = ctx.getLocalTiime();
             Model.user = ctx.getCurrentUser(User.Identity.Name);
             setHMList();
             return View(Model);
+        }
+        [AdminAuthorize(Roles = "Employee,Admin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult PublicOutForm(vwPublicOut Model)
+        {
+            #region "checkinput"
+            List<string> errList = new List<string>();
+
+            DateTime dtBegin, dtEnd;
+            dtBegin = Convert.ToDateTime(Model.dtBegin);
+            dtEnd = Convert.ToDateTime(Model.dtEnd);
+            try
+            {
+                dtBegin = new DateTime(dtBegin.Year, dtBegin.Month, dtBegin.Day, Model.beginHH, Model.beginMM, 0);
+                dtEnd = new DateTime(dtEnd.Year, dtEnd.Month, dtEnd.Day, Model.endHH, Model.endMM, 0);
+
+                int icompare = DateTime.Compare(dtBegin, dtEnd);
+                if (icompare >= 0)
+                {
+                    errList.Add("回廠時間必須大於出發時間");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                errList.Add("開始時間、結束時間必須是正確格式");
+            }
+
+            if (errList.Count > 0)
+            {
+                ModelState.AddModelError("", string.Join(",", errList));
+                //Model.user = ctx.getCurrentUser(User.Identity.Name);
+                //Model.requestDate = ctx.getLocalTiime();
+                //setHMList();
+                //return View(Model);
+            }
+
+            #endregion
+
+            var context = new ApplicationDbContext();
+
+            if (!ModelState.IsValid)
+            {
+                Model.user = ctx.getCurrentUser(User.Identity.Name);
+                Model.requestDate = ctx.getLocalTiime();
+                setHMList();
+                return View(Model);
+            }
+
+            string FlowDefKey = "PublicOut";
+            FlowMain fmain = new FlowMain();
+            List<FlowSub> fsublist = new List<FlowSub>();
+            FlowDefMain fDefMain = context.FlowDefMainList.Where(x => x.enm == FlowDefKey).FirstOrDefault();
+            List<FlowDefSub> fDefSubList = new List<FlowDefSub>();
+            if (fDefMain != null)
+            {
+                fDefSubList = context.FlowDefSubList.Where(x => x.pid == fDefMain.id).OrderBy(x => x.seq).ToList<FlowDefSub>();
+            }
+
+            var sender = context.Users.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
+            fmain.id = Guid.NewGuid().ToString();
+            fmain.defId = FlowDefKey;
+            fmain.flowName = fDefMain.nm;
+            fmain.flowStatus = 1;
+            fmain.senderNo = sender.workNo;
+            fmain.billDate = context.getLocalTiime();
+            context.FlowMainList.Add(fmain);
+
+            publicOut fmObj = new publicOut
+            {
+                dtBegin = dtBegin,
+                dtEnd = dtEnd,
+                destination=Model.destination,
+                requestDate=Model.requestDate,
+                subject=Model.subject,
+                transport=Model.transport,
+                id = Guid.NewGuid().ToString(),
+                flowId = fmain.id
+            };
+
+            context.publicOutList.Add(fmObj);
+
+            int flowSeq = 1;
+
+            dbHelper dbh = new dbHelper();
+            string senderPoNo = dbh.sql2Str("select poNo from PoUsers where UserId='" + sender.workNo + "' and ApplicationUser_Id is not null");
+            string senderMgrNo = "";
+
+            List<string> signerList = new List<string>();
+
+            if (!string.IsNullOrEmpty(senderPoNo))
+            {
+                string senderDepNo = dbh.sql2Str("select depNo from jobPoes where poNo='" + senderPoNo + "'");
+                if (!string.IsNullOrEmpty(senderDepNo))
+                {
+                    dep depObj = context.deps.Where(x => x.depNo == senderDepNo).FirstOrDefault();
+                    signerList = getDepSigner(context, depObj, sender.workNo, signerList);
+                }
+            }
+
+            foreach (string signer in signerList)
+            {
+                FlowSub fsub = new FlowSub();
+                fsub.pid = fmain.id;
+                fsub.id = Guid.NewGuid().ToString();
+                fsub.seq = flowSeq;
+                fsub.workNo = signer;
+                fsub.signType = 1;
+                fsub.signResult = 0;
+                flowSeq++;
+                context.FlowSubList.Add(fsub);
+            }
+
+            foreach (FlowDefSub defItem in fDefSubList)
+            {
+                if (defItem.workNo != senderMgrNo && signerList.Where(x => x == defItem.workNo).Count() == 0 && defItem.workNo != sender.workNo)
+                {
+                    FlowSub fsub = new FlowSub();
+                    fsub.pid = fmain.id;
+                    fsub.id = Guid.NewGuid().ToString();
+                    fsub.seq = flowSeq;
+                    fsub.workNo = defItem.workNo;
+                    fsub.signType = defItem.signType;
+                    fsub.signResult = 0;
+                    flowSeq++;
+                    context.FlowSubList.Add(fsub);
+                    signerList.Add(defItem.workNo);
+                }
+            }
+
+            try
+            {
+                context.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                Model.user = ctx.getCurrentUser(User.Identity.Name);
+                Model.requestDate = ctx.getLocalTiime();
+                setHMList();
+                return View(Model);
+            }
+
         }
     }
 }

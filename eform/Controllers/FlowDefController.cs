@@ -141,14 +141,14 @@ namespace eform.Controllers
 
                 FlowDefMain fmain = ctx.FlowDefMainList.Where(x => x.id == model.pid).FirstOrDefault();
 
-                if(fmain.enm== "RealOverTime" && model.signType !=4)
+                if(fmain.enm== "RealOverTime" && model.signType != 3 && model.signType != 4)
                 {
-                    ModelState.AddModelError("signType", "加班單限定為串簽");
+                    ModelState.AddModelError("signType", "加班單限定為串簽或直接許可");
                 }
 
-                if (fmain.enm == "DayOff" && model.signType != 4)
+                if (fmain.enm == "DayOff" && model.signType != 3 && model.signType != 4)
                 {
-                    ModelState.AddModelError("signType", "請假單限定為串簽");
+                    ModelState.AddModelError("signType", "請假單限定為串簽或直接許可");
                 }
 
                 if (!string.IsNullOrEmpty(model.workNo))

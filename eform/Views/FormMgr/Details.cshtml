@@ -78,10 +78,13 @@
             {
                 @Html.Partial("Form/_RealOverTimeForm", (vwRealOverTime)ViewBag.SubModel)
             }
-
             @if (flowMain.defId == "DayOff")
             {
                 @Html.Partial("Form/_DayOffForm", (vwDayOffForm)ViewBag.SubModel)
+            }
+            @if (flowMain.defId == "PublicOut")
+            {
+                @Html.Partial("Form/_PublicOutForm", (vwPublicOut)ViewBag.SubModel)
             }
         </div>
     </div>

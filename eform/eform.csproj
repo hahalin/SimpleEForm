@@ -322,6 +322,10 @@
     <Compile Include="Migrations\201809141237146_addDayOffEntities.Designer.cs">
       <DependentUpon>201809141237146_addDayOffEntities.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201810031354158_addPublicOutTable.cs" />
+    <Compile Include="Migrations\201810031354158_addPublicOutTable.Designer.cs">
+      <DependentUpon>201810031354158_addPublicOutTable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ApplicationDbContext.cs" />
@@ -1312,6 +1316,7 @@
     <Content Include="Views\Form\RealOverTimeForm.cshtml" />
     <Content Include="Views\Shared\Form\_RealOverTimeForm.cshtml" />
     <Content Include="Views\Form\PublicOutForm.cshtml" />
+    <Content Include="Views\Shared\Form\_PublicOutForm.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1396,6 +1401,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201809141237146_addDayOffEntities.resx">
       <DependentUpon>201809141237146_addDayOffEntities.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201810031354158_addPublicOutTable.resx">
+      <DependentUpon>201810031354158_addPublicOutTable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -7,6 +7,7 @@ using eform.Attributes;
 using eform.Models;
 using eform.Attributes;
 using Newtonsoft.Json.Linq;
+using System.Data;
 
 namespace eform.Controllers
 {
@@ -27,11 +28,11 @@ namespace eform.Controllers
             var user = context.Users.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
 
             var unSignMainList = from item in context.FlowMainList
-                                 where item.flowStatus == 1
+                                 where item.flowStatus == 1 
                                  select item.id;
 
             var mySignSubList = (from item in context.FlowSubList
-                                 where item.workNo == user.workNo && item.signResult==0
+                                 where item.workNo == user.workNo && item.signResult == 0
                                  && unSignMainList.Contains(item.pid)
                                  select item.pid).ToList<string>();
 
@@ -53,8 +54,8 @@ namespace eform.Controllers
                 };
                 list.Add(vwItem);
             }
-
-            return View(list);
+            var rlist = list.OrderByDescending(x => x.billDate).ToList<vwFlowMain>();
+            return View(rlist);
         }
 
 
@@ -86,7 +87,7 @@ namespace eform.Controllers
         }
 
         [AdminAuthorize(Roles = "Admin,Employee")]
-        public ActionResult Details(string id, string FlowPageType = "", string ReturnAction="")
+        public ActionResult Details(string id, string FlowPageType = "", string ReturnAction = "")
         {
             var context = new ApplicationDbContext();
             ViewBag.FlowPageType = FlowPageType;
@@ -170,7 +171,7 @@ namespace eform.Controllers
                 {
                     vwReqOverTimeObj = new vwRealOverTime
                     {
-                        user=ctx.getUserByWorkNo(fmain.senderNo),
+                        user = ctx.getUserByWorkNo(fmain.senderNo),
                         dtBegin = reqOverTimeObj.dtBegin,
                         dtEnd = reqOverTimeObj.dtEnd,
                         hours = reqOverTimeObj.hours,
@@ -210,8 +211,40 @@ namespace eform.Controllers
                 return View("Details", list);
             }
             #endregion
+            
+            #region "外出申請單"
+            if (fmain.defId == "PublicOut")
+            {
+                publicOut publicOutObj = ctx.publicOutList.Where(x => x.flowId == fmain.id).FirstOrDefault();
+                vwPublicOut subModel = new vwPublicOut
+                {
+                    id = publicOutObj.id,
+                    user = ctx.getUserByWorkNo(fmain.senderNo),
+                    requestDate = publicOutObj.requestDate,
+                    dtBegin = publicOutObj.dtBegin,
+                    dtEnd = publicOutObj.dtEnd,
+                    subject = publicOutObj.subject,
+                    destination = publicOutObj.destination,
+                    transport = publicOutObj.transport
+                };
+                ViewBag.SubModel = subModel;
+                return View("Details", list);
+            }
+
+            #endregion
 
             return View(list);
+        }
+
+        bool isGmDep(string workNo)
+        {
+            dbHelper dbh = new dbHelper();
+            string sql = @"select count(b.depNo) as cnt
+                            from PoUsers a inner join jobPoes b on a.poNO=b.poNo 
+                                           inner join deps c on b.depNo=c.depNo
+                            where a.UserId='@workno' and a.applicationUser_id is not null and b.depNo='001'";
+            sql = sql.Replace("@workno", workNo);
+            return  dbh.sql2count(sql)>0;
         }
 
         [HttpPost]
@@ -224,9 +257,11 @@ namespace eform.Controllers
             string signValue = collection["signValue"].ToString();
             string signMemo = collection["signMemo"].ToString();
             string workNo = context.Users.Where(x => x.UserName == User.Identity.Name).FirstOrDefault().workNo;
-
+            
             FlowSub fsub = context.FlowSubList.Where(x => x.pid == id && x.workNo == workNo).FirstOrDefault();
             FlowMain fmain = ctx.FlowMainList.Where(x => x.id == id).FirstOrDefault();
+            bool bIsGmDep = false;
+            bIsGmDep = isGmDep(workNo);
             if (fsub != null && fmain != null)
             {
                 if (fmain.defId == "OverTime")
@@ -255,11 +290,14 @@ namespace eform.Controllers
 
                 if (fmain.defId == "RealOverTime")
                 {
-                    List<FlowSub> qPriorSigner = ctx.FlowSubList.Where(x => x.pid == id && x.seq < fsub.seq && x.signResult == 0).ToList<FlowSub>();
-                    if (qPriorSigner.Count() > 0)
+                    if (fsub.signType != 3 && (!bIsGmDep))
                     {
-                        TempData["error"] = "上一位簽核人尚未簽核";
-                        return RedirectToAction("Details", "FormMgr", new { id = fmain.id });
+                        List<FlowSub> qPriorSigner = ctx.FlowSubList.Where(x => x.pid == id && x.seq < fsub.seq && x.signResult == 0).ToList<FlowSub>();
+                        if (qPriorSigner.Count() > 0)
+                        {
+                            TempData["error"] = "上一位簽核人尚未簽核";
+                            return RedirectToAction("Details", "FormMgr", new { id = fmain.id });
+                        }
                     }
                     fsub.signDate = context.getLocalTiime();
                     fsub.signResult = Convert.ToInt16(signValue);
@@ -269,7 +307,7 @@ namespace eform.Controllers
                     dbHelper dbh = new dbHelper();
                     var fsublist = ctx.FlowSubList.Where(x => x.pid == id);
                     if (fsub.signResult == 1 &&
-                        fsublist.Where(x => x.signResult == 1).Count() == fsublist.Count()
+                        (fsublist.Where(x => x.signResult == 1).Count() == fsublist.Count() || bIsGmDep)
                     )
                     {
                         dbh.execSql("update FlowMains set flowStatus=2 where id='" + id + "'");
@@ -286,11 +324,14 @@ namespace eform.Controllers
 
                 if (fmain.defId == "DayOff")
                 {
-                    List<FlowSub> qPriorSigner = ctx.FlowSubList.Where(x => x.pid == id && x.seq < fsub.seq && x.signResult == 0).ToList<FlowSub>();
-                    if (qPriorSigner.Count()>0)
-                    {
-                        TempData["error"] = "上一位簽核人尚未簽核";
-                        return RedirectToAction("Details", "FormMgr",new { id = fmain.id });
+                    if (fsub.signType !=3 && (!bIsGmDep))
+                    { 
+                        List<FlowSub> qPriorSigner = ctx.FlowSubList.Where(x => x.pid == id && x.seq < fsub.seq && x.signResult == 0).ToList<FlowSub>();
+                        if (qPriorSigner.Count() > 0)
+                        {
+                            TempData["error"] = "上一位簽核人尚未簽核";
+                            return RedirectToAction("Details", "FormMgr", new { id = fmain.id });
+                        }
                     }
                     fsub.signDate = context.getLocalTiime();
                     fsub.signResult = Convert.ToInt16(signValue);
@@ -299,8 +340,8 @@ namespace eform.Controllers
 
                     dbHelper dbh = new dbHelper();
                     var fsublist = ctx.FlowSubList.Where(x => x.pid == id);
-                    if (fsub.signResult == 1 && 
-                        fsublist.Where(x=>x.signResult==1).Count()==fsublist.Count()
+                    if (fsub.signResult == 1 &&
+                        (fsublist.Where(x => x.signResult == 1).Count() == fsublist.Count() || bIsGmDep)
                     )
                     {
                         dbh.execSql("update FlowMains set flowStatus=2 where id='" + id + "'");
@@ -308,6 +349,29 @@ namespace eform.Controllers
 
                     if (fsub.signResult == 2)
                     {
+                        int allCnt = context.FlowSubList.Where(x => x.pid == id).Count();
+                        {
+                            dbh.execSql("update FlowMains set flowStatus=3 where id='" + id + "'");
+                        }
+                    }
+                }
+
+                if (fmain.defId == "PublicOut")
+                {
+                    fsub.signDate = context.getLocalTiime();
+                    fsub.signResult = Convert.ToInt16(signValue);
+                    fsub.comment = signMemo;
+                    context.SaveChanges();
+
+                    dbHelper dbh = new dbHelper();
+                    if (fsub.signResult == 1)
+                    {
+                        dbh.execSql("update FlowMains set flowStatus=2 where id='" + id + "'");
+                    }
+
+                    if (fsub.signResult == 2)
+                    {
+                        int allDenyCnt = context.FlowSubList.Where(x => x.pid == id && x.signResult == 2).Count();
                         int allCnt = context.FlowSubList.Where(x => x.pid == id).Count();
                         {
                             dbh.execSql("update FlowMains set flowStatus=3 where id='" + id + "'");
@@ -331,8 +395,8 @@ namespace eform.Controllers
             //                      select item.id);
 
             var signOkSubList = from item in context.FlowSubList
-                                      where item.signResult !=0 && item.signResult != 99 && item.workNo == user.workNo
-                                      select item.pid;
+                                where item.signResult != 0 && item.signResult != 99 && item.workNo == user.workNo
+                                select item.pid;
 
 
             var mySignSubList = (from item in context.FlowSubList
@@ -341,7 +405,7 @@ namespace eform.Controllers
                                  select item.pid).ToList<string>();
 
             var mySignMainList = context.FlowMainList.Where(x => mySignSubList.Contains(x.id))
-                .OrderByDescending(x=>x.billDate).ToList<FlowMain>();
+                .OrderByDescending(x => x.billDate).ToList<FlowMain>();
 
             List<vwFlowMain> list = new List<vwFlowMain>();
 
@@ -360,7 +424,7 @@ namespace eform.Controllers
                 list.Add(vwItem);
             }
             ViewBag.FlowPageType = "Query";
-            return View(list);
+            return View(list.OrderByDescending(x=>x.billDate).ToList<vwFlowMain>());
         }
 
         [AdminAuthorize(Roles = "Admin")]
@@ -425,7 +489,7 @@ namespace eform.Controllers
                     list.Add(vwItem);
                 }
             }
-            return View(list);
+            return View(list.OrderByDescending(x=>x.billDate).ToList<vwFlowMain>());
         }
     }
 }
