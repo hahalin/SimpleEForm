@@ -160,7 +160,9 @@
                                 簽核狀態
                             </th>
                         </tr>
-                        @foreach (var item in historyList)
+                        @if (historyList != null)
+                        {
+                            foreach (var item in historyList)
                             {
                                 //var dayoff = dayOffList.Where(x => x.flowId == flow.id).FirstOrDefault();
                                 <tr>
@@ -184,6 +186,7 @@
                                     </td>
                                 </tr>
                             }
+                        }
                     </table>
                 </div>
             </div>

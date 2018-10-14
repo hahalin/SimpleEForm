@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using eform.Attributes;
 using eform.Models;
-using eform.Attributes;
 using Newtonsoft.Json.Linq;
 using System.Data;
 
@@ -28,7 +26,7 @@ namespace eform.Controllers
             var user = context.Users.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
 
             var unSignMainList = from item in context.FlowMainList
-                                 where item.flowStatus == 1 
+                                 where item.flowStatus == 1
                                  select item.id;
 
             var mySignSubList = (from item in context.FlowSubList
@@ -89,6 +87,11 @@ namespace eform.Controllers
         [AdminAuthorize(Roles = "Admin,Employee")]
         public ActionResult Details(string id, string FlowPageType = "", string ReturnAction = "")
         {
+            if (ctx.FlowSubList.Where(x=>x.pid==id && x.workNo== User.Identity.Name).Count()==0)
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+
             var context = new ApplicationDbContext();
             ViewBag.FlowPageType = FlowPageType;
             ViewBag.ReturnAction = ReturnAction;
@@ -211,7 +214,7 @@ namespace eform.Controllers
                 return View("Details", list);
             }
             #endregion
-            
+
             #region "外出申請單"
             if (fmain.defId == "PublicOut")
             {
@@ -244,7 +247,7 @@ namespace eform.Controllers
                                            inner join deps c on b.depNo=c.depNo
                             where a.UserId='@workno' and a.applicationUser_id is not null and b.depNo='001'";
             sql = sql.Replace("@workno", workNo);
-            return  dbh.sql2count(sql)>0;
+            return dbh.sql2count(sql) > 0;
         }
 
         [HttpPost]
@@ -257,7 +260,7 @@ namespace eform.Controllers
             string signValue = collection["signValue"].ToString();
             string signMemo = collection["signMemo"].ToString();
             string workNo = context.Users.Where(x => x.UserName == User.Identity.Name).FirstOrDefault().workNo;
-            
+
             FlowSub fsub = context.FlowSubList.Where(x => x.pid == id && x.workNo == workNo).FirstOrDefault();
             FlowMain fmain = ctx.FlowMainList.Where(x => x.id == id).FirstOrDefault();
             bool bIsGmDep = false;
@@ -324,8 +327,8 @@ namespace eform.Controllers
 
                 if (fmain.defId == "DayOff")
                 {
-                    if (fsub.signType !=3 && (!bIsGmDep))
-                    { 
+                    if (fsub.signType != 3 && (!bIsGmDep))
+                    {
                         List<FlowSub> qPriorSigner = ctx.FlowSubList.Where(x => x.pid == id && x.seq < fsub.seq && x.signResult == 0).ToList<FlowSub>();
                         if (qPriorSigner.Count() > 0)
                         {
@@ -424,7 +427,47 @@ namespace eform.Controllers
                 list.Add(vwItem);
             }
             ViewBag.FlowPageType = "Query";
-            return View(list.OrderByDescending(x=>x.billDate).ToList<vwFlowMain>());
+            return View(list.OrderByDescending(x => x.billDate).ToList<vwFlowMain>());
+        }
+
+        [AdminAuthorize(Roles = "Admin,Employee")]
+        public ActionResult HRCheckFlow()
+        {
+            return RedirectToAction("onWorking", "Account");
+
+            var user = ctx.Users.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
+
+            var signOkSubList = from item in ctx.FlowSubList
+                                where item.signResult != 0 && item.signResult != 99 && item.workNo == user.workNo
+                                select item.pid;
+
+
+            var mySignSubList = (from item in ctx.FlowSubList
+                                 where item.workNo == user.workNo
+                                 && signOkSubList.Contains(item.pid)
+                                 select item.pid).ToList<string>();
+
+            var mySignMainList = ctx.FlowMainList.Where(x => mySignSubList.Contains(x.id))
+                .OrderByDescending(x => x.billDate).ToList<FlowMain>();
+
+            List<vwFlowMain> list = new List<vwFlowMain>();
+
+            foreach (FlowMain item in mySignMainList)
+            {
+                var Status = ctx.flowStatusList().Where(x => x.id == item.flowStatus).FirstOrDefault();
+                var sender = ctx.Users.Where(x => x.workNo.Equals(item.senderNo)).FirstOrDefault();
+                vwFlowMain vwItem = new vwFlowMain
+                {
+                    id = item.id,
+                    sender = sender.workNo + " " + sender.cName,
+                    billDate = item.billDate,
+                    flowName = item.flowName,
+                    flowStatus = Status == null ? "簽核中" : Status.nm
+                };
+                list.Add(vwItem);
+            }
+            ViewBag.FlowPageType = "HRCheck";
+            return View(list.OrderByDescending(x => x.billDate).ToList<vwFlowMain>());
         }
 
         [AdminAuthorize(Roles = "Admin")]
@@ -489,7 +532,7 @@ namespace eform.Controllers
                     list.Add(vwItem);
                 }
             }
-            return View(list.OrderByDescending(x=>x.billDate).ToList<vwFlowMain>());
+            return View(list.OrderByDescending(x => x.billDate).ToList<vwFlowMain>());
         }
     }
 }

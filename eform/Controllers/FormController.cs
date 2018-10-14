@@ -10,6 +10,11 @@ using Newtonsoft.Json.Linq;
 using Dapper;
 using eform.Attributes;
 using eform.Models;
+using System.Threading.Tasks;
+using SendGrid.Helpers.Mail;
+using System.Text;
+using eform.Service;
+using System.Web.Routing;
 
 namespace eform.Controllers
 {
@@ -46,10 +51,9 @@ namespace eform.Controllers
                 };
                 list.Add(item);
             }
-
-
             return View(list);
         }
+        
         void getOverTime(FlowMain fmain)
         {
             string id = fmain.id;
@@ -343,9 +347,8 @@ namespace eform.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult CreateOverTimeForm(vwReqOverTime Model)
+        public async Task<ActionResult> CreateOverTimeForm(vwReqOverTime Model)
         {
-
             #region "checkinput"
             List<string> errList = new List<string>();
 
@@ -504,6 +507,29 @@ namespace eform.Controllers
 
                 dbh.execSql("update ReqOverTimes set jext =N'"+jobj.ToString()+"' where flowId='"+fmain.id+"'");
 
+                List<EmailAddress> mailList = new List<EmailAddress>();
+                foreach (FlowDefSub defItem in fDefSubList)
+                {
+                    vwEmployee emp = ctx.getUserByWorkNo(defItem.workNo);
+                    if (!string.IsNullOrEmpty(emp.Email))
+                    {
+                        mailList.Add(new EmailAddress
+                        {
+                            Email = emp.Email,
+                            Name = emp.workNo + " " + emp.UserCName
+                        });
+                    }
+                }
+
+                StringBuilder sb = new StringBuilder();
+                sb.Append("您好," + "<br/><br/>");
+                sb.Append(sender.workNo + " " + sender.cName + " 送出非工作時間廠務申請單" + "<br/><br/>");
+                sb.AppendFormat("<a href='{0}'>{1}</a><br/>",
+                    Url.Action("Details", "FormMgr", new RouteValueDictionary(new { id = fmain.id }), HttpContext.Request.Url.Scheme, HttpContext.Request.Url.Authority),
+                    "單據網址"
+                );
+                sb.Append("<br/>此信件為系統發出，請勿直接回信<br/>");
+                await SendGridSrv.sendEmail(mailList, "非工作時間廠務申請單送出通知", sb.ToString());
 
                 return RedirectToAction("Index");
             }
@@ -543,7 +569,7 @@ namespace eform.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AdminAuthorize(Roles = "Employee,Admin")]
-        public ActionResult CreateDayOffForm(vwDayOffForm Model)
+        public async Task<ActionResult> CreateDayOffForm(vwDayOffForm Model)
         {
             Model.dayOffForm.dType = Model.dType;
             Model.user = ctx.getCurrentUser(User.Identity.Name);
@@ -569,7 +595,7 @@ namespace eform.Controllers
             {
                 errList.Add("開始時間、結束時間必須是正確格式");
             }
-            
+
             if (string.IsNullOrEmpty(Model.dayOffForm.sMemo))
             {
                 errList.Add("請輸入請假事由");
@@ -614,8 +640,8 @@ namespace eform.Controllers
                 dtBegin = dtBegin,
                 dtEnd = dtEnd,
                 hours = Model.dayOffForm.hours,
-                dType=Model.dType,
-                jobAgent=Model.dayOffForm.jobAgent,
+                dType = Model.dType,
+                jobAgent = Model.dayOffForm.jobAgent,
                 sMemo = Model.dayOffForm.sMemo,
                 id = Model.dayOffForm.id,
                 flowId = fmain.id
@@ -630,7 +656,6 @@ namespace eform.Controllers
             string senderMgrNo = "";
 
             List<string> signerList = new List<string>();
-
             if (!string.IsNullOrEmpty(senderPoNo))
             {
                 string senderDepNo = dbh.sql2Str("select depNo from jobPoes where poNo='" + senderPoNo + "'");
@@ -673,6 +698,29 @@ namespace eform.Controllers
             try
             {
                 context.SaveChanges();
+                List<EmailAddress> mailList = new List<EmailAddress>();
+                foreach (FlowDefSub defItem in fDefSubList)
+                {
+                    vwEmployee emp = ctx.getUserByWorkNo(defItem.workNo);
+                    if (!string.IsNullOrEmpty(emp.Email))
+                    {
+                        mailList.Add(new EmailAddress
+                        {
+                            Email = emp.Email,
+                            Name = emp.workNo + " " + emp.UserCName
+                        });
+                    }
+                }
+
+                StringBuilder sb = new StringBuilder();
+                sb.Append("您好," + "<br/><br/>");
+                sb.Append(Model.user.workNo + " " + Model.user.UserCName + " 送出請假單" + "<br/><br/>");
+                sb.AppendFormat("<a href='{0}'>{1}</a><br/>",
+                    Url.Action("Details", "FormMgr", new RouteValueDictionary(new { id = fmain.id }), HttpContext.Request.Url.Scheme, HttpContext.Request.Url.Authority),
+                    "單據網址"
+                );
+                sb.Append("<br/>此信件為系統發出，請勿直接回信<br/>");
+                await SendGridSrv.sendEmail(mailList, "請假單送出通知", sb.ToString());
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
@@ -699,7 +747,7 @@ namespace eform.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult RealOverTimeForm(vwRealOverTime Model)
+        public async Task<ActionResult> RealOverTimeForm(vwRealOverTime Model)
         {
             #region "checkinput"
             List<string> errList = new List<string>();
@@ -722,19 +770,6 @@ namespace eform.Controllers
             catch (Exception ex)
             {
                 errList.Add("開始時間、結束時間必須是正確格式");
-            }
-
-            if (string.IsNullOrEmpty(Model.prjId))
-            {
-                //errList.Add("請輸入專案號碼");
-            }
-            if (string.IsNullOrEmpty(Model.sMemo))
-            {
-                //errList.Add("請輸入加班事由");
-            }
-            if (string.IsNullOrEmpty(Model.sMemo2))
-            {
-                //errList.Add("請輸入備註");
             }
 
             if (Model.hours <=0)
@@ -849,6 +884,30 @@ namespace eform.Controllers
 
                 dbh.execSql("update ReqOverTimes set jext =N'" + jobj.ToString() + "' where flowId='" + fmain.id + "'");
 
+                List<EmailAddress> mailList = new List<EmailAddress>();
+                foreach (FlowDefSub defItem in fDefSubList)
+                {
+                    vwEmployee emp = ctx.getUserByWorkNo(defItem.workNo);
+                    if (!string.IsNullOrEmpty(emp.Email))
+                    {
+                        mailList.Add(new EmailAddress
+                        {
+                            Email = emp.Email,
+                            Name = emp.workNo + " " + emp.UserCName
+                        });
+                    }
+                }
+
+                StringBuilder sb = new StringBuilder();
+                sb.Append("您好," + "<br/><br/>");
+                sb.Append(sender.workNo + " " + sender.cName + " 送出加班申請單" + "<br/><br/>");
+                sb.AppendFormat("<a href='{0}'>{1}</a><br/>",
+                    Url.Action("Details", "FormMgr", new RouteValueDictionary(new { id = fmain.id }), HttpContext.Request.Url.Scheme, HttpContext.Request.Url.Authority),
+                    "單據網址"
+                );
+                sb.Append("<br/>此信件為系統發出，請勿直接回信<br/>");
+                await SendGridSrv.sendEmail(mailList, "加班申請單送出通知", sb.ToString());
+
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
@@ -900,10 +959,6 @@ namespace eform.Controllers
             if (errList.Count > 0)
             {
                 ModelState.AddModelError("", string.Join(",", errList));
-                //Model.user = ctx.getCurrentUser(User.Identity.Name);
-                //Model.requestDate = ctx.getLocalTiime();
-                //setHMList();
-                //return View(Model);
             }
 
             #endregion

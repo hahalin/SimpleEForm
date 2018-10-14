@@ -69,6 +69,11 @@ namespace eform.Models
                 id = 4,
                 nm = "串簽"
             });
+            list.Add(new vwSignType
+            {
+                id = 701,
+                nm = "人事登錄"
+            });
             return list;
         }
         public List<vwFlowStatus> flowStatusList()
@@ -185,5 +190,7 @@ namespace eform.Models
 
             return JsonConvert.SerializeObject(userlist);
         }
+
+        
     }
 }
