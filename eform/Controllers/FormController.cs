@@ -26,7 +26,7 @@ namespace eform.Controllers
         public FormController()
         {
             ctx = new ApplicationDbContext();
-            con=new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString);
+            con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString);
         }
         // GET: Form
         public ActionResult Index()
@@ -36,7 +36,7 @@ namespace eform.Controllers
 
             var sender = context.Users.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
 
-            List<FlowMain> flist = context.FlowMainList.Where(x => x.senderNo == sender.workNo && x.flowStatus !=99).OrderByDescending(x => x.billDate).ToList<FlowMain>();
+            List<FlowMain> flist = context.FlowMainList.Where(x => x.senderNo == sender.workNo && x.flowStatus != 99).OrderByDescending(x => x.billDate).ToList<FlowMain>();
 
             foreach (FlowMain fitem in flist)
             {
@@ -53,7 +53,7 @@ namespace eform.Controllers
             }
             return View(list);
         }
-        
+
         void getOverTime(FlowMain fmain)
         {
             string id = fmain.id;
@@ -106,7 +106,7 @@ namespace eform.Controllers
             {
                 vwReqOverTimeObj = new vwRealOverTime
                 {
-                    user=ctx.getUserByWorkNo(fmain.senderNo),
+                    user = ctx.getUserByWorkNo(fmain.senderNo),
                     billDate = fmain.billDate,
                     dtBegin = reqOverTimeObj.dtBegin,
                     dtEnd = reqOverTimeObj.dtEnd,
@@ -144,23 +144,23 @@ namespace eform.Controllers
                     signDate = sitem.signDate,
                     signResult = signResultObj == null ? "" : signResultObj.nm,
                     signType = signTypeObj == null ? "會簽" : signTypeObj.nm,
-                    signer = signUser == null ? "" : signUser.workNo+"-"+signUser.cName
+                    signer = signUser == null ? "" : signUser.workNo + "-" + signUser.cName
                 };
                 list.Add(item);
             }
 
             FlowMain fmain = ctx.FlowMainList.Where(x => x.id == id).FirstOrDefault();
 
-            vwEmployee employee= ctx.getUserByWorkNo(fmain.senderNo);
+            vwEmployee employee = ctx.getUserByWorkNo(fmain.senderNo);
             ViewBag.Employee = employee;
 
-            if (null != fmain )
+            if (null != fmain)
             {
                 ViewBag.flowMain = fmain;
                 if (fmain.defId == "OverTime")
-                { 
+                {
                     getOverTime(fmain);
-                    return View("Details",list);
+                    return View("Details", list);
                 }
                 if (fmain.defId == "RealOverTime")
                 {
@@ -170,7 +170,7 @@ namespace eform.Controllers
                 if (fmain.defId == "DayOff")
                 {
                     vwDayOffForm subModel = new vwDayOffForm();
-                    dayOff dayOffObj= ctx.dayOffList.Where(x => x.flowId == fmain.id).FirstOrDefault();
+                    dayOff dayOffObj = ctx.dayOffList.Where(x => x.flowId == fmain.id).FirstOrDefault();
                     subModel.dayOffForm = new vwdayOff
                     {
                         id = dayOffObj.id,
@@ -185,18 +185,18 @@ namespace eform.Controllers
                     return View("Details", list);
                 }
                 if (fmain.defId == "PublicOut")
-                { 
+                {
                     publicOut publicOutObj = ctx.publicOutList.Where(x => x.flowId == fmain.id).FirstOrDefault();
                     vwPublicOut subModel = new vwPublicOut
                     {
                         id = publicOutObj.id,
-                        user=ctx.getUserByWorkNo(fmain.senderNo),
+                        user = ctx.getUserByWorkNo(fmain.senderNo),
                         requestDate = publicOutObj.requestDate,
                         dtBegin = publicOutObj.dtBegin,
                         dtEnd = publicOutObj.dtEnd,
-                        subject=publicOutObj.subject,
+                        subject = publicOutObj.subject,
                         destination = publicOutObj.destination,
-                        transport=publicOutObj.transport
+                        transport = publicOutObj.transport
                     };
                     ViewBag.SubModel = subModel;
                     return View("Details", list);
@@ -326,8 +326,8 @@ namespace eform.Controllers
             else
             {
                 dep parentDepObj = ctx.deps.Where(x => x.depNo == depObj.parentDepNo).FirstOrDefault();
-                if (parentDepObj!=null)
-                { 
+                if (parentDepObj != null)
+                {
                     signerList = getDepSigner(ctx, parentDepObj, senderWorkNo, signerList);
                 }
                 return signerList;
@@ -394,10 +394,10 @@ namespace eform.Controllers
                 errList.Add("請輸入加班事由");
             }
 
-            if (errList.Count>0)
+            if (errList.Count > 0)
             {
                 ViewBag.UserName = Request.Form["worker"];
-                ModelState.AddModelError("", string.Join(" , " , errList.ToArray<string>()));
+                ModelState.AddModelError("", string.Join(" , ", errList.ToArray<string>()));
             }
 
             #endregion
@@ -461,7 +461,7 @@ namespace eform.Controllers
                 }
             }
 
-            foreach (string signer in signerList) 
+            foreach (string signer in signerList)
             {
                 FlowSub fsub = new FlowSub();
                 fsub.pid = fmain.id;
@@ -476,7 +476,7 @@ namespace eform.Controllers
 
             foreach (FlowDefSub defItem in fDefSubList)
             {
-                if (defItem.workNo != senderMgrNo && signerList.Where(x=>x==defItem.workNo).Count()==0 && defItem.workNo != sender.workNo)
+                if (defItem.workNo != senderMgrNo && signerList.Where(x => x == defItem.workNo).Count() == 0 && defItem.workNo != sender.workNo)
                 {
                     FlowSub fsub = new FlowSub();
                     fsub.pid = fmain.id;
@@ -505,7 +505,7 @@ namespace eform.Controllers
                 jobj["depNo"] = Model.depNo;
                 jobj["poNo"] = Model.poNo;
 
-                dbh.execSql("update ReqOverTimes set jext =N'"+jobj.ToString()+"' where flowId='"+fmain.id+"'");
+                dbh.execSql("update ReqOverTimes set jext =N'" + jobj.ToString() + "' where flowId='" + fmain.id + "'");
 
                 List<EmailAddress> mailList = new List<EmailAddress>();
                 foreach (FlowDefSub defItem in fDefSubList)
@@ -553,7 +553,7 @@ namespace eform.Controllers
             }
             ViewBag.dTypeList = dTypeList;
             ViewBag.userlist = ctx.getUserList();
-            List<FlowMain> dayOffFlowMainList= ctx.FlowMainList.Where(x => x.senderNo == model.user.workNo && x.defId == model.defId && x.flowStatus == 2).ToList<FlowMain>();
+            List<FlowMain> dayOffFlowMainList = ctx.FlowMainList.Where(x => x.senderNo == model.user.workNo && x.defId == model.defId && x.flowStatus == 2).ToList<FlowMain>();
             ViewBag.dayOffFlowMainList = dayOffFlowMainList;
             var qdayOffFlowMainList = from item in dayOffFlowMainList select item.id;
             ViewBag.dayOffList = ctx.dayOffList.Where(x => qdayOffFlowMainList.Contains(x.flowId)).ToList<dayOff>();
@@ -740,8 +740,8 @@ namespace eform.Controllers
 
             string sql = "select a.id,a.dtBegin,a.dtEnd,a.hours,a.sMemo,b.flowStatus ";
             sql += " from ReqOverTimes a inner join FlowMains b on a.flowId=b.id ";
-            sql +=" where b.senderNo=@sender and b.flowStatus <> 99 and b.defId=@defId order by b.billDate desc";
-            List<vwRealOverTime> historyList=con.Query<vwRealOverTime>(sql, new {sender=Model.user.workNo,defId = "RealOverTime" }).ToList<vwRealOverTime>();
+            sql += " where b.senderNo=@sender and b.flowStatus <> 99 and b.defId=@defId order by b.billDate desc";
+            List<vwRealOverTime> historyList = con.Query<vwRealOverTime>(sql, new { sender = Model.user.workNo, defId = "RealOverTime" }).ToList<vwRealOverTime>();
             ViewBag.historyList = historyList;
             return View(Model);
         }
@@ -772,7 +772,7 @@ namespace eform.Controllers
                 errList.Add("開始時間、結束時間必須是正確格式");
             }
 
-            if (Model.hours <=0)
+            if (Model.hours <= 0)
             {
                 errList.Add("小時數必須大於0");
             }
@@ -931,7 +931,7 @@ namespace eform.Controllers
         [AdminAuthorize(Roles = "Employee,Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult PublicOutForm(vwPublicOut Model)
+        public async Task<ActionResult> PublicOutForm(vwPublicOut Model)
         {
             #region "checkinput"
             List<string> errList = new List<string>();
@@ -961,7 +961,7 @@ namespace eform.Controllers
                 ModelState.AddModelError("", string.Join(",", errList));
             }
 
-            #endregion
+           
 
             var context = new ApplicationDbContext();
 
@@ -973,6 +973,9 @@ namespace eform.Controllers
                 return View(Model);
             }
 
+            #endregion
+
+            #region "FlowWork"
             string FlowDefKey = "PublicOut";
             FlowMain fmain = new FlowMain();
             List<FlowSub> fsublist = new List<FlowSub>();
@@ -996,10 +999,10 @@ namespace eform.Controllers
             {
                 dtBegin = dtBegin,
                 dtEnd = dtEnd,
-                destination=Model.destination,
-                requestDate=Model.requestDate,
-                subject=Model.subject,
-                transport=Model.transport,
+                destination = Model.destination,
+                requestDate = Model.requestDate,
+                subject = Model.subject,
+                transport = Model.transport,
                 id = Guid.NewGuid().ToString(),
                 flowId = fmain.id
             };
@@ -1054,9 +1057,36 @@ namespace eform.Controllers
                 }
             }
 
+            #endregion
+
             try
             {
                 context.SaveChanges();
+
+                List<EmailAddress> mailList = new List<EmailAddress>();
+                foreach (FlowDefSub defItem in fDefSubList)
+                {
+                    vwEmployee emp = ctx.getUserByWorkNo(defItem.workNo);
+                    if (!string.IsNullOrEmpty(emp.Email))
+                    {
+                        mailList.Add(new EmailAddress
+                        {
+                            Email = emp.Email,
+                            Name = emp.workNo + " " + emp.UserCName
+                        });
+                    }
+                }
+
+                StringBuilder sb = new StringBuilder();
+                sb.Append("您好," + "<br/><br/>");
+                sb.Append(sender.workNo + " " + sender.cName + " 送出外出申請單" + "<br/><br/>");
+                sb.AppendFormat("<a href='{0}'>{1}</a><br/>",
+                    Url.Action("Details", "FormMgr", new RouteValueDictionary(new { id = fmain.id }), HttpContext.Request.Url.Scheme, HttpContext.Request.Url.Authority),
+                    "單據網址"
+                );
+                sb.Append("<br/>此信件為系統發出，請勿直接回信<br/>");
+                await SendGridSrv.sendEmail(mailList, "外出申請單送出通知", sb.ToString());
+
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
