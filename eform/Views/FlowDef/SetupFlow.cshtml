@@ -38,9 +38,9 @@
             @Html.DisplayFor(modelItem => item.singTypeName)
         </td>
         <td>
-            @*@Html.ActionLink("編輯", "Edit", new { id=item.id },new { @class = "btn btn-info" })*@ 
             @*@Html.ActionLink("Details", "Details", new { id=item.id }) |*@
             @*@Html.ActionLink("Delete", "Delete", new { id=item.id })*@
+            @Html.ActionLink("編輯", "Edit", new { id = item.id }, new { @class = "btn btn-info" })
             <button class="btn btn-danger btn-delete" data-workNo="@item.workNo" data-id="@item.id" >刪除</button>
         </td>
     </tr>

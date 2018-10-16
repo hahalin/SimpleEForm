@@ -1334,6 +1334,7 @@
     <Content Include="Views\Shared\Form\_RealOverTimeForm.cshtml" />
     <Content Include="Views\Form\PublicOutForm.cshtml" />
     <Content Include="Views\Shared\Form\_PublicOutForm.cshtml" />
+    <Content Include="Views\FlowDef\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

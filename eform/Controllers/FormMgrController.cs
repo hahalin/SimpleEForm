@@ -92,9 +92,17 @@ namespace eform.Controllers
                 return RedirectToAction("AccessDenied", "Account");
             }
 
+            if (ctx.FlowSubList.Where(x => x.pid == id && x.workNo == User.Identity.Name && x.signType == 701).Count() > 0)
+            {
+                FlowPageType = "HRCheck";
+            }
+
             var context = new ApplicationDbContext();
             ViewBag.FlowPageType = FlowPageType;
             ViewBag.ReturnAction = ReturnAction;
+
+            
+
 
             List<vwFlowSub> list = new List<vwFlowSub>();
             List<FlowSub> fsubList = context.FlowSubList.Where(x => x.pid == id).OrderBy(x => x.seq).ToList<FlowSub>();
@@ -261,7 +269,7 @@ namespace eform.Controllers
             string signMemo = collection["signMemo"].ToString();
             string workNo = context.Users.Where(x => x.UserName == User.Identity.Name).FirstOrDefault().workNo;
 
-            FlowSub fsub = context.FlowSubList.Where(x => x.pid == id && x.workNo == workNo).FirstOrDefault();
+            FlowSub fsub = context.FlowSubList.Where(x => x.pid == id && x.workNo == workNo && x.signType != 701).FirstOrDefault();
             FlowMain fmain = ctx.FlowMainList.Where(x => x.id == id).FirstOrDefault();
             bool bIsGmDep = false;
             bIsGmDep = isGmDep(workNo);
@@ -295,7 +303,7 @@ namespace eform.Controllers
                 {
                     if (fsub.signType != 3 && (!bIsGmDep))
                     {
-                        List<FlowSub> qPriorSigner = ctx.FlowSubList.Where(x => x.pid == id && x.seq < fsub.seq && x.signResult == 0).ToList<FlowSub>();
+                        List<FlowSub> qPriorSigner = ctx.FlowSubList.Where(x => x.pid == id && x.signType !=701 && x.seq < fsub.seq && x.signResult == 0).ToList<FlowSub>();
                         if (qPriorSigner.Count() > 0)
                         {
                             TempData["error"] = "上一位簽核人尚未簽核";
@@ -308,7 +316,7 @@ namespace eform.Controllers
                     context.SaveChanges();
 
                     dbHelper dbh = new dbHelper();
-                    var fsublist = ctx.FlowSubList.Where(x => x.pid == id);
+                    var fsublist = ctx.FlowSubList.Where(x => x.pid == id && x.signType !=701);
                     if (fsub.signResult == 1 &&
                         (fsublist.Where(x => x.signResult == 1).Count() == fsublist.Count() || bIsGmDep)
                     )
@@ -318,10 +326,7 @@ namespace eform.Controllers
 
                     if (fsub.signResult == 2)
                     {
-                        int allCnt = context.FlowSubList.Where(x => x.pid == id).Count();
-                        {
-                            dbh.execSql("update FlowMains set flowStatus=3 where id='" + id + "'");
-                        }
+                        dbh.execSql("update FlowMains set flowStatus=3 where id='" + id + "'");
                     }
                 }
 
@@ -329,7 +334,7 @@ namespace eform.Controllers
                 {
                     if (fsub.signType != 3 && (!bIsGmDep))
                     {
-                        List<FlowSub> qPriorSigner = ctx.FlowSubList.Where(x => x.pid == id && x.seq < fsub.seq && x.signResult == 0).ToList<FlowSub>();
+                        List<FlowSub> qPriorSigner = ctx.FlowSubList.Where(x => x.pid == id && x.signType!=701 && x.seq < fsub.seq && x.signResult == 0).ToList<FlowSub>();
                         if (qPriorSigner.Count() > 0)
                         {
                             TempData["error"] = "上一位簽核人尚未簽核";
@@ -342,7 +347,7 @@ namespace eform.Controllers
                     context.SaveChanges();
 
                     dbHelper dbh = new dbHelper();
-                    var fsublist = ctx.FlowSubList.Where(x => x.pid == id);
+                    var fsublist = ctx.FlowSubList.Where(x => x.pid == id && x.signType != 701);
                     if (fsub.signResult == 1 &&
                         (fsublist.Where(x => x.signResult == 1).Count() == fsublist.Count() || bIsGmDep)
                     )
@@ -352,10 +357,7 @@ namespace eform.Controllers
 
                     if (fsub.signResult == 2)
                     {
-                        int allCnt = context.FlowSubList.Where(x => x.pid == id).Count();
-                        {
-                            dbh.execSql("update FlowMains set flowStatus=3 where id='" + id + "'");
-                        }
+                        dbh.execSql("update FlowMains set flowStatus=3 where id='" + id + "'");
                     }
                 }
 
@@ -374,11 +376,7 @@ namespace eform.Controllers
 
                     if (fsub.signResult == 2)
                     {
-                        int allDenyCnt = context.FlowSubList.Where(x => x.pid == id && x.signResult == 2).Count();
-                        int allCnt = context.FlowSubList.Where(x => x.pid == id).Count();
-                        {
-                            dbh.execSql("update FlowMains set flowStatus=3 where id='" + id + "'");
-                        }
+                       dbh.execSql("update FlowMains set flowStatus=3 where id='" + id + "'");
                     }
                 }
             }

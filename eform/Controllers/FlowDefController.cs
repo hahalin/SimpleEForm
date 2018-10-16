@@ -114,6 +114,35 @@ namespace eform.Controllers
         }
 
         [HttpGet]
+        public ActionResult Edit(string id)
+        {
+            FlowDefSub DefSub = ctx.FlowDefSubList.Where(x => x.id == id).FirstOrDefault();
+            getUserList(ctx);
+            return View(DefSub);
+        }
+        [HttpPost]
+        public ActionResult Edit(vwFlowDefSub model)
+        {
+            if(!ModelState.IsValid)
+            {
+                getUserList(ctx);
+                return View(model);
+            }
+            foreach(var item in ctx.FlowDefSubList)
+            {
+                if (item.id==model.id)
+                {
+                    item.seq = model.seq;
+                    item.signType = model.signType;
+                    item.workNo = model.workNo;
+                    break;
+                }
+            }
+            ctx.SaveChanges();
+            return RedirectToAction("SetupFlow", new { id = model.pid });
+        }
+
+        [HttpGet]
         public ActionResult AddDefSub(string pid)
         {
             var context = new ApplicationDbContext();

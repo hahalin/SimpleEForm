@@ -37,7 +37,18 @@ namespace eform.Controllers
         {
             //ReportSalary
 
-            List<string> userList = ctx.permList.Where(x => x.mod == mod).Select(x => x.workNo).ToList<string>();
+            List<string> leaveEmpList = new List<string>();
+            leaveEmpList = (from emp in ctx.Users.Where(u => u.status != 1) select emp.workNo).ToList<string>();
+            foreach(var item in ctx.permList)
+            {
+                if (leaveEmpList.Contains(item.workNo))
+                {
+                    ctx.permList.Remove(item);
+                }
+            }
+            ctx.SaveChanges();
+
+            List< string > userList = ctx.permList.Where(x => x.mod == mod).Select(x => x.workNo).ToList<string>();
 
             List<ApplicationUser> permUserList = (from user in ctx.Users where userList.Contains(user.workNo) select user).OrderBy(x=>x.workNo).ToList<ApplicationUser>();
 

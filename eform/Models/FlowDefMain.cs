@@ -64,8 +64,12 @@ namespace eform.Models
                         return "直接許可";
                     case 4:
                         return "串簽";
+                    case 701:
+                        return "人事登錄";
+                    case 801:
+                        return "代理人";
                     default:
-                        return "1.會簽";
+                        return "會簽";
                 }
             }
         }
