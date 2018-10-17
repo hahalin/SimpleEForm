@@ -290,12 +290,7 @@ namespace eform.Controllers
 
                     if (fsub.signResult == 2)
                     {
-                        int allDenyCnt = context.FlowSubList.Where(x => x.pid == id && x.signResult == 2).Count();
-                        int allCnt = context.FlowSubList.Where(x => x.pid == id).Count();
-                        //if (allCnt == allDenyCnt)
-                        {
-                            dbh.execSql("update FlowMains set flowStatus=3 where id='" + id + "'");
-                        }
+                       dbh.execSql("update FlowMains set flowStatus=3 where id='" + id + "'");
                     }
                 }
 

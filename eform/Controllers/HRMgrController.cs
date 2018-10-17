@@ -5,35 +5,85 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Configuration;
+using System.IO;
 using Dapper;
 using eform.Models;
 using System.Data.SqlClient;
 using System.Dynamic;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using OfficeOpenXml;
+
 
 namespace eform.Controllers
 {
     public class HrMgrController : Controller
     {
         ApplicationDbContext ctx;
+        SqlConnection con;
         string constring = "";
         public HrMgrController()
         {
             ctx = new ApplicationDbContext();
             constring = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            con = new SqlConnection(constring);
+        }
+
+        void QueryData(int y)
+        {
+            #region 組合Pivot矩陣月份資料
+
+            DataTable tb = new DataTable();
+
+            tb.Load(
+                con.ExecuteReader(
+                    @"
+                        select * from
+                            (
+                            select '本期新增特休' hType,* from (
+                                select a.workNo,b.cName,'m'+convert(varchar(2),a.m) m,a.v1
+                                from dayOffSums a left join AspNetUsers b on a.workNo=b.workNo where a.y=@y and a.sType='a'
+                            ) t
+                            pivot
+                                (
+                                sum(v1)
+                                for [m] in (
+                                    [m0],[m1],[m2],[m3],[m4],[m5],[m6],[m7],[m8],[m9],[m10],[m11],[m12]
+                                )
+                            ) p1
+                            union
+                            select '本期新增補休' hType,* from (
+                                select a.workNo,b.cName,'m'+convert(varchar(2),a.m) m,a.v1
+                                from dayOffSums a left join AspNetUsers b on a.workNo=b.workNo where a.y=@y and a.sType='b'
+                            ) t
+                            pivot
+                                (
+                                sum(v1)
+                                for [m] in (
+                                    [m0],[m1],[m2],[m3],[m4],[m5],[m6],[m7],[m8],[m9],[m10],[m11],[m12]
+                                )
+                            ) p2 
+                        ) tb order by workNo,hType
+                    ",
+                    new { y = y }
+                )
+            );
+            ViewBag.tb = tb;
+            #endregion
         }
 
         // GET: HRMgr
         [HttpGet]
+        [Authorize]
         public ActionResult List(int? y)
         {
             if (y == null)
             {
                 y = DateTime.Today.Year;
             }
-
             ViewBag.y = y;
             ViewBag.Title = "人力資源主管特休補修登錄區";
+            QueryData(Convert.ToInt32(y));
             return View();
         }
         [HttpPost]
@@ -54,57 +104,23 @@ namespace eform.Controllers
                         cn.Execute(@"insert into dayOffSums(id,y,m,workNo,sType,v1,v2) values (@id,@y,@m,@workNo,@sType,@v1,@v2)",
                             new[]
                             {
-                           new{
-                               id =Guid.NewGuid().ToString(),
-                               y=year,
-                               m=i,
-                               workNo =user.workNo,
-                               sType="a",
-                               v1=0,
-                               v2=0
-                           },
-                            new
-                            {
-                                id = Guid.NewGuid().ToString(),
-                                y=year,
-                                m=i,
-                                workNo = user.workNo,
-                                sType = "b",
-                                v1 = 0,
-                                v2 = 0
-                            }
+                               new{
+                                   id =Guid.NewGuid().ToString(),
+                                   y=year,
+                                   m=i,
+                                   workNo =user.workNo,
+                                   sType="a",
+                                   v1=0,
+                                   v2=0
+                               }
                             }
                         );
                     }
                 }
             }
 
-            DataTable tb = new DataTable();
+            QueryData(year);
 
-            tb.Load(
-                cn.ExecuteReader(
-                    @"
-                        select * from (
-                            select a.workNo,b.cName,'m'+convert(varchar(2),a.m)+a.stype m,a.v1
-                            from dayOffSums a left join AspNetUsers b on a.workNo=b.workNo where a.y=@y
-                        ) t
-                        pivot
-                           (
-                            sum(v1)
-                            for [m] in (
-                                [m0a],
-                                [m1a],[m1b],[m2a],[m2b],[m3a],[m3b],
-                                [m4a],[m4b],[m5a],[m5b],[m6a],[m6b],
-                                [m7a],[m7b],[m8a],[m8b],[m9a],[m9b],
-                                [m10a],[m10b],[m11a],[m11b],[m12a],[m12b]
-                            )
-                        ) p order by workNo
-                    ",
-                    new { y = year }
-                )
-            );
-
-            ViewBag.tb = tb;
             return View();
         }
 
@@ -112,10 +128,10 @@ namespace eform.Controllers
         public ActionResult SaveList(int year, List<vwDayOffSum> data)
         {
             dbHelper dbh = new dbHelper();
-                
+
 
             DataTable tb = new DataTable();
-            tb=dbh.sql2tb("select workNo,m,v1 from dayOffSums where y = " + year.ToString() + " and sType='a'");
+            tb = dbh.sql2tb("select workNo,m,v1 from dayOffSums where y = " + year.ToString() + " and sType='a'");
 
             List<string> sqlList = new List<string>();
 
@@ -128,15 +144,15 @@ namespace eform.Controllers
                 vlist.Add(item.m7a); vlist.Add(item.m8a); vlist.Add(item.m9a);
                 vlist.Add(item.m10a); vlist.Add(item.m11a); vlist.Add(item.m12a);
 
-                
 
-                for(int i=0;i<vlist.Count;i++)
+
+                for (int i = 0; i < vlist.Count; i++)
                 {
-                    foreach(DataRow row in tb.Rows)
+                    foreach (DataRow row in tb.Rows)
                     {
-                        if(row["workNo"].ToString()==item.workNo 
-                            && row["m"].ToString()==i.ToString() 
-                            && ( (Convert.ToDecimal(row["v1"]) -vlist[i]) !=0)
+                        if (row["workNo"].ToString() == item.workNo
+                            && row["m"].ToString() == i.ToString()
+                            && ((Convert.ToDecimal(row["v1"]) - vlist[i]) != 0)
                         )
                         {
                             sqlList.Add(
@@ -148,7 +164,7 @@ namespace eform.Controllers
                             break;
                         }
 
-                        if (sqlList.Count ==10)
+                        if (sqlList.Count == 10)
                         {
                             dbh.execSql(string.Join(" ", sqlList));
                             sqlList.Clear();
@@ -167,5 +183,99 @@ namespace eform.Controllers
             return Content(JsonConvert.SerializeObject(r), "application /json");
         }
 
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public ActionResult Upload(HttpPostedFileBase file)
+        {
+            if (file == null)
+            {
+                TempData["msg"] = "請選取上傳檔案";
+                return RedirectToAction("List");
+            }
+
+            if (file.ContentLength > 0)
+            {
+                string filename = Path.GetFileName(file.FileName);
+                string ext = Path.GetExtension(file.FileName).Replace(".", "").ToUpper();
+                if (ext != "XLSX")
+                {
+                    TempData["msg"] = "請選擇XLSX格式Excel檔案";
+                    return RedirectToAction("List");
+                }
+
+                string path = @"C:\inetpub\upload\" + ctx.getLocalTiime().ToString("yyyyMM");
+                DirectoryInfo di = new DirectoryInfo(path);
+                if (di.Exists == false)
+                {
+                    di.Create();
+                }
+                string uploadfile = path + @"\" + "HrUpload" + ctx.getLocalTiime().ToString("yyyyMMdd") + ".xlsx";
+                if (System.IO.File.Exists(uploadfile))
+                {
+                    System.IO.File.Delete(uploadfile);
+                }
+                file.SaveAs(uploadfile);
+
+                ExcelPackage pkg = new ExcelPackage(new FileInfo(uploadfile));
+                ExcelWorkbook bk = pkg.Workbook;
+                ExcelWorksheet sht = bk.Worksheets[1];
+                int year = Convert.ToInt32(sht.Cells[1,5].Text.Trim().Substring(0,4));
+                for (int i = 2; i <= 65535; i++)
+                {
+                    if (sht.Cells[i, 1].Text.Trim() == "" || sht.Cells[i, 2].Text.Trim() == "")
+                    {
+                        break;
+                    }
+                    string workNo = sht.Cells[i, 2].Text.Trim();
+                    con.Execute("delete from dayOffSums where y=@y and workNo=@workNo", new { @y = year, @workNo = workNo });
+                }
+                for (int i = 2; i <= 65535; i++)
+                {
+                    if (sht.Cells[i, 1].Text.Trim() == "" || sht.Cells[i, 2].Text.Trim() == "")
+                    {
+                        break;
+                    }
+                    string workNo = sht.Cells[i, 2].Text.Trim();
+                    string hType = sht.Cells[i, 1].Text.Trim().Contains("新增特休") ? "a" : "b";
+                    List<decimal> mvList = new List<decimal>();
+                    for (int itmp=0;itmp<=12;itmp++)
+                    {
+                        decimal v = 0;
+                        try
+                        {
+                            v = Convert.ToDecimal(sht.Cells[i, 4 + itmp].Text);
+                        }
+                        catch(Exception ex)
+                        {
+                            v = 0;
+                        }
+                        //mvList.Add(v);
+                        string sql = "";
+                        sql = "insert into dayOffSums(id, y, m, workNo, sType, v1,v2) values(@id, @y, @m, @workNo, @sType, @v,0)";
+                        con.Execute(sql,
+                            new[]
+                            {
+                               new{
+                                   id =Guid.NewGuid().ToString(),
+                                   y=year,
+                                   m=itmp,
+                                   workNo =workNo,
+                                   sType=hType,
+                                   v=v
+                               }
+                            }
+                        );
+                    }
+                }
+                TempData["msg"] = "上傳完成";
+                return RedirectToAction("List");
+            }
+            else
+            {
+                TempData["msg"] = "上傳檔案失敗，請重新執行";
+                return RedirectToAction("List");
+            }
+        }
     }
 }

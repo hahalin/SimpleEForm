@@ -2,8 +2,6 @@
 @{
 
 }
-
-
 <style>
     .ui-datepicker-calendar {
         display: none;
@@ -17,33 +15,73 @@
         display: none;
     }
 </style>
+
+<script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+<script src="~/Scripts/jquery.blockUI.js"></script>
+<script type="text/javascript">
+    $.blockUI({ message: '<h2>資料讀取中...</h2>' });
+</script>
+
 <h3>@ViewBag.Title</h3>
-<div>
-    @using (Html.BeginForm("List", "HrMgr", FormMethod.Post))
-    {
-        <div class="row">
-            <label>年:<input type="number" id="year" name="year" value="@ViewBag.y" autocomplete="off" style="width:60px;text-align:right;font-size:14px;" /></label>
-            <input type="submit" value="查詢" onclick="doclick();" />
-            <input type="button" value="儲存" onclick="dosave();" />
+
+<div class="col-sm-11 no-padding no-margin">
+    <div class="box box-primary">
+        <div class="box-body">
+            <div class="form-horizontal">
+                <div class="form-group">
+                    @using (Html.BeginForm("List", "HrMgr", FormMethod.Post, new { id = "fmQuery" }))
+                    {
+                        <label class="control-label col-sm-1" style="text-align:right;">
+                            年度:
+                        </label>
+                        <div class="col-md-2" style="width:120px;text-align:left;">
+                            <input type="number" id="year" name="year" class="form-control" value="@ViewBag.y" autocomplete="off" style="text-align:right;font-size:14px;" />
+                        </div>
+
+                    }
+                    <form id="fmUpload" action="@Url.Action("Upload","HrMgr")" method="post" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+                        <div class="col-md-5" style="text-align:left;">
+                            <input type="file" name="file" id="file" class="form-control" />
+                        </div>
+                    </form>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-10 text-left">
+                        <input type="button" value="查詢" class="btn btn-default" onclick="doQuery();" />
+                        <input type="submit" value="上傳" class="btn btn-primary" onclick="doUpload();">
+                    </div>
+                </div>
+                @*<div class="form-group">
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    </div>*@
+            </div>
         </div>
-    }
-    <div id="tbdivContainer">
-        <div id="tbdiv">
+
+        <div class="box-body no-padding">
+            <div id="tbdivContainer">
+                <div id="tbdiv" style="width:100%;">
+                </div>
+            </div>
         </div>
     </div>
-    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
 </div>
-<script src="~/Scripts/jquery.blockUI.js"></script>
 
-<link href="~/Scripts/tabulator-master/dist/css/tabulator.min.css" rel="stylesheet" />
-<script src="~/Scripts/tabulator-master/dist/js/tabulator.min.js"></script>
 @section Scripts
 {
+    <link href="~/Scripts/tabulator-master/dist/css/tabulator.min.css" rel="stylesheet" />
+    <script src="~/Scripts/tabulator-master/dist/js/tabulator.min.js"></script>
+
     <script type="text/javascript">
         //https://stackoverflow.com/questions/34676752/can-i-use-an-html-input-type-date-to-collect-only-a-year
-        function doclick() {
+        function doQuery() {
             $.blockUI({ message: '<h2>資料處理中...</h2>' });
-            return true;
+            $('#fmQuery').submit();
+        }
+
+        function doUpload() {
+            $.blockUI({ message: '<h2>上傳中...</h2>' });
+            $('#fmUpload').submit();
         }
 
         function dosave()
@@ -65,7 +103,6 @@
                 });
             promise.done(function (data)
             {
-                //顯示Server端回傳的資料
                 console.log(data);
                 $.unblockUI();
                 if (data.success) {
@@ -76,18 +113,16 @@
         }
 
         $(function () {
-            //$('#year').datepicker({
-            //    changeYear: true,
-            //    showButtonPanel: true,
-            //    dateFormat: 'yy',
-            //    onClose: function (dateText, inst) {
-            //        var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
-            //        $(this).datepicker('setDate', new Date(year, 1));
-            //    }
-            //});
-            //$(".date-picker-year").focus(function () {
-            //    $(".ui-datepicker-month").hide();
-            //});
+            $.unblockUI();
+            var msg = '';
+            @if (TempData["msg"]!=null)
+            {
+                @:msg = '@TempData["msg"].ToString()';
+            }
+            if (msg != '')
+            {
+                alert(msg);
+            }
         })
 
 
@@ -107,13 +142,8 @@
                 @:data.push(obj);
             }
 
-            @:console.log(data);
+            //@:console.log(data);
         }
-        $("#tbdivContainer").css('left', '0px');
-        $("#tbdivContainer").css('right', '10px');
-        $("#tbdivContainer").css('position', 'relative');
-        $("#tbdivContainer").css('display', 'block');
-        $("#tbdivContainer").css('overflow', 'auto').css('width', '90%');
 
         $("#tbdiv").tabulator({
             height: "auto",
@@ -121,37 +151,26 @@
             paginationSize: 12,
             //layout: "fitColumns",
             columns: [
+                { title: '類別', field: 'hType' },
                 { title: '工號', field: 'workNo' },
                 { title: '姓名', field: 'cName' },
-                { title: '上年度轉入', field: 'm0a', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
-                { title: '1月前期轉入', field: 'm1a', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
-                { title: '本期新增', field: 'm1b'},
-                { title: '2月前期轉入', field: 'm2a', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
-                { title: '本期新增', field: 'm2b'},
-                { title: '3月前期轉入', field: 'm3b', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
-                { title: '本期新增', field: 'm3b'},
-                { title: '4月前期轉入', field: 'm4a', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
-                { title: '本期新增', field: 'm4b'},
-                { title: '5月前期轉入', field: 'm5a', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
-                { title: '本期新增', field: 'm5b'},
-                { title: '6月前期轉入', field: 'm6a', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
-                { title: '本期新增', field: 'm6b'},
-                { title: '7月前期轉入', field: 'm7a', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
-                { title: '本期新增', field: 'm7b'},
-                { title: '8月前期轉入', field: 'm8a', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
-                { title: '本期新增', field: 'm8b'},
-                { title: '9月前期轉入', field: 'm9a', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
-                { title: '本期新增', field: 'm9b'},
-                { title: '10月前期轉入', field: 'm10a', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
-                { title: '本期新增', field: 'm10b'},
-                { title: '11月前期轉入', field: 'm11a', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
-                { title: '本期新增', field: 'm11b'},
-                { title: '12月前期轉入', field: 'm12a', editor: 'input', editor: true, validator: ["min:0", "numeric"] },
-                { title: '本期新增', field: 'm12b'}
+                { title: '前期轉入', field: 'm0', editor: 'input', editor: false, validator: ["min:0", "numeric"] },
+                { title: '1月', field: 'm1', editor: 'input', editor: false, validator: ["min:0", "numeric"] },
+                { title: '2月', field: 'm2', editor: 'input', editor: false, validator: ["min:0", "numeric"] },
+                { title: '3月', field: 'm3', editor: 'input', editor: false, validator: ["min:0", "numeric"] },
+                { title: '4月', field: 'm4', editor: 'input', editor: false, validator: ["min:0", "numeric"] },
+                { title: '5月', field: 'm5', editor: 'input', editor: false, validator: ["min:0", "numeric"] },
+                { title: '6月', field: 'm6', editor: 'input', editor: false, validator: ["min:0", "numeric"] },
+                { title: '7月', field: 'm7', editor: 'input', editor: false, validator: ["min:0", "numeric"] },
+                { title: '8月', field: 'm8', editor: 'input', editor: false, validator: ["min:0", "numeric"] },
+                { title: '9月', field: 'm9', editor: 'input', editor: false, validator: ["min:0", "numeric"] },
+                { title: '10月', field: 'm10', editor: 'input', editor: false, validator: ["min:0", "numeric"] },
+                { title: '11月', field: 'm11', editor: 'input', editor: false, validator: ["min:0", "numeric"] },
+                { title: '12月', field: 'm12', editor: 'input', editor: false, validator: ["min:0", "numeric"] },
             ],
             data: data
         });
-        $('#tbdiv').css('width', '95%');
+        //$('#tbdiv').css('width', '95%');
 
     </script>
 }
