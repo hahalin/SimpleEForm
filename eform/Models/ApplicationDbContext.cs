@@ -191,6 +191,36 @@ namespace eform.Models
             return JsonConvert.SerializeObject(userlist);
         }
 
-        
+        //請假單 P018A1
+        public string genBillNo(string formType)
+        {
+            string r = "";
+            string code = "P018A1";
+            if (formType== "DayOff")
+            {
+                string preCode = code + "-" + getLocalTiime().ToString("yyMM");
+                var list = from fmain in this.FlowMainList.Where(x => x.billNo != null && x.billNo.Contains(preCode))
+                           select fmain.billNo;
+                list = list.Where(x => string.IsNullOrEmpty(x) == false);
+
+                if (list.Count()==0)
+                {
+                    r = preCode + "0001";
+                }
+                else
+                {
+                    List<int> vList = new List<int>();
+                    foreach (string _v in list)
+                    {
+                        if (_v.Length > 4)
+                        {
+                            vList.Add(Convert.ToInt32(_v.Substring(_v.Length - 4, 4)));
+                        }
+                    }
+                    r=preCode+String.Format("{0:0000}", vList.Max()+1);
+               }
+            }
+            return r;
+        }
     }
 }

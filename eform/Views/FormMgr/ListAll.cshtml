@@ -3,6 +3,11 @@
 @{
     ViewBag.Title = "所有表單紀錄";
 }
+<script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+<script src="~/Scripts/jquery.blockUI.js"></script>
+<script type="text/javascript">
+    $.blockUI({ message: '<h2>資料讀取中...</h2>' });
+</script>
 
 <div class="row">
     <div class="col-md-10">
@@ -39,6 +44,9 @@
                                 @Html.DisplayNameFor(model => model.flowName)
                             </th>
                             <th>
+                                @Html.DisplayNameFor(model => model.billNo)
+                            </th>
+                            <th>
                                 @Html.DisplayNameFor(model => model.flowStatus)
                             </th>
                             <th></th>
@@ -66,6 +74,9 @@
                                     @Html.DisplayFor(modelItem => item.flowName)
                                 </td>
                                 <td>
+                                    @Html.DisplayFor(modelItem => item.billNo)
+                                </td>
+                                <td>
                                     @Html.DisplayFor(modelItem => item.flowStatus)
                                 </td>
                                 <td>
@@ -85,7 +96,9 @@
 {
     <script type="text/javascript">
         $(function () {
+            $.unblockUI();
             $('#btnQuery').click(function () {
+                $.blockUI({ message: '<h2>資料讀取中...</h2>' });
                 var url = "@Url.Action("ListAll", new { status = "xxx" })";
                 url = url.replace("xxx", $('#status').val());
                 window.location = url;
@@ -95,7 +108,7 @@
                 var selList = [];
                 for (var i = 0; i < $('.custom-checkbox:checked').length; i++)
                 {
-                    selList.push($($('.custom-checkbox:checked')[i]);
+                    selList.push($($('.custom-checkbox:checked')[i]));
                 };
 
             });

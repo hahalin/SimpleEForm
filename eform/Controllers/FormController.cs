@@ -44,6 +44,7 @@ namespace eform.Controllers
                 vwFlowMain item = new vwFlowMain
                 {
                     id = fitem.id,
+                    billNo=fitem.billNo,
                     sender = sender.workNo + " " + sender.cName,
                     billDate = fitem.billDate,
                     flowName = fitem.flowName,
@@ -626,7 +627,7 @@ namespace eform.Controllers
             {
                 fDefSubList = context.FlowDefSubList.Where(x => x.pid == fDefMain.id).OrderBy(x => x.seq).ToList<FlowDefSub>();
             }
-
+            fmain.billNo = ctx.genBillNo(Model.defId);
             fmain.id = Guid.NewGuid().ToString();
             fmain.defId = Model.defId;
             fmain.flowName = ctx.FlowDefMainList.Where(x => x.enm == Model.defId).FirstOrDefault().nm;

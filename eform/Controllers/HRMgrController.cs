@@ -40,7 +40,7 @@ namespace eform.Controllers
                     @"
                         select * from
                             (
-                            select '本期新增特休' hType,* from (
+                            select N'本期新增特休' hType,* from (
                                 select a.workNo,b.cName,'m'+convert(varchar(2),a.m) m,a.v1
                                 from dayOffSums a left join AspNetUsers b on a.workNo=b.workNo where a.y=@y and a.sType='a'
                             ) t
@@ -52,7 +52,7 @@ namespace eform.Controllers
                                 )
                             ) p1
                             union
-                            select '本期新增補休' hType,* from (
+                            select N'本期新增補休' hType,* from (
                                 select a.workNo,b.cName,'m'+convert(varchar(2),a.m) m,a.v1
                                 from dayOffSums a left join AspNetUsers b on a.workNo=b.workNo where a.y=@y and a.sType='b'
                             ) t

@@ -46,6 +46,7 @@ namespace eform.Controllers
                 {
                     id = item.id,
                     sender = sender.workNo + " " + sender.cName,
+                    billNo=item.billNo,
                     billDate = item.billDate,
                     flowName = item.flowName,
                     flowStatus = Status == null ? "簽核中" : Status.nm
@@ -386,9 +387,6 @@ namespace eform.Controllers
 
             var user = context.Users.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
 
-            //var unSignMainList = (from item in context.FlowMainList
-            //                      where item.flowStatus != 1 && item.flowStatus != 99 && item.defId == "OverTime"
-            //                      select item.id);
 
             var signOkSubList = from item in context.FlowSubList
                                 where item.signResult != 0 && item.signResult != 99 && item.workNo == user.workNo
@@ -414,6 +412,7 @@ namespace eform.Controllers
                     id = item.id,
                     sender = sender.workNo + " " + sender.cName,
                     billDate = item.billDate,
+                    billNo=item.billNo,
                     flowName = item.flowName,
                     flowStatus = Status == null ? "簽核中" : Status.nm
                 };
@@ -518,6 +517,7 @@ namespace eform.Controllers
                     {
                         id = item.id,
                         sender = sender.workNo + " " + sender.cName,
+                        billNo=item.billNo,
                         billDate = item.billDate,
                         flowName = item.flowName,
                         flowStatus = Status == null ? "簽核中" : Status.nm

@@ -7,7 +7,6 @@
     List<FlowMain> dayOffFlowMainList = (List<FlowMain>)ViewBag.dayOffFlowMainList;
     List<dayOff> dayOffList = (List<dayOff>)ViewBag.dayOffList;
 }
-
 <link rel="stylesheet" type="text/css" href="~/Content/bootstrap-datetimepicker.min.css" />
 <div class="row">
     <div class="col-md-10">
@@ -197,10 +196,13 @@
 </div>
 
 @section Scripts {
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    <script src="~/Scripts/jquery.blockUI.js"></script>
     <script type="text/javascript" src="~/Scripts/moment-with-locales.min.js"></script>
     <script type="text/javascript" src="~/Scripts/bootstrap-datetimepicker.min.js"></script>
     <script type="text/javascript">
         function doSubmit() {
+            $.blockUI({ message: '<h2>表單儲存中...</h2>' });
             return true;
         }
         function formatRepoSelection(repo) {

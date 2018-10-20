@@ -25,6 +25,9 @@
                             @Html.DisplayNameFor(model => model.flowName)
                         </th>
                         <th>
+                            @Html.DisplayNameFor(model => model.billNo)
+                        </th>
+                        <th>
                             @Html.DisplayNameFor(model => model.flowStatus)
                         </th>
                         <th></th>
@@ -45,6 +48,9 @@
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.flowName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.billNo)
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.flowStatus)
