@@ -82,8 +82,8 @@ namespace eform.Models
 
             list.Add(new vwFlowStatus
             {
-                id=1,
-                nm="簽核中"
+                id = 1,
+                nm = "簽核中"
             });
 
             list.Add(new vwFlowStatus
@@ -146,16 +146,17 @@ namespace eform.Models
             return r;
         }
 
-        public vwEmployee getCurrentUser(string  Name)
+        public vwEmployee getCurrentUser(string Name)
         {
-            ApplicationUser user=this.Users.Where(x => x.UserName == Name).FirstOrDefault();
-            vwEmployee employee = new vwEmployee{
+            ApplicationUser user = this.Users.Where(x => x.UserName == Name).FirstOrDefault();
+            vwEmployee employee = new vwEmployee
+            {
                 Id = user.Id,
                 UserCName = user.cName,
                 UserEName = user.eName,
                 workNo = user.workNo,
                 Email = user.Email,
-                beginWorkDate=user.beginWorkDate
+                beginWorkDate = user.beginWorkDate
             };
             return employee;
         }
@@ -175,7 +176,7 @@ namespace eform.Models
         }
         public string getUserList()
         {
-            var userlist0 = this.Users.Where(x => x.status == 1 && x.UserName.ToLower().Contains("admin") == false).OrderBy(x=>x.workNo).ToList();
+            var userlist0 = this.Users.Where(x => x.status == 1 && x.UserName.ToLower().Contains("admin") == false).OrderBy(x => x.workNo).ToList();
             List<dynamic> userlist = new List<dynamic>();
             foreach (var user in userlist0)
             {
@@ -195,31 +196,45 @@ namespace eform.Models
         public string genBillNo(string formType)
         {
             string r = "";
-            string code = "P018A1";
-            if (formType== "DayOff")
+            string code = "";
+            if (formType == "OverTime")
             {
-                string preCode = code + "-" + getLocalTiime().ToString("yyMM");
-                var list = from fmain in this.FlowMainList.Where(x => x.billNo != null && x.billNo.Contains(preCode))
-                           select fmain.billNo;
-                list = list.Where(x => string.IsNullOrEmpty(x) == false);
-
-                if (list.Count()==0)
-                {
-                    r = preCode + "0001";
-                }
-                else
-                {
-                    List<int> vList = new List<int>();
-                    foreach (string _v in list)
-                    {
-                        if (_v.Length > 4)
-                        {
-                            vList.Add(Convert.ToInt32(_v.Substring(_v.Length - 4, 4)));
-                        }
-                    }
-                    r=preCode+String.Format("{0:0000}", vList.Max()+1);
-               }
+                code = "P016A1";
             }
+            if (formType == "RealOverTime")
+            {
+                code = "P017A1";
+            }
+            if (formType == "DayOff")
+            {
+                code = "P018A1";
+            }
+            if (formType == "PublicOut")
+            {
+                code = "P019A1";
+            }
+            string preCode = code + "-" + getLocalTiime().ToString("yyMM");
+            var list = from fmain in this.FlowMainList.Where(x => x.billNo != null && x.billNo.Contains(preCode))
+                       select fmain.billNo;
+            list = list.Where(x => string.IsNullOrEmpty(x) == false);
+
+            if (list.Count() == 0)
+            {
+                r = preCode + "0001";
+            }
+            else
+            {
+                List<int> vList = new List<int>();
+                foreach (string _v in list)
+                {
+                    if (_v.Length > 4)
+                    {
+                        vList.Add(Convert.ToInt32(_v.Substring(_v.Length - 4, 4)));
+                    }
+                }
+                r = preCode + String.Format("{0:0000}", vList.Max() + 1);
+            }
+
             return r;
         }
     }

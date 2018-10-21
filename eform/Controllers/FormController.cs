@@ -426,6 +426,7 @@ namespace eform.Controllers
             var sender = context.Users.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
             fmain.id = Guid.NewGuid().ToString();
             fmain.defId = "OverTime";
+            fmain.billNo = ctx.genBillNo(fmain.defId);
             fmain.flowName = fDefMain.nm;
             fmain.flowStatus = 1;
             fmain.senderNo = sender.workNo;
@@ -810,6 +811,7 @@ namespace eform.Controllers
             var sender = context.Users.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
             fmain.id = Guid.NewGuid().ToString();
             fmain.defId = FlowDefKey;
+            fmain.billNo = ctx.genBillNo(fmain.defId);
             fmain.flowName = fDefMain.nm;
             fmain.flowStatus = 1;
             fmain.senderNo = sender.workNo;
@@ -988,6 +990,7 @@ namespace eform.Controllers
             }
 
             var sender = context.Users.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
+            fmain.billNo = ctx.genBillNo(FlowDefKey);
             fmain.id = Guid.NewGuid().ToString();
             fmain.defId = FlowDefKey;
             fmain.flowName = fDefMain.nm;
