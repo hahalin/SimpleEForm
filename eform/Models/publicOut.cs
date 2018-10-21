@@ -33,6 +33,8 @@ namespace eform.Models
         public string id { get; set; }
         public string flowId { get; set; }
         public vwEmployee user { get; set; }
+        [DisplayName("單號")]
+        public string billNo { get; set; }
         [DisplayName("申請日期")]
         public DateTime? requestDate { get; set; }
         [DisplayName("預計出發時間")]

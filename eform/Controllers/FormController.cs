@@ -64,6 +64,7 @@ namespace eform.Controllers
             {
                 vwReqOverTimeObj = new vwReqOverTime
                 {
+                    billNo=fmain.billNo,
                     billDate = fmain.billDate,
                     dtBegin = reqOverTimeObj.dtBegin,
                     dtEnd = reqOverTimeObj.dtEnd,
@@ -108,6 +109,7 @@ namespace eform.Controllers
                 vwReqOverTimeObj = new vwRealOverTime
                 {
                     user = ctx.getUserByWorkNo(fmain.senderNo),
+                    billNo=fmain.billNo,
                     billDate = fmain.billDate,
                     dtBegin = reqOverTimeObj.dtBegin,
                     dtEnd = reqOverTimeObj.dtEnd,
@@ -175,6 +177,7 @@ namespace eform.Controllers
                     subModel.dayOffForm = new vwdayOff
                     {
                         id = dayOffObj.id,
+                        billNo=fmain.billNo,
                         dtBegin = dayOffObj.dtBegin,
                         dtEnd = dayOffObj.dtEnd,
                         hours = dayOffObj.hours,
@@ -191,6 +194,7 @@ namespace eform.Controllers
                     vwPublicOut subModel = new vwPublicOut
                     {
                         id = publicOutObj.id,
+                        //billNo=fmain.billNo,
                         user = ctx.getUserByWorkNo(fmain.senderNo),
                         requestDate = publicOutObj.requestDate,
                         dtBegin = publicOutObj.dtBegin,
@@ -525,7 +529,7 @@ namespace eform.Controllers
 
                 StringBuilder sb = new StringBuilder();
                 sb.Append("您好," + "<br/><br/>");
-                sb.Append(sender.workNo + " " + sender.cName + " 送出非工作時間廠務申請單" + "<br/><br/>");
+                sb.Append(sender.workNo + " " + sender.cName + " 送出非工作時間廠務申請單：" +fmain.billNo+"<br/><br/>");
                 sb.AppendFormat("<a href='{0}'>{1}</a><br/>",
                     Url.Action("Details", "FormMgr", new RouteValueDictionary(new { id = fmain.id }), HttpContext.Request.Url.Scheme, HttpContext.Request.Url.Authority),
                     "單據網址"
@@ -716,7 +720,7 @@ namespace eform.Controllers
 
                 StringBuilder sb = new StringBuilder();
                 sb.Append("您好," + "<br/><br/>");
-                sb.Append(Model.user.workNo + " " + Model.user.UserCName + " 送出請假單" + "<br/><br/>");
+                sb.Append(Model.user.workNo + " " + Model.user.UserCName + " 送出請假單："+fmain.billNo + "<br/><br/>");
                 sb.AppendFormat("<a href='{0}'>{1}</a><br/>",
                     Url.Action("Details", "FormMgr", new RouteValueDictionary(new { id = fmain.id }), HttpContext.Request.Url.Scheme, HttpContext.Request.Url.Authority),
                     "單據網址"
@@ -903,7 +907,7 @@ namespace eform.Controllers
 
                 StringBuilder sb = new StringBuilder();
                 sb.Append("您好," + "<br/><br/>");
-                sb.Append(sender.workNo + " " + sender.cName + " 送出加班申請單" + "<br/><br/>");
+                sb.Append(sender.workNo + " " + sender.cName + " 送出加班申請單：" +fmain.billNo+ "<br/><br/>");
                 sb.AppendFormat("<a href='{0}'>{1}</a><br/>",
                     Url.Action("Details", "FormMgr", new RouteValueDictionary(new { id = fmain.id }), HttpContext.Request.Url.Scheme, HttpContext.Request.Url.Authority),
                     "單據網址"
@@ -1083,7 +1087,7 @@ namespace eform.Controllers
 
                 StringBuilder sb = new StringBuilder();
                 sb.Append("您好," + "<br/><br/>");
-                sb.Append(sender.workNo + " " + sender.cName + " 送出外出申請單" + "<br/><br/>");
+                sb.Append(sender.workNo + " " + sender.cName + " 送出外出申請單：" +fmain.billNo+"<br/><br/>");
                 sb.AppendFormat("<a href='{0}'>{1}</a><br/>",
                     Url.Action("Details", "FormMgr", new RouteValueDictionary(new { id = fmain.id }), HttpContext.Request.Url.Scheme, HttpContext.Request.Url.Authority),
                     "單據網址"

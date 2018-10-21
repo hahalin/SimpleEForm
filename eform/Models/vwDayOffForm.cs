@@ -42,6 +42,8 @@ namespace eform.Models
 
         [DisplayName("申請日期")]
         public DateTime? billDate { get; set; }
+        [DisplayName("單號")]
+        public string billNo { get; set; }
         public vwdayOff dayOffForm { get; set; }
         public int beginHH { get; set; } = 0;
         public int beginMM { get; set; } = 0;
@@ -57,6 +59,8 @@ namespace eform.Models
     {
         public string id { get; set; }
         public string flowId { get; set; }
+        [DisplayName("單號")]
+        public string billNo { get; set; }
         [DisplayName("開始時間")]
         public DateTime? dtBegin { get; set; }
         [DisplayName("結束時間")]

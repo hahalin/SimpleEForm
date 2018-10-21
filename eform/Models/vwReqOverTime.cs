@@ -11,6 +11,8 @@ namespace eform.Models
     {
         public string id { get; set; }
         public string flowId { get; set; }
+        [DisplayName("單號")]
+        public string billNo { get; set; }
         public string worker { get; set; }
         [DisplayName("申請日期")]
         public DateTime? billDate { get; set; }
@@ -55,6 +57,8 @@ namespace eform.Models
         public string id { get; set; }
         public vwEmployee user { get; set; }
         public string flowId { get; set; }
+        [DisplayName("單號")]
+        public string billNo { get; set; }
         public string worker { get; set; }
         [DisplayName("申請日期")]
         public DateTime? billDate { get; set; }
