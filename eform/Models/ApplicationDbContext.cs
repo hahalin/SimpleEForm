@@ -213,6 +213,10 @@ namespace eform.Models
             {
                 code = "P019A1";
             }
+            if (formType == "GuestForm")
+            {
+                code = "P011A1";
+            }
             string preCode = code + "-" + getLocalTiime().ToString("yyMM");
             var list = from fmain in this.FlowMainList.Where(x => x.billNo != null && x.billNo.Contains(preCode))
                        select fmain.billNo;

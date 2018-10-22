@@ -1107,5 +1107,28 @@ namespace eform.Controllers
             }
 
         }
+
+
+        [AdminAuthorize(Roles = "Employee,Admin")]
+        [HttpGet]
+        public ActionResult GuestForm()
+        {
+            vwGuestForm Model = new vwGuestForm();
+            Model.requestDate = ctx.getLocalTiime();
+            Model.user = ctx.getCurrentUser(User.Identity.Name);
+            setHMList();
+            return View(Model);
+        }
+        [AdminAuthorize(Roles = "Employee,Admin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult GuestForm(vwGuestForm Model) {
+
+            Model.user = ctx.getCurrentUser(User.Identity.Name);
+            setHMList();
+            return View(Model);
+        }
+
+
     }
 }

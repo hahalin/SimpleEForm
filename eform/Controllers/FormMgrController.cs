@@ -6,6 +6,8 @@ using eform.Attributes;
 using eform.Models;
 using Newtonsoft.Json.Linq;
 using System.Data;
+using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.AspNet.Identity;
 
 namespace eform.Controllers
 {
@@ -46,7 +48,7 @@ namespace eform.Controllers
                 {
                     id = item.id,
                     sender = sender.workNo + " " + sender.cName,
-                    billNo=item.billNo,
+                    billNo = item.billNo,
                     billDate = item.billDate,
                     flowName = item.flowName,
                     flowStatus = Status == null ? "簽核中" : Status.nm
@@ -88,9 +90,28 @@ namespace eform.Controllers
         [AdminAuthorize(Roles = "Admin,Employee")]
         public ActionResult Details(string id, string FlowPageType = "", string ReturnAction = "")
         {
-            if (ctx.FlowSubList.Where(x=>x.pid==id && x.workNo== User.Identity.Name).Count()==0)
+
+            var store = new UserStore<ApplicationUser>(ctx);
+            var manager = new UserManager<ApplicationUser>(store);
+            var user= manager.FindByName(User.Identity.Name);
+            var roleStore = new RoleStore<ApplicationRole>(ctx);
+            var roleManager = new RoleManager<ApplicationRole>(roleStore);
+            bool isAdmin = false;
+            foreach (var role in roleManager.Roles)
             {
-                return RedirectToAction("AccessDenied", "Account");
+                if (user.Roles.Where(x=>x.RoleId==role.Id && role.Name.ToUpper()=="ADMIN").Count()>0)
+                {
+                    isAdmin = true;
+                    break;
+                }
+            }
+
+            if (!isAdmin)
+            {
+                if (ctx.FlowSubList.Where(x => x.pid == id && x.workNo == User.Identity.Name).Count() == 0)
+                {
+                    return RedirectToAction("AccessDenied", "Account");
+                }
             }
 
             if (ctx.FlowSubList.Where(x => x.pid == id && x.workNo == User.Identity.Name && x.signType == 701).Count() > 0)
@@ -101,9 +122,6 @@ namespace eform.Controllers
             var context = new ApplicationDbContext();
             ViewBag.FlowPageType = FlowPageType;
             ViewBag.ReturnAction = ReturnAction;
-
-            
-
 
             List<vwFlowSub> list = new List<vwFlowSub>();
             List<FlowSub> fsubList = context.FlowSubList.Where(x => x.pid == id).OrderBy(x => x.seq).ToList<FlowSub>();
@@ -133,12 +151,14 @@ namespace eform.Controllers
             #region "非工作時間廠務申請單"
             if (fmain.defId == "OverTime")
             {
+                fmain.flowName += "(P016A1)";
                 ReqOverTime reqOverTimeObj = context.reqOverTimeList.Where(x => x.flowId == id).FirstOrDefault();
                 vwReqOverTime vwReqOverTimeObj = null;
                 if (reqOverTimeObj != null)
                 {
                     vwReqOverTimeObj = new vwReqOverTime
                     {
+                        billNo = fmain.billNo,
                         dtBegin = reqOverTimeObj.dtBegin,
                         dtEnd = reqOverTimeObj.dtEnd,
                         hours = reqOverTimeObj.hours,
@@ -177,6 +197,7 @@ namespace eform.Controllers
             #region "加班單"
             if (fmain.defId == "RealOverTime")
             {
+                fmain.flowName += "(P017A1)";
                 ReqOverTime reqOverTimeObj = context.reqOverTimeList.Where(x => x.flowId == id).FirstOrDefault();
                 vwRealOverTime vwReqOverTimeObj = null;
                 if (reqOverTimeObj != null)
@@ -184,6 +205,7 @@ namespace eform.Controllers
                     vwReqOverTimeObj = new vwRealOverTime
                     {
                         user = ctx.getUserByWorkNo(fmain.senderNo),
+                        billNo = fmain.billNo,
                         dtBegin = reqOverTimeObj.dtBegin,
                         dtEnd = reqOverTimeObj.dtEnd,
                         hours = reqOverTimeObj.hours,
@@ -207,11 +229,13 @@ namespace eform.Controllers
             #region "請假單"
             if (fmain.defId == "DayOff")
             {
+                fmain.flowName += "(P018A1)";
                 vwDayOffForm subModel = new vwDayOffForm();
                 dayOff dayOffObj = ctx.dayOffList.Where(x => x.flowId == fmain.id).FirstOrDefault();
                 subModel.dayOffForm = new vwdayOff
                 {
                     id = dayOffObj.id,
+                    billNo = fmain.billNo,
                     dtBegin = dayOffObj.dtBegin,
                     dtEnd = dayOffObj.dtEnd,
                     hours = dayOffObj.hours,
@@ -227,10 +251,12 @@ namespace eform.Controllers
             #region "外出申請單"
             if (fmain.defId == "PublicOut")
             {
+                fmain.flowName += "(P019A1)";
                 publicOut publicOutObj = ctx.publicOutList.Where(x => x.flowId == fmain.id).FirstOrDefault();
                 vwPublicOut subModel = new vwPublicOut
                 {
                     id = publicOutObj.id,
+                    billNo = fmain.billNo,
                     user = ctx.getUserByWorkNo(fmain.senderNo),
                     requestDate = publicOutObj.requestDate,
                     dtBegin = publicOutObj.dtBegin,
@@ -291,7 +317,7 @@ namespace eform.Controllers
 
                     if (fsub.signResult == 2)
                     {
-                       dbh.execSql("update FlowMains set flowStatus=3 where id='" + id + "'");
+                        dbh.execSql("update FlowMains set flowStatus=3 where id='" + id + "'");
                     }
                 }
 
@@ -299,7 +325,7 @@ namespace eform.Controllers
                 {
                     if (fsub.signType != 3 && (!bIsGmDep))
                     {
-                        List<FlowSub> qPriorSigner = ctx.FlowSubList.Where(x => x.pid == id && x.signType !=701 && x.seq < fsub.seq && x.signResult == 0).ToList<FlowSub>();
+                        List<FlowSub> qPriorSigner = ctx.FlowSubList.Where(x => x.pid == id && x.signType != 701 && x.seq < fsub.seq && x.signResult == 0).ToList<FlowSub>();
                         if (qPriorSigner.Count() > 0)
                         {
                             TempData["error"] = "上一位簽核人尚未簽核";
@@ -312,7 +338,7 @@ namespace eform.Controllers
                     context.SaveChanges();
 
                     dbHelper dbh = new dbHelper();
-                    var fsublist = ctx.FlowSubList.Where(x => x.pid == id && x.signType !=701);
+                    var fsublist = ctx.FlowSubList.Where(x => x.pid == id && x.signType != 701);
                     if (fsub.signResult == 1 &&
                         (fsublist.Where(x => x.signResult == 1).Count() == fsublist.Count() || bIsGmDep)
                     )
@@ -330,7 +356,7 @@ namespace eform.Controllers
                 {
                     if (fsub.signType != 3 && (!bIsGmDep))
                     {
-                        List<FlowSub> qPriorSigner = ctx.FlowSubList.Where(x => x.pid == id && x.signType!=701 && x.seq < fsub.seq && x.signResult == 0).ToList<FlowSub>();
+                        List<FlowSub> qPriorSigner = ctx.FlowSubList.Where(x => x.pid == id && x.signType != 701 && x.seq < fsub.seq && x.signResult == 0).ToList<FlowSub>();
                         if (qPriorSigner.Count() > 0)
                         {
                             TempData["error"] = "上一位簽核人尚未簽核";
@@ -372,7 +398,7 @@ namespace eform.Controllers
 
                     if (fsub.signResult == 2)
                     {
-                       dbh.execSql("update FlowMains set flowStatus=3 where id='" + id + "'");
+                        dbh.execSql("update FlowMains set flowStatus=3 where id='" + id + "'");
                     }
                 }
             }
@@ -412,7 +438,7 @@ namespace eform.Controllers
                     id = item.id,
                     sender = sender.workNo + " " + sender.cName,
                     billDate = item.billDate,
-                    billNo=item.billNo,
+                    billNo = item.billNo,
                     flowName = item.flowName,
                     flowStatus = Status == null ? "簽核中" : Status.nm
                 };
@@ -517,7 +543,7 @@ namespace eform.Controllers
                     {
                         id = item.id,
                         sender = sender.workNo + " " + sender.cName,
-                        billNo=item.billNo,
+                        billNo = item.billNo,
                         billDate = item.billDate,
                         flowName = item.flowName,
                         flowStatus = Status == null ? "簽核中" : Status.nm
