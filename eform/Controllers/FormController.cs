@@ -163,16 +163,19 @@ namespace eform.Controllers
                 ViewBag.flowMain = fmain;
                 if (fmain.defId == "OverTime")
                 {
+                    fmain.flowName += "(P016A1)";
                     getOverTime(fmain);
                     return View("Details", list);
                 }
                 if (fmain.defId == "RealOverTime")
                 {
+                    fmain.flowName += "(P017A1)";
                     getRealOverTime(fmain);
                     return View("Details", list);
                 }
                 if (fmain.defId == "DayOff")
                 {
+                    fmain.flowName += "(P018A1)";
                     vwDayOffForm subModel = new vwDayOffForm();
                     dayOff dayOffObj = ctx.dayOffList.Where(x => x.flowId == fmain.id).FirstOrDefault();
                     subModel.dayOffForm = new vwdayOff
@@ -191,6 +194,7 @@ namespace eform.Controllers
                 }
                 if (fmain.defId == "PublicOut")
                 {
+                    fmain.flowName += "(P019A1)";
                     publicOut publicOutObj = ctx.publicOutList.Where(x => x.flowId == fmain.id).FirstOrDefault();
                     vwPublicOut subModel = new vwPublicOut
                     {
@@ -209,6 +213,7 @@ namespace eform.Controllers
                 }
                 if (fmain.defId == "GuestForm")
                 {
+                    fmain.flowName += "(P011A1)";
                     guestForm formObj = ctx.guestFormList.Where(x => x.flowId == fmain.id).FirstOrDefault();
                     vwGuestForm subModel = new vwGuestForm
                     {
