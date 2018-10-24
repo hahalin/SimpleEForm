@@ -342,6 +342,10 @@
     <Compile Include="Migrations\201810031354158_addPublicOutTable.Designer.cs">
       <DependentUpon>201810031354158_addPublicOutTable.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201810232138049_addGuestForm.cs" />
+    <Compile Include="Migrations\201810232138049_addGuestForm.Designer.cs">
+      <DependentUpon>201810232138049_addGuestForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ApplicationDbContext.cs" />
@@ -374,6 +378,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repo\dateUtils.cs" />
     <Compile Include="Repo\numberUtils.cs" />
+    <Compile Include="Repo\hrRep.cs" />
     <Compile Include="Repo\prjRep.cs" />
     <Compile Include="Service\SendGridSrv.cs" />
     <Compile Include="Startup.cs" />
@@ -1337,6 +1342,7 @@
     <Content Include="Views\Shared\Form\_PublicOutForm.cshtml" />
     <Content Include="Views\FlowDef\Edit.cshtml" />
     <Content Include="Views\Form\GuestForm.cshtml" />
+    <Content Include="Views\Shared\Form\_GuestForm.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1424,6 +1430,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201810031354158_addPublicOutTable.resx">
       <DependentUpon>201810031354158_addPublicOutTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201810232138049_addGuestForm.resx">
+      <DependentUpon>201810232138049_addGuestForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

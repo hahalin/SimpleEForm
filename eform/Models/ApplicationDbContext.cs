@@ -44,6 +44,8 @@ namespace eform.Models
         public DbSet<dayOffSum> dayOffSumList { get; set; }
 
         public DbSet<publicOut> publicOutList { get; set; }
+        public DbSet<guestForm> guestFormList { get; set; }
+        
 
 
         public List<vwSignType> signTypeList()

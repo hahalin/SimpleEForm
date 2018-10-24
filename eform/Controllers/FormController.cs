@@ -15,6 +15,7 @@ using SendGrid.Helpers.Mail;
 using System.Text;
 using eform.Service;
 using System.Web.Routing;
+using eform.Repo;
 
 namespace eform.Controllers
 {
@@ -202,6 +203,34 @@ namespace eform.Controllers
                         subject = publicOutObj.subject,
                         destination = publicOutObj.destination,
                         transport = publicOutObj.transport
+                    };
+                    ViewBag.SubModel = subModel;
+                    return View("Details", list);
+                }
+                if (fmain.defId == "GuestForm")
+                {
+                    guestForm formObj = ctx.guestFormList.Where(x => x.flowId == fmain.id).FirstOrDefault();
+                    vwGuestForm subModel = new vwGuestForm
+                    {
+                        id = formObj.id,
+                        user = ctx.getUserByWorkNo(fmain.senderNo),
+                        requestDate = formObj.requestDate,
+                        dtBegin = formObj.dtBegin,
+                        dtEnd = formObj.dtEnd,
+                        subject = formObj.subject,
+                        to = formObj.to,
+                        toDep = formObj.toDep,
+                        guestCmp= formObj.guestCmp,
+                        guestName = formObj.guestName,
+                        guestCnt = formObj.guestCnt,
+                        cellPhone = formObj.cellPhone,
+                        area1=formObj.area1,
+                        area2 = formObj.area2,
+                        area21 = formObj.area21,
+                        area3 = formObj.area3,
+                        area4 = formObj.area4,
+                        area41 = formObj.area41,
+                        sMemo =formObj.sMemo
                     };
                     ViewBag.SubModel = subModel;
                     return View("Details", list);
@@ -563,6 +592,8 @@ namespace eform.Controllers
             ViewBag.dayOffFlowMainList = dayOffFlowMainList;
             var qdayOffFlowMainList = from item in dayOffFlowMainList select item.id;
             ViewBag.dayOffList = ctx.dayOffList.Where(x => qdayOffFlowMainList.Contains(x.flowId)).ToList<dayOff>();
+            hrRep rep = new hrRep(User.Identity.Name);
+            ViewBag.tb = rep.queryMyDayOffList(DateTime.Today.Year);
         }
         [HttpGet]
         [AdminAuthorize(Roles = "Employee,Admin")]
@@ -1122,13 +1153,181 @@ namespace eform.Controllers
         [AdminAuthorize(Roles = "Employee,Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult GuestForm(vwGuestForm Model) {
+        public async Task<ActionResult> GuestForm(vwGuestForm Model)
+        {
+            #region "checkinput"
+            List<string> errList = new List<string>();
 
-            Model.user = ctx.getCurrentUser(User.Identity.Name);
-            setHMList();
-            return View(Model);
+            DateTime dtBegin, dtEnd;
+            dtBegin = Convert.ToDateTime(Model.dtBegin);
+            dtEnd = Convert.ToDateTime(Model.dtEnd);
+            try
+            {
+                dtBegin = new DateTime(dtBegin.Year, dtBegin.Month, dtBegin.Day, Model.beginHH, Model.beginMM, 0);
+                dtEnd = new DateTime(dtEnd.Year, dtEnd.Month, dtEnd.Day, Model.endHH, Model.endMM, 0);
+
+                int icompare = DateTime.Compare(dtBegin, dtEnd);
+                if (icompare >= 0)
+                {
+                    errList.Add("離廠時間必須大於入廠時間");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                errList.Add("開始時間、結束時間必須是正確格式");
+            }
+
+            if (errList.Count > 0)
+            {
+                ModelState.AddModelError("", string.Join(",", errList));
+            }
+
+
+            if (!ModelState.IsValid)
+            {
+                Model.user = ctx.getCurrentUser(User.Identity.Name);
+                Model.requestDate = ctx.getLocalTiime();
+                setHMList();
+                return View(Model);
+            }
+
+            #endregion
+
+            #region "FlowWork"
+            string FlowDefKey = "GuestForm";
+            FlowMain fmain = new FlowMain();
+            List<FlowSub> fsublist = new List<FlowSub>();
+            FlowDefMain fDefMain = ctx.FlowDefMainList.Where(x => x.enm == FlowDefKey).FirstOrDefault();
+            List<FlowDefSub> fDefSubList = new List<FlowDefSub>();
+            if (fDefMain != null)
+            {
+                fDefSubList = ctx.FlowDefSubList.Where(x => x.pid == fDefMain.id).OrderBy(x => x.seq).ToList<FlowDefSub>();
+            }
+
+            var sender = ctx.Users.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
+            fmain.billNo = ctx.genBillNo(FlowDefKey);
+            fmain.id = Guid.NewGuid().ToString();
+            fmain.defId = FlowDefKey;
+            fmain.flowName = fDefMain.nm;
+            fmain.flowStatus = 1;
+            fmain.senderNo = sender.workNo;
+            fmain.billDate = ctx.getLocalTiime();
+            ctx.FlowMainList.Add(fmain);
+
+            guestForm fmObj = new guestForm
+            {
+                dtBegin = dtBegin,
+                dtEnd = dtEnd,
+                area1 = Model.area1,
+                area2=Model.area2,
+                area21=Model.area21,
+                area3=Model.area3,
+                area4=Model.area4,
+                area41=Model.area41,
+                requestDate = Model.requestDate,
+                subject = Model.subject,
+                id = Guid.NewGuid().ToString(),
+                flowId = fmain.id,
+                to=Model.to,
+                toDep=Model.toDep,
+                guestCmp=Model.guestCmp,
+                guestCnt=Model.guestCnt,
+                guestName=Model.guestName,
+                cellPhone=Model.cellPhone,
+                sMemo=Model.sMemo
+            };
+
+            ctx.guestFormList.Add(fmObj);
+
+            int flowSeq = 1;
+
+            dbHelper dbh = new dbHelper();
+            string senderPoNo = dbh.sql2Str("select poNo from PoUsers where UserId='" + sender.workNo + "' and ApplicationUser_Id is not null");
+            string senderMgrNo = "";
+
+            List<string> signerList = new List<string>();
+
+            if (!string.IsNullOrEmpty(senderPoNo))
+            {
+                string senderDepNo = dbh.sql2Str("select depNo from jobPoes where poNo='" + senderPoNo + "'");
+                if (!string.IsNullOrEmpty(senderDepNo))
+                {
+                    dep depObj = ctx.deps.Where(x => x.depNo == senderDepNo).FirstOrDefault();
+                    signerList = getDepSigner(ctx, depObj, sender.workNo, signerList);
+                }
+            }
+
+            foreach (string signer in signerList)
+            {
+                FlowSub fsub = new FlowSub();
+                fsub.pid = fmain.id;
+                fsub.id = Guid.NewGuid().ToString();
+                fsub.seq = flowSeq;
+                fsub.workNo = signer;
+                fsub.signType = 1;
+                fsub.signResult = 0;
+                flowSeq++;
+                ctx.FlowSubList.Add(fsub);
+            }
+
+            foreach (FlowDefSub defItem in fDefSubList)
+            {
+                if (defItem.workNo != senderMgrNo && signerList.Where(x => x == defItem.workNo).Count() == 0 && defItem.workNo != sender.workNo)
+                {
+                    FlowSub fsub = new FlowSub();
+                    fsub.pid = fmain.id;
+                    fsub.id = Guid.NewGuid().ToString();
+                    fsub.seq = flowSeq;
+                    fsub.workNo = defItem.workNo;
+                    fsub.signType = defItem.signType;
+                    fsub.signResult = 0;
+                    flowSeq++;
+                    ctx.FlowSubList.Add(fsub);
+                    signerList.Add(defItem.workNo);
+                }
+            }
+
+            #endregion
+
+            try
+            {
+                ctx.SaveChanges();
+
+                List<EmailAddress> mailList = new List<EmailAddress>();
+                foreach (FlowDefSub defItem in fDefSubList)
+                {
+                    vwEmployee emp = ctx.getUserByWorkNo(defItem.workNo);
+                    if (!string.IsNullOrEmpty(emp.Email))
+                    {
+                        mailList.Add(new EmailAddress
+                        {
+                            Email = emp.Email,
+                            Name = emp.workNo + " " + emp.UserCName
+                        });
+                    }
+                }
+
+                StringBuilder sb = new StringBuilder();
+                sb.Append("您好," + "<br/><br/>");
+                sb.Append(sender.workNo + " " + sender.cName + " 送出訪客申請單：" + fmain.billNo + "<br/><br/>");
+                sb.AppendFormat("<a href='{0}'>{1}</a><br/>",
+                    Url.Action("Details", "FormMgr", new RouteValueDictionary(new { id = fmain.id }), HttpContext.Request.Url.Scheme, HttpContext.Request.Url.Authority),
+                    "單據網址"
+                );
+                sb.Append("<br/>此信件為系統發出，請勿直接回信<br/>");
+                await SendGridSrv.sendEmail(mailList, "訪客申請單送出通知", sb.ToString());
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                Model.user = ctx.getCurrentUser(User.Identity.Name);
+                Model.requestDate = ctx.getLocalTiime();
+                setHMList();
+                return View(Model);
+            }
         }
-
-
     }
 }

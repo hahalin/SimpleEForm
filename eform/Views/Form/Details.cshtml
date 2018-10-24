@@ -9,7 +9,7 @@
 
 <div class="row">
     <div class="col-md-10">
-        <div class="box">
+        <div class="box box-primary">
             <div class="box-header text-center">
                 <div class="box-title">
                     <h3><span class="label label-default">@employee.Company</span></h3>
@@ -32,10 +32,14 @@
             {
                 @Html.Partial("Form/_PublicOutForm", (vwPublicOut)ViewBag.SubModel)
             }
+            @if (flowMain.defId == "GuestForm")
+            {
+                @Html.Partial("Form/_GuestForm", (vwGuestForm)ViewBag.SubModel)
+            }
         </div>
     </div>
     <div class="col-md-10">
-        <div class="box">
+        <div class="box box-info">
             <div class="box-header">
                 <h3><span class="label label-success">簽核清單</span></h3>
             </div>
