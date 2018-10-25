@@ -24,7 +24,7 @@ namespace eform.Controllers
         {
             var context = new ApplicationDbContext();
 
-            var model = context.FlowDefMainList.OrderBy(x => x.seq);
+            var model = context.FlowDefMainList.OrderBy(x => x.code);
 
             return View(model);
         }

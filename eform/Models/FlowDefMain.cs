@@ -16,6 +16,8 @@ namespace eform.Models
         [Required]
         public string nm { get; set; }
         public string enm { get; set; }
+        [MaxLength(20)]
+        public string code { get; set; }
         public int seq { get; set; } = 1;
     }
 

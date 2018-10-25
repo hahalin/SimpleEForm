@@ -58,20 +58,28 @@ namespace eform.Models
         public vwEmployee user { get; set; }
         [DisplayName("申請日期")]
         public DateTime? requestDate { get; set; }
+        [Required]
         [DisplayName("預計到廠")]
         public DateTime? dtBegin { get; set; }
+        [Required]
         [DisplayName("預計離廠")]
         public DateTime? dtEnd { get; set; }
+        [Required]
         [DisplayName("拜訪部門")]
         public string toDep { get; set; }
+        [Required]
         [DisplayName("拜訪對象")]
         public string to { get; set; }
+        [Required]
         [DisplayName("來訪目的")]
         public string subject { get; set; }
+        [Required]
         [DisplayName("來賓公司名稱")]
         public string guestCmp { get; set; }
+        [Required]
         [DisplayName("來賓姓名")]
         public string guestName { get; set; }
+        [Required]
         [DisplayName("來賓人數")]
         public int guestCnt { get; set; } = 1;
         [DisplayName("來賓手機號碼(選填)")]

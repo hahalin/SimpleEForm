@@ -92,28 +92,28 @@
             <div class="col-md-8">
                 <div class="col-md-10 row">
                     <div class="col-md-5">
-                        @Html.CheckBox("area1", subModel.area1, new { @enabled = false })會議室
+                        @Html.CheckBox("area1", subModel.area1, new { @disabled = "disabled" })會議室
                     </div>
                 </div>
                 <div class="col-md-10 row">
                     <div class="col-md-4" style="">
-                        @Html.CheckBox("area2", subModel.area2, new { @enabled = false })生產區域:
+                        @Html.CheckBox("area2", subModel.area2, new { @disabled = "disabled" })生產區域:
                     </div>
                     <div class="col-md-6" style="text-align:left;">
-                        @Html.TextBoxFor(m => subModel.area21, new { @className = "form-control" })
+                        @subModel.area21
                     </div>
                 </div>
                 <div class="col-md-10 row">
                     <div class="col-md-5">
-                        @Html.CheckBox("area3", subModel.area3,new { @enabled = false })實驗室
+                        @Html.CheckBox("area3", subModel.area3,new { @disabled = "disabled" })實驗室
                     </div>
                 </div>
                 <div class="col-md-10 row">
                     <div class="col-md-4" style="">
-                        @Html.CheckBox("area4", subModel.area4, new { @enabled = false })其他:
+                        @Html.CheckBox("area4", subModel.area4, new { @disabled = "disabled" })其他:
                     </div>
                     <div class="col-md-6" style="text-align:left;">
-                        @Html.TextBoxFor(m => subModel.area41, new { @className = "form-control" })
+                        @subModel.area41
                     </div>
                 </div>
             </div>

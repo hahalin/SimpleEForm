@@ -346,6 +346,10 @@
     <Compile Include="Migrations\201810232138049_addGuestForm.Designer.cs">
       <DependentUpon>201810232138049_addGuestForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201810251504209_addCode2FlowDef.cs" />
+    <Compile Include="Migrations\201810251504209_addCode2FlowDef.Designer.cs">
+      <DependentUpon>201810251504209_addCode2FlowDef.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ApplicationDbContext.cs" />
@@ -1433,6 +1437,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201810232138049_addGuestForm.resx">
       <DependentUpon>201810232138049_addGuestForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201810251504209_addCode2FlowDef.resx">
+      <DependentUpon>201810251504209_addCode2FlowDef.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

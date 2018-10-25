@@ -271,6 +271,39 @@ namespace eform.Controllers
 
             #endregion
 
+            #region "訪客申請單"
+            if (fmain.defId == "GuestForm")
+            {
+                fmain.flowName += "(P011A1)";
+                guestForm formObj = ctx.guestFormList.Where(x => x.flowId == fmain.id).FirstOrDefault();
+                vwGuestForm subModel = new vwGuestForm
+                {
+                    id = formObj.id,
+                    user = ctx.getUserByWorkNo(fmain.senderNo),
+                    requestDate = formObj.requestDate,
+                    dtBegin = formObj.dtBegin,
+                    dtEnd = formObj.dtEnd,
+                    subject = formObj.subject,
+                    to = formObj.to,
+                    toDep = formObj.toDep,
+                    guestCmp = formObj.guestCmp,
+                    guestName = formObj.guestName,
+                    guestCnt = formObj.guestCnt,
+                    cellPhone = formObj.cellPhone,
+                    area1 = formObj.area1,
+                    area2 = formObj.area2,
+                    area21 = formObj.area21,
+                    area3 = formObj.area3,
+                    area4 = formObj.area4,
+                    area41 = formObj.area41,
+                    sMemo = formObj.sMemo
+                };
+                ViewBag.SubModel = subModel;
+                return View("Details", list);
+            }
+
+            #endregion
+
             return View(list);
         }
 
@@ -320,7 +353,6 @@ namespace eform.Controllers
                         dbh.execSql("update FlowMains set flowStatus=3 where id='" + id + "'");
                     }
                 }
-
                 if (fmain.defId == "RealOverTime")
                 {
                     if (fsub.signType != 3 && (!bIsGmDep))
@@ -351,7 +383,6 @@ namespace eform.Controllers
                         dbh.execSql("update FlowMains set flowStatus=3 where id='" + id + "'");
                     }
                 }
-
                 if (fmain.defId == "DayOff")
                 {
                     if (fsub.signType != 3 && (!bIsGmDep))
@@ -382,8 +413,25 @@ namespace eform.Controllers
                         dbh.execSql("update FlowMains set flowStatus=3 where id='" + id + "'");
                     }
                 }
-
                 if (fmain.defId == "PublicOut")
+                {
+                    fsub.signDate = context.getLocalTiime();
+                    fsub.signResult = Convert.ToInt16(signValue);
+                    fsub.comment = signMemo;
+                    context.SaveChanges();
+
+                    dbHelper dbh = new dbHelper();
+                    if (fsub.signResult == 1)
+                    {
+                        dbh.execSql("update FlowMains set flowStatus=2 where id='" + id + "'");
+                    }
+
+                    if (fsub.signResult == 2)
+                    {
+                        dbh.execSql("update FlowMains set flowStatus=3 where id='" + id + "'");
+                    }
+                }
+                if (fmain.defId == "GuestForm")
                 {
                     fsub.signDate = context.getLocalTiime();
                     fsub.signResult = Convert.ToInt16(signValue);
