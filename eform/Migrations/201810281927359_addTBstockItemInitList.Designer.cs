@@ -13,7 +13,7 @@ namespace eform.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201810281235093_addTBstockItemInitList"; }
+            get { return "201810281927359_addTBstockItemInitList"; }
         }
         
         string IMigrationMetadata.Source

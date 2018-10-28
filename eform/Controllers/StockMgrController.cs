@@ -19,6 +19,11 @@ namespace eform.Controllers
 {
     public class StockMgrController : Controller
     {
+        ApplicationDbContext ctx;
+        public StockMgrController()
+        {
+            ctx = new ApplicationDbContext();
+        }
         // GET: StockMgr
         public ActionResult Index()
         {
@@ -26,9 +31,11 @@ namespace eform.Controllers
         }
 
         [Authorize]
+        [HttpGet]
         public ActionResult Query()
         {
-            return View();
+            List<stockItemInit> listA = ctx.stockItemInitList.ToList<stockItemInit>();
+            return View(listA);
         }
 
         [Authorize]
@@ -99,7 +106,18 @@ namespace eform.Controllers
                     ctx.SaveChanges();
                 }
 
-                for (int i = 3; i <= 65535; i++)
+                int startRow = 2;
+
+                for (int itmp=1;itmp<=3;itmp++)
+                {
+                    if (sht.Cells[itmp,1].Text.Trim()== "公司別")
+                    {
+                        startRow = itmp;
+                        break;
+                    }
+                }
+
+                for (int i = startRow; i <= 65535; i++)
                 {
                     if (sht.Cells[i, 2].Text.Trim() == "")
                     {

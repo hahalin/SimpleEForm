@@ -33,6 +33,7 @@ namespace eform.Migrations
                         curRate = c.Decimal(nullable: false, precision: 18, scale: 2),
                         priceB = c.Decimal(nullable: false, precision: 18, scale: 2),
                         amtC = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        amtD = c.Decimal(nullable: false, precision: 18, scale: 2),
                         prjId = c.String(),
                         prjNm = c.String(),
                         reqId = c.String(),

@@ -1,0 +1,214 @@
+﻿@model IEnumerable<eform.Models.stockItemInit>
+
+@{
+}
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.12.1/bootstrap-table.min.css">
+<!-- Latest compiled and minified JavaScript -->
+<script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.12.1/bootstrap-table.min.js"></script>
+<!-- Latest compiled and minified Locales -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.12.1/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="~/Scripts/jquery.blockUI.js"></script>
+<script type="text/javascript">
+    $.blockUI({
+        message: '<h3>資料讀取中...</h3>'
+    });
+</script>
+
+<h3>庫存查詢</h3>
+<div class="row col-md-10">
+    <div class="box box-primary" id="box1" style_="overflow:auto;position:relative;right:10px;left:5px;bottom:10px;height:500px;">
+        <div class="box-body">
+            <table data-toggle="table"
+                   data-height="460"
+                   class="table table-bordered table-hover table-responsive table-primary table-striped">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.pdId)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.pdNm)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.spec)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.dateA)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.billNm)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.billInNo)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.InvNo)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.brandNo)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.supPdId)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.supId)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.supNm)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.smemoA)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.smemoB)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.qty)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.priceA)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.amtA)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.amtB)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.curId)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.curRate)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.priceB)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.amtC)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.amtD)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.prjId)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.prjNm)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.reqId)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.reqId2)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.dateB)
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.pdId)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.pdNm)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.spec)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.dateA)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.billNm)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.billInNo)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.InvNo)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.brandNo)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.supPdId)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.supId)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.supNm)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.smemoA)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.smemoB)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.qty)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.priceA)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.amtA)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.amtB)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.curId)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.curRate)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.priceB)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.amtC)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.amtD)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.prjId)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.prjNm)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.reqId)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.reqId2)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.dateB)
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(function() {
+            $.unblockUI();
+        });
+    </script>
+}
+
+
+

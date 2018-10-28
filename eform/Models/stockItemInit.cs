@@ -41,21 +41,21 @@ namespace eform.Models
         [DisplayName("數量")]
         public decimal qty { get; set; }
         [DisplayName("登打單價")]
-        public decimal priceA { get; set; }
+        public decimal priceA { get; set; } = 0;
         [DisplayName("明細金額")]
-        public decimal amtA { get; set; }
+        public decimal amtA { get; set; } = 0;
         [DisplayName("明細含稅金額")]
-        public decimal amtB { get; set; }
+        public decimal amtB { get; set; } = 0;
         [DisplayName("外幣代號")]
         public string curId { get; set; }
         [DisplayName("匯率")]
-        public decimal curRate { get; set; }
+        public decimal curRate { get; set; } = 0;
         [DisplayName("外幣登打單價")]
-        public decimal priceB { get; set; }
+        public decimal priceB { get; set; } = 0;
         [DisplayName("明細外幣金額")]
-        public decimal amtC { get; set; }
+        public decimal amtC { get; set; } = 0;
         [DisplayName("明細外幣含稅金額")]
-        public decimal amtD { get; set; }
+        public decimal amtD { get; set; } = 0;
         [DisplayName("專案/項目編號")]
         public string prjId { get; set; }
         [DisplayName("專案/項目名稱")]

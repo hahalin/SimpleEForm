@@ -134,7 +134,31 @@
                     </a>
                 </li>
 
-                <!--主管管理區-->
+                <!--庫存管理查詢-->
+                 if(
+                     (permList.Where(x => x.mod == "StockInit").Count() > 0)
+                     || (permList.Where(x => x.mod == "StockQuery").Count() > 0)
+                  )
+                {
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-table"></i> <span>庫存管理/查詢</span> <i class="fa fa-angle-left pull-right"></i>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li>
+                                <a href="@Url.Action("UploadInit", "StockMgr")">
+                                    <i class="fa fa-upload"></i>初始庫存上傳
+                                </a>
+                            </li>
+                            <li>
+                                <a href="@Url.Action("Query", "StockMgr")">
+                                    <i class="fa fa-search"></i>庫存查詢
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                }
+                 <!--主管管理區-->
                 <li class="treeview">
                     <a href="#">
                         <i class="fa fa-users"></i> <span>主管管理區</span> <i class="fa fa-angle-left pull-right"></i>
@@ -158,19 +182,10 @@
                                 </a>
                             </li>
                         }
-                        @if (permList.Where(x => x.mod == "StockInit").Count() > 0)
-                        {
-                            <li>
-                                <a href="@Url.Action("UploadInit", "StockMgr")" >
-                                    <i class="fa fa-upload"></i>初始庫存上傳
-                                </a>
-                            </li>
-                        }
-
                     </ul>
                 </li>
 
-                <!--系統管理區-->
+                        <!--系統管理區-->
                 if (isAdmin)
                 {
                     <li class="treeview">
@@ -238,13 +253,13 @@
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="@Url.Action("Index", "NewsMgr", null)">
-                                            <i class="fa fa-newspaper-o"></i>公告管理
+                                        <a href="@Url.Action("SetupWording", "FormMgr", null)">
+                                            <i class="fa fa-file-text"></i>表單規範文字設定
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="@Url.Action("SetupWording", "FormMgr", null)">
-                                            <i class="fa fa-file-text"></i>表單規範文字設定
+                                        <a href="@Url.Action("Index", "NewsMgr", null)">
+                                            <i class="fa fa-newspaper-o"></i>公告管理
                                         </a>
                                     </li>
                                 </ul>

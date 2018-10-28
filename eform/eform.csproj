@@ -355,9 +355,9 @@
     <Compile Include="Migrations\201810280424009_addWording2FlowDefMain.Designer.cs">
       <DependentUpon>201810280424009_addWording2FlowDefMain.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201810281235093_addTBstockItemInitList.cs" />
-    <Compile Include="Migrations\201810281235093_addTBstockItemInitList.Designer.cs">
-      <DependentUpon>201810281235093_addTBstockItemInitList.cs</DependentUpon>
+    <Compile Include="Migrations\201810281927359_addTBstockItemInitList.cs" />
+    <Compile Include="Migrations\201810281927359_addTBstockItemInitList.Designer.cs">
+      <DependentUpon>201810281927359_addTBstockItemInitList.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -777,7 +777,6 @@
     <Content Include="Content\bootstrap\alerts.less" />
     <Content Include="Content\_bootstrap-datetimepicker.less" />
     <Content Include="Content\bootstrap-datetimepicker-build.less" />
-    <Content Include="20180822.xlsx" />
     <Content Include="Scripts\.gitignore" />
     <Content Include="Scripts\bower.json" />
     <Content Include="Content\font-awesome-4.7.0\fonts\fontawesome-webfont.eot" />
@@ -1359,6 +1358,7 @@
     <Content Include="Views\Shared\Form\_GuestForm.cshtml" />
     <Content Include="Views\FormMgr\SetupWording.cshtml" />
     <Content Include="Views\StockMgr\UploadInit.cshtml" />
+    <Content Include="Views\StockMgr\Query.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1456,8 +1456,8 @@
     <EmbeddedResource Include="Migrations\201810280424009_addWording2FlowDefMain.resx">
       <DependentUpon>201810280424009_addWording2FlowDefMain.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201810281235093_addTBstockItemInitList.resx">
-      <DependentUpon>201810281235093_addTBstockItemInitList.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201810281927359_addTBstockItemInitList.resx">
+      <DependentUpon>201810281927359_addTBstockItemInitList.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
