@@ -45,7 +45,10 @@ namespace eform.Models
 
         public DbSet<publicOut> publicOutList { get; set; }
         public DbSet<guestForm> guestFormList { get; set; }
-        
+
+        //stock begin
+        public DbSet<stockItemInit> stockItemInitList { get; set; }
+        //stock end
 
 
         public List<vwSignType> signTypeList()

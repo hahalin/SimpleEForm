@@ -158,14 +158,15 @@
                                 </a>
                             </li>
                         }
-                        @*@if (permList.Where(x => x.mod == "HRCheckFlow").Count() > 0)
+                        @if (permList.Where(x => x.mod == "StockInit").Count() > 0)
                         {
                             <li>
-                                <a href="@Url.Action("HRCheckFlow", "FormMgr")" hrefa="#">
-                                    <i class="fa fa-list"></i>人事登錄查閱表單
+                                <a href="@Url.Action("UploadInit", "StockMgr")" >
+                                    <i class="fa fa-upload"></i>初始庫存上傳
                                 </a>
                             </li>
-                        }*@
+                        }
+
                     </ul>
                 </li>
 
@@ -180,22 +181,7 @@
                             <li>
                                 <a href="@Url.Action("All", "Perm")">
                                     <i class="fa fa-key"></i>權限管理
-                                    @*<span class="pull-right-container">
-                                            <i class="fa fa-angle-left pull-right"></i>
-                                        </span>*@
                                 </a>
-                                @*<ul class="treeview-menu">
-                                        <li>
-                                            <a href="@Url.Action("Index", "Perm",new {mod="ReportSalary"})">
-                                                <i class="fa fa-circle-o"></i>薪資查詢主管權限
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="@Url.Action("Index", "Perm",new {mod="ReportUpload"})">
-                                                <i class="fa fa-circle-o"></i>薪資檔上傳主管權限
-                                            </a>
-                                        </li>
-                                    </ul>*@
                             </li>
                             <li class="treeview">
                                 <a href="#">
@@ -254,6 +240,11 @@
                                     <li>
                                         <a href="@Url.Action("Index", "NewsMgr", null)">
                                             <i class="fa fa-newspaper-o"></i>公告管理
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="@Url.Action("SetupWording", "FormMgr", null)">
+                                            <i class="fa fa-file-text"></i>表單規範文字設定
                                         </a>
                                     </li>
                                 </ul>

@@ -28,122 +28,123 @@
             <div class="box-body">
                 @using (Html.BeginForm("CreateDayOffForm", "Form", FormMethod.Post, new { id = "fmMain" }))
                 {
-                @Html.AntiForgeryToken()
+                    @Html.AntiForgeryToken()
 
-                <div class="form-horizontal col-md-10">
-                    @Html.ValidationSummary(true, "", new { @class = "text-danger", style = "font-size:15px;font-weight:bold;" })
-                    <div class="form-group">
-                        <label class="control-label col-md-2">申請人</label>
-                        <div class="col-md-4">
-                            <div class="form-control">@Model.user.workNo-@Model.user.UserCName</div>
-                            <input type="hidden" name="userId" value="@Model.user.Id" />
-                        </div>
-                        @Html.LabelFor(model => model.billDate, htmlAttributes: new { @class = "control-label col-md-2" })
-                        <div class="col-md-4">
-                            @Html.EditorFor(model => model.billDate, new { htmlAttributes = new { @class = "form-control", type = "date", @readonly = "readonly" } })
-                            @Html.ValidationMessageFor(model => model.billDate, "", new { @class = "text-danger" })
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        @Html.LabelFor(model => model.dayOffForm.dtBegin, htmlAttributes: new { @class = "control-label col-md-2" })
-                        <div class="col-md-3">
-                            <div class='input-group date' id='datetimepicker1'>
-                                @Html.EditorFor(model => model.dayOffForm.dtBegin, new { htmlAttributes = new { @class = "form-control", type = "text" } })
-                                <span class="input-group-addon">
-                                    <span class="glyphicon glyphicon-calendar"></span>
-                                </span>
+                    <div class="form-horizontal col-md-10">
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger", style = "font-size:15px;font-weight:bold;" })
+                        <div class="form-group">
+                            <label class="control-label col-md-2">申請人</label>
+                            <div class="col-md-4">
+                                <div class="form-control">@Model.user.workNo-@Model.user.UserCName</div>
+                                <input type="hidden" name="userId" value="@Model.user.Id" />
+                            </div>
+                            @Html.LabelFor(model => model.billDate, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                @Html.EditorFor(model => model.billDate, new { htmlAttributes = new { @class = "form-control", type = "date", @readonly = "readonly" } })
+                                @Html.ValidationMessageFor(model => model.billDate, "", new { @class = "text-danger" })
                             </div>
                         </div>
-                        <div class="col-md-1">
-                            @Html.DropDownListFor(model => model.beginHH, (SelectList)ViewBag.beginHHList, new { @class = "form-control", style = "width:70px;" })
-                        </div>
-                        <label class="control-label col-md-1">時</label>
-                        <div class="col-md-1">
-                            @Html.DropDownListFor(model => model.beginMM, (SelectList)ViewBag.beginMMList, new { @class = "form-control", style = "width:70px;" })
-                        </div>
-                        <label class="control-label col-md-1">分</label>
 
-                        @Html.ValidationMessageFor(model => model.dayOffForm.dtBegin, "", new { @class = "text-danger" })
-                    </div>
-                    <div class="form-group">
-                        @Html.LabelFor(model => model.dayOffForm.dtEnd, htmlAttributes: new { @class = "control-label col-md-2" })
-                        <div class="col-md-3">
-                            <div class='input-group date' id='datetimepicker2'>
-                                @Html.EditorFor(model => model.dayOffForm.dtEnd, new { htmlAttributes = new { @class = "form-control", type = "text" } })
-                                <span class="input-group-addon">
-                                    <span class="glyphicon glyphicon-calendar"></span>
-                                </span>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.dayOffForm.dtBegin, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-3">
+                                <div class='input-group date' id='datetimepicker1'>
+                                    @Html.EditorFor(model => model.dayOffForm.dtBegin, new { htmlAttributes = new { @class = "form-control", type = "text" } })
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                @Html.DropDownListFor(model => model.beginHH, (SelectList)ViewBag.beginHHList, new { @class = "form-control", style = "width:70px;" })
+                            </div>
+                            <label class="control-label col-md-1">時</label>
+                            <div class="col-md-1">
+                                @Html.DropDownListFor(model => model.beginMM, (SelectList)ViewBag.beginMMList, new { @class = "form-control", style = "width:70px;" })
+                            </div>
+                            <label class="control-label col-md-1">分</label>
+
+                            @Html.ValidationMessageFor(model => model.dayOffForm.dtBegin, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.dayOffForm.dtEnd, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-3">
+                                <div class='input-group date' id='datetimepicker2'>
+                                    @Html.EditorFor(model => model.dayOffForm.dtEnd, new { htmlAttributes = new { @class = "form-control", type = "text" } })
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                @Html.DropDownListFor(model => model.endHH, (SelectList)ViewBag.endHHList, new { @class = "form-control", style = "width:70px;" })
+                            </div>
+                            <label class="control-label col-md-1">時</label>
+                            <div class="col-md-1">
+                                @Html.DropDownListFor(model => model.endMM, (SelectList)ViewBag.endMMList, new { @class = "form-control", style = "width:70px;" })
+                            </div>
+                            <label class="control-label col-md-1">分</label>
+                            @Html.ValidationMessageFor(model => model.dayOffForm.dtEnd, "", new { @class = "text-danger" })
+                            <label class="control-label col-md-1" style="width:90px;">請假時數</label>
+                            <div class="col-md-1">
+                                @Html.TextBoxFor(model => model.dayOffForm.hours, htmlAttributes: new { @class = "form-control", type = "number", step = "0.5", style = "width:80px;" })
                             </div>
                         </div>
-                        <div class="col-md-1">
-                            @Html.DropDownListFor(model => model.endHH, (SelectList)ViewBag.endHHList, new { @class = "form-control", style = "width:70px;" })
-                        </div>
-                        <label class="control-label col-md-1">時</label>
-                        <div class="col-md-1">
-                            @Html.DropDownListFor(model => model.endMM, (SelectList)ViewBag.endMMList, new { @class = "form-control", style = "width:70px;" })
-                        </div>
-                        <label class="control-label col-md-1">分</label>
-                        @Html.ValidationMessageFor(model => model.dayOffForm.dtEnd, "", new { @class = "text-danger" })
-                        <label class="control-label col-md-1" style="width:90px;">請假時數</label>
-                        <div class="col-md-1">
-                            @Html.TextBoxFor(model => model.dayOffForm.hours, htmlAttributes: new { @class = "form-control", type = "number", step = "0.5", style = "width:80px;" })
-                        </div>
-                    </div>
 
-                    <div class="form-group">
-                        @Html.LabelFor(model => model.dayOffForm.dType, htmlAttributes: new { @class = "control-label col-md-2" })
-                        <div class="col-md-4">
-                            @Html.DropDownListFor(model => model.dType, (IEnumerable<SelectListItem>)ViewBag.dTypeList, new { @class = "form-control", style = "max-width:800px;width:100%;" })
-                            @Html.ValidationMessageFor(model => model.dType, "", new { @class = "text-danger" })
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.dayOffForm.dType, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                @Html.DropDownListFor(model => model.dType, (IEnumerable<SelectListItem>)ViewBag.dTypeList, new { @class = "form-control", style = "max-width:800px;width:100%;" })
+                                @Html.ValidationMessageFor(model => model.dType, "", new { @class = "text-danger" })
+                            </div>
+                            @Html.LabelFor(model => model.dayOffForm.jobAgent, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                @Html.DropDownListFor(model => model.dayOffForm.jobAgent, new List<SelectListItem>(), new { htmlAttributes = new { @class = "form-control select2-input select2" }, style = "max-width:800px;width:100%;" })
+                                @Html.ValidationMessageFor(model => model.dayOffForm.jobAgent, "", new { @class = "text-danger" })
+                            </div>
                         </div>
-                        @Html.LabelFor(model => model.dayOffForm.jobAgent, htmlAttributes: new { @class = "control-label col-md-2" })
-                        <div class="col-md-4">
-                            @Html.DropDownListFor(model => model.dayOffForm.jobAgent, new List<SelectListItem>(), new { htmlAttributes = new { @class = "form-control select2-input select2" }, style = "max-width:800px;width:100%;" })
-                            @Html.ValidationMessageFor(model => model.dayOffForm.jobAgent, "", new { @class = "text-danger" })
-                        </div>
-                    </div>
 
-                    <div class="form-group">
-                        @Html.LabelFor(model => model.dayOffForm.sMemo, htmlAttributes: new { @class = "control-label col-md-2" })
-                        <div class="col-md-10" style="margin-bottom:10px;">
-                            @Html.TextAreaFor(model => model.dayOffForm.sMemo, htmlAttributes: new { @class = "form-control", rows = "2", style = "width:630px;" })
-                            @Html.ValidationMessageFor(model => model.dayOffForm.sMemo, "", new { @class = "text-danger" })
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.dayOffForm.sMemo, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10" style="margin-bottom:10px;">
+                                @Html.TextAreaFor(model => model.dayOffForm.sMemo, htmlAttributes: new { @class = "form-control", rows = "2", style = "width:630px;" })
+                                @Html.ValidationMessageFor(model => model.dayOffForm.sMemo, "", new { @class = "text-danger" })
+                            </div>
+                            <br />
                         </div>
-                        <br />
-                    </div>
 
-                    <div class="form-group">
-                        <label class="control-label col-md-2">申請程序說明</label>
-                        <div class="col-md-10 col-md-offset-1" style="margin-top:-20px;margin-left:95px;color:#3664bc;">
-                            <ol>
-                                <li>
-                                    申請人填寫→部門主管簽核完成→職務代理人簽章完成→行政總務部歸檔。
-                                </li>
-                                <li>
-                                    如為不可抗拒之因素需臨時請假, 請第一時間電話通知代理人or部門主管, 並於事後補辦請假。
-                                </li>
-                                <li>
-                                    凡屬公假/婚假/產假/喪假/陪產假/病假..等皆需附證明文件, (事假/特休除外)。
-                                </li>
-                                <li>
-                                    申請人務必善盡職責告知職務代理人需協助之工作事項。
-                                </li>
-                                <li>
-                                    如因加班而補休, 請加註與何者&加班日期及由何者指派, 若無詳盡視為特休or事假。
-                                </li>
-                                <li>
-                                    補休請於年度結束前請畢。(於10月至12月發生的補休可遞延至下一年度請畢)
-                                </li>
-                            </ol>
+                        <div class="form-group">
+                            <label class="control-label col-md-2">申請程序說明</label>
+                            <div class="col-md-12 col-md-offset-1" style="margin-top:-40px;margin-left:125px;color:#3664bc;font-family:微軟正黑體;font-size:15px;font-weight:700;white-space: pre-line;">
+                                @ViewBag.wording
+                                @*<ol>
+                                        <li>
+                                            申請人填寫→部門主管簽核完成→職務代理人簽章完成→行政總務部歸檔。
+                                        </li>
+                                        <li>
+                                            如為不可抗拒之因素需臨時請假, 請第一時間電話通知代理人or部門主管, 並於事後補辦請假。
+                                        </li>
+                                        <li>
+                                            凡屬公假/婚假/產假/喪假/陪產假/病假..等皆需附證明文件, (事假/特休除外)。
+                                        </li>
+                                        <li>
+                                            申請人務必善盡職責告知職務代理人需協助之工作事項。
+                                        </li>
+                                        <li>
+                                            如因加班而補休, 請加註與何者&加班日期及由何者指派, 若無詳盡視為特休or事假。
+                                        </li>
+                                        <li>
+                                            補休請於年度結束前請畢。(於10月至12月發生的補休可遞延至下一年度請畢)
+                                        </li>
+                                    </ol>*@
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-10 text-center">
+                                <input type="submit" value="送出" class="btn-lg btn-primary" onclick="return doSubmit();" />
+                            </div>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <div class="col-md-offset-2 col-md-10 text-center">
-                            <input type="submit" value="送出" class="btn-lg btn-primary" onclick="return doSubmit();" />
-                        </div>
-                    </div>
-                </div>
                 }
 
             </div>

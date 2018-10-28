@@ -1,0 +1,56 @@
+﻿<div class="row">
+    <div class="col-md-6">
+        <div class="box">
+            <div class="box-header">
+                <h3>@ViewBag.Title</h3>
+            </div>
+            <div class="box-body">
+
+                <form action="@Url.Action("UploadInit","StockMgr")" method="post" enctype="multipart/form-data">
+                    @*@Html.AntiForgeryToken()*@
+                    <div class="form-horizontal">
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        <div class="form-group">
+                            @Html.Label("上傳檔案", htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                <input type="file" name="file" id="file" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-10">
+                                <input type="submit" value="檔案上傳" class="btn btn-primary" onclick="doUpload();">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript" src="~/Scripts/jquery.blockUI.js"></script>
+    <script type="text/javascript">
+
+        function doUpload() {
+            $.blockUI({
+                message: '<h2>檔案上傳中...</h2>'
+            });
+            return true;
+        }
+
+        $(function () {
+            var msg = '';
+            @if (TempData["msg"]!=null)
+            {
+                @:msg = '@TempData["msg"].ToString()';
+            }
+            if (msg != '')
+            {
+                alert(msg);
+            }
+        })
+
+    </script>
+}

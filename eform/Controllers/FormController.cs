@@ -595,6 +595,14 @@ namespace eform.Controllers
             ViewBag.userlist = ctx.getUserList();
             List<FlowMain> dayOffFlowMainList = ctx.FlowMainList.Where(x => x.senderNo == model.user.workNo && x.defId == model.defId && x.flowStatus == 2).ToList<FlowMain>();
             ViewBag.dayOffFlowMainList = dayOffFlowMainList;
+            try
+            { 
+                ViewBag.wording = ctx.FlowDefMainList.Where(x => x.enm == "DayOff").ToList<FlowDefMain>().First().wording;
+            }
+            catch(Exception ex)
+            {
+                ViewBag.wording = "";
+            }
             var qdayOffFlowMainList = from item in dayOffFlowMainList select item.id;
             ViewBag.dayOffList = ctx.dayOffList.Where(x => qdayOffFlowMainList.Contains(x.flowId)).ToList<dayOff>();
             hrRep rep = new hrRep(User.Identity.Name);
@@ -773,11 +781,24 @@ namespace eform.Controllers
             }
         }
 
+        void setRealOverTimeFormViewBag()
+        {
+            try
+            {
+                ViewBag.wording = ctx.FlowDefMainList.Where(x => x.enm == "RealOverTime").ToList<FlowDefMain>().First().wording;
+            }
+            catch (Exception ex)
+            {
+                ViewBag.wording = "";
+            }
+        }
+
         [AdminAuthorize(Roles = "Employee,Admin")]
         public ActionResult RealOverTimeForm()
         {
             vwRealOverTime Model = new vwRealOverTime();
             Model.user = ctx.getCurrentUser(User.Identity.Name);
+            setRealOverTimeFormViewBag();
             setHMList();
 
             string sql = "select a.id,a.dtBegin,a.dtEnd,a.hours,a.sMemo,b.flowStatus ";
@@ -832,6 +853,7 @@ namespace eform.Controllers
             if (!ModelState.IsValid)
             {
                 Model.user = ctx.getCurrentUser(User.Identity.Name);
+                setRealOverTimeFormViewBag();
                 setHMList();
                 return View(Model);
             }
@@ -957,6 +979,7 @@ namespace eform.Controllers
             {
                 ModelState.AddModelError("", ex.Message);
                 Model.user = ctx.getCurrentUser(User.Identity.Name);
+                setRealOverTimeFormViewBag();
                 setHMList();
                 return View(Model);
             }

@@ -601,5 +601,36 @@ namespace eform.Controllers
             }
             return View(list.OrderByDescending(x => x.billDate).ToList<vwFlowMain>());
         }
+
+        [HttpGet]
+        public ActionResult SetupWording()
+        {
+            List<string> inStr = new List<string>();
+            inStr.Add("DayOff");inStr.Add("RealOverTime");
+            List<FlowDefMain> model = ctx.FlowDefMainList.Where(x => inStr.Contains(x.enm)).ToList<FlowDefMain>();
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult SetupWording(List<FlowDefMain> model)
+        {
+
+            foreach(FlowDefMain defItem in model)
+            {
+                var defObj = ctx.FlowDefMainList.Where(x => x.code == defItem.code).FirstOrDefault();
+                if (defObj != null)
+                {
+                    defObj.wording = defItem.wording;
+                    ctx.SaveChanges();
+                }
+            }
+
+            TempData["msg"] = "存檔完成";
+            List<string> inStr = new List<string>();
+            inStr.Add("DayOff"); inStr.Add("RealOverTime");
+            List<FlowDefMain> modela = ctx.FlowDefMainList.Where(x => inStr.Contains(x.enm)).ToList<FlowDefMain>();
+            return View(modela);
+        }
+
     }
 }

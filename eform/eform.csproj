@@ -247,6 +247,7 @@
     <Compile Include="Controllers\PrjController.cs" />
     <Compile Include="Controllers\RoleController.cs" />
     <Compile Include="Controllers\SalaryController.cs" />
+    <Compile Include="Controllers\StockMgrController.cs" />
     <Compile Include="CustomMigration\DefaultSeed.cs" />
     <Compile Include="CustomMigration\eFormDBInitializer.cs" />
     <Compile Include="DB\dbHelper.cs" />
@@ -350,6 +351,14 @@
     <Compile Include="Migrations\201810251504209_addCode2FlowDef.Designer.cs">
       <DependentUpon>201810251504209_addCode2FlowDef.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201810280424009_addWording2FlowDefMain.cs" />
+    <Compile Include="Migrations\201810280424009_addWording2FlowDefMain.Designer.cs">
+      <DependentUpon>201810280424009_addWording2FlowDefMain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201810281235093_addTBstockItemInitList.cs" />
+    <Compile Include="Migrations\201810281235093_addTBstockItemInitList.Designer.cs">
+      <DependentUpon>201810281235093_addTBstockItemInitList.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ApplicationDbContext.cs" />
@@ -369,6 +378,7 @@
     <Compile Include="Models\publicOut.cs" />
     <Compile Include="Models\ReqOverTime.cs" />
     <Compile Include="Models\salary.cs" />
+    <Compile Include="Models\stockItemInit.cs" />
     <Compile Include="Models\vwDayOffForm.cs" />
     <Compile Include="Models\vwDayOffSum.cs" />
     <Compile Include="Models\vwFlowMain.cs" />
@@ -1347,6 +1357,8 @@
     <Content Include="Views\FlowDef\Edit.cshtml" />
     <Content Include="Views\Form\GuestForm.cshtml" />
     <Content Include="Views\Shared\Form\_GuestForm.cshtml" />
+    <Content Include="Views\FormMgr\SetupWording.cshtml" />
+    <Content Include="Views\StockMgr\UploadInit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1440,6 +1452,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201810251504209_addCode2FlowDef.resx">
       <DependentUpon>201810251504209_addCode2FlowDef.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201810280424009_addWording2FlowDefMain.resx">
+      <DependentUpon>201810280424009_addWording2FlowDefMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201810281235093_addTBstockItemInitList.resx">
+      <DependentUpon>201810281235093_addTBstockItemInitList.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

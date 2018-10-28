@@ -19,6 +19,7 @@ namespace eform.Models
         [MaxLength(20)]
         public string code { get; set; }
         public int seq { get; set; } = 1;
+        public string wording { get; set; }
     }
 
     [Table("FlowDefSub")]
@@ -56,7 +57,7 @@ namespace eform.Models
         {
             get
             {
-                switch(signType)
+                switch (signType)
                 {
                     case 1:
                         return "會簽";
@@ -77,5 +78,9 @@ namespace eform.Models
         }
     }
 
-
+    public class vwFlowDefWording
+    {
+        public string code { get; set; }
+        public string wording { get; set; }
+    }
 }
