@@ -359,6 +359,10 @@
     <Compile Include="Migrations\201810281927359_addTBstockItemInitList.Designer.cs">
       <DependentUpon>201810281927359_addTBstockItemInitList.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201810292247209_updateStockItemInit.cs" />
+    <Compile Include="Migrations\201810292247209_updateStockItemInit.Designer.cs">
+      <DependentUpon>201810292247209_updateStockItemInit.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ApplicationDbContext.cs" />
@@ -470,6 +474,7 @@
     <Content Include="Content\bootstrap-datetimepicker.css" />
     <Content Include="Content\bootstrap-datetimepicker.min.css" />
     <Content Include="Content\bootstrap-select.min.css" />
+    <Content Include="Content\bootstrap-table-fixed-columns.css" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
@@ -683,6 +688,7 @@
     <Content Include="Scripts\bootstrap-datetimepicker.js" />
     <Content Include="Scripts\bootstrap-datetimepicker.min.js" />
     <Content Include="Scripts\bootstrap-select.min.js" />
+    <Content Include="Scripts\bootstrap-table-fixed-columns.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="ApplicationInsights.config">
@@ -1359,6 +1365,7 @@
     <Content Include="Views\FormMgr\SetupWording.cshtml" />
     <Content Include="Views\StockMgr\UploadInit.cshtml" />
     <Content Include="Views\StockMgr\Query.cshtml" />
+    <Content Include="Views\StockMgr\UploadStockIn.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1458,6 +1465,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201810281927359_addTBstockItemInitList.resx">
       <DependentUpon>201810281927359_addTBstockItemInitList.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201810292247209_updateStockItemInit.resx">
+      <DependentUpon>201810292247209_updateStockItemInit.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

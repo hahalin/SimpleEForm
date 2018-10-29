@@ -145,11 +145,19 @@
                             <i class="fa fa-table"></i> <span>庫存管理/查詢</span> <i class="fa fa-angle-left pull-right"></i>
                         </a>
                         <ul class="treeview-menu">
-                            <li>
-                                <a href="@Url.Action("UploadInit", "StockMgr")">
-                                    <i class="fa fa-upload"></i>初始庫存上傳
-                                </a>
-                            </li>
+                            @if (permList.Where(x => x.mod == "StockInit").Count() > 0)
+                            { 
+                                <li>
+                                    <a href="@Url.Action("UploadInit", "StockMgr")">
+                                        <i class="fa fa-upload"></i>初始庫存上傳
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("UploadInit", "StockMgr")">
+                                        <i class="fa fa-upload"></i>進銷明細單上傳
+                                    </a>
+                                </li>
+                            }
                             <li>
                                 <a href="@Url.Action("Query", "StockMgr")">
                                     <i class="fa fa-search"></i>庫存查詢

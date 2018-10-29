@@ -2,13 +2,16 @@
 
 @{
 }
-
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.12.1/bootstrap-table.min.css">
+<link href="~/Content/bootstrap-table-fixed-columns.css" rel="stylesheet" />
 <!-- Latest compiled and minified JavaScript -->
 <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.12.1/bootstrap-table.min.js"></script>
 <!-- Latest compiled and minified Locales -->
 <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.12.1/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="~/Scripts/bootstrap-table-fixed-columns.js"></script>
+
+
 <script src="~/Scripts/jquery.blockUI.js"></script>
 <script type="text/javascript">
     $.blockUI({
@@ -17,11 +20,13 @@
 </script>
 
 <h3>庫存查詢</h3>
-<div class="row col-md-10">
-    <div class="box box-primary" id="box1" style_="overflow:auto;position:relative;right:10px;left:5px;bottom:10px;height:500px;">
+<div class="row col-md-11">
+    <div class="box box-primary" id="box1" >
         <div class="box-body">
             <table data-toggle="table"
-                   data-height="460"
+                   data-height="500"
+                   data-fixed-columns="true"
+                   data-fixed-number="1"
                    class="table table-bordered table-hover table-responsive table-primary table-striped">
                 <thead>
                     <tr>

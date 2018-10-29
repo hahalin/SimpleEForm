@@ -463,7 +463,7 @@ namespace eform.Controllers
 
 
             var signOkSubList = from item in context.FlowSubList
-                                where item.signResult != 0 && item.signResult != 99 && item.workNo == user.workNo
+                                where item.signResult != 0 && item.signResult != 99 
                                 select item.pid;
 
 

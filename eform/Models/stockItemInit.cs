@@ -12,6 +12,7 @@ namespace eform.Models
     {
         [Key]
         public string id { get; set; }
+        public string sType { get; set; } = "1";
         [DisplayName("產品代號")]
         public string pdId { get; set; }
         [DisplayName("品名")]
@@ -66,5 +67,6 @@ namespace eform.Models
         public string reqId2 { get; set; }
         [DisplayName("到貨日期")]
         public string dateB { get; set; }
+        public string filename { get; set; }
     }
 }
