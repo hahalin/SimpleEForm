@@ -3,13 +3,13 @@
 @{
 }
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.12.1/bootstrap-table.min.css">
-<link href="~/Content/bootstrap-table-fixed-columns.css" rel="stylesheet" />
+@*<link href="~/Content/bootstrap-table-fixed-columns.css" rel="stylesheet" />*@
 <!-- Latest compiled and minified JavaScript -->
 <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.12.1/bootstrap-table.min.js"></script>
 <!-- Latest compiled and minified Locales -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.12.1/locale/bootstrap-table-zh-CN.min.js"></script>
-<script src="~/Scripts/bootstrap-table-fixed-columns.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.12.1/locale/bootstrap-table-zh-TW.min.js"></script>
+@*<script src="~/Scripts/bootstrap-table-fixed-columns.js"></script>*@
 
 
 <script src="~/Scripts/jquery.blockUI.js"></script>
@@ -19,14 +19,44 @@
     });
 </script>
 
+<style>
+    table{
+        table-layout:auto;
+    }
+    table td {
+        /*height:20px;*/
+    }
+    .nowrap {
+        /*white-space: nowrap;*/
+        min-width:200px;
+        max-width:250px;
+        overflow-x:auto;
+    }
+    .nowrap200 {
+        /*white-space: nowrap;*/
+        min-width: 180px;
+        max-width: 200px;
+        overflow-x: auto;
+    }
+   
+</style>
+
 <h3>庫存查詢</h3>
 <div class="row col-md-11">
-    <div class="box box-primary" id="box1" >
+    <div class="box box-primary" id="box1" style="display:none;">
         <div class="box-body">
-            <table data-toggle="table"
-                   data-height="500"
+            <table id="table" data-toggle="table"
+                   data-height="450"
                    data-fixed-columns="true"
                    data-fixed-number="1"
+                   data-pagination="true"
+                   data-page-size="50"
+                   data-page-list="[50,100,200]"
+                   data-pagination-first-text="第一頁"
+                   data-pagination-pre-text="上一頁"
+                   data-pagination-next-text="下一頁"
+                   data-pagination-last-text="最後頁"
+                   
                    class="table table-bordered table-hover table-responsive table-primary table-striped">
                 <thead>
                     <tr>
@@ -63,10 +93,10 @@
                         <th>
                             @Html.DisplayNameFor(model => model.supNm)
                         </th>
-                        <th>
+                        <th style="width:230px;">
                             @Html.DisplayNameFor(model => model.smemoA)
                         </th>
-                        <th>
+                        <th style="width:230px;">
                             @Html.DisplayNameFor(model => model.smemoB)
                         </th>
                         <th>
@@ -120,10 +150,10 @@
                             <td>
                                 @Html.DisplayFor(modelItem => item.pdId)
                             </td>
-                            <td>
+                            <td class="nowrap">
                                 @Html.DisplayFor(modelItem => item.pdNm)
                             </td>
-                            <td>
+                            <td class="nowrap">
                                 @Html.DisplayFor(modelItem => item.spec)
                             </td>
                             <td>
@@ -138,7 +168,7 @@
                             <td>
                                 @Html.DisplayFor(modelItem => item.InvNo)
                             </td>
-                            <td>
+                            <td class="nowrap200">
                                 @Html.DisplayFor(modelItem => item.brandNo)
                             </td>
                             <td>
@@ -150,10 +180,10 @@
                             <td>
                                 @Html.DisplayFor(modelItem => item.supNm)
                             </td>
-                            <td>
+                            <td class="nowrap">
                                 @Html.DisplayFor(modelItem => item.smemoA)
                             </td>
-                            <td>
+                            <td class="nowrap">
                                 @Html.DisplayFor(modelItem => item.smemoB)
                             </td>
                             <td>
@@ -209,8 +239,11 @@
 
 @section Scripts {
     <script type="text/javascript">
-        $(function() {
+        var $table = $('#table');
+        $(function () {
             $.unblockUI();
+            $('#box1').show();
+            $table.bootstrapTable('resetView');
         });
     </script>
 }

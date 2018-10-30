@@ -15,9 +15,9 @@ namespace eform.Models
         public string sType { get; set; } = "1";
         [DisplayName("產品代號")]
         public string pdId { get; set; }
-        [DisplayName("品名")]
+        [DisplayName("品    名")]
         public string pdNm { get; set; }
-        [DisplayName("規格")]
+        [DisplayName("規    格")]
         public string spec { get; set; }
         [DisplayName("日期(轉換)")]
         public string dateA { get; set; }
@@ -37,9 +37,10 @@ namespace eform.Models
         public string supNm { get; set; }
         [DisplayName("進銷-備註(M)")]
         public string smemoA { get; set; }
-        [DisplayName("備註")]
+        [DisplayName("備    註")]
         public string smemoB { get; set; }
         [DisplayName("數量")]
+        [DisplayFormat(DataFormatString = "{0:N0}")]
         public decimal qty { get; set; }
         [DisplayName("登打單價")]
         public decimal priceA { get; set; } = 0;
