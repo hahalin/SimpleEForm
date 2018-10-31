@@ -14,7 +14,7 @@ namespace eform.Service
         public static async Task sendEmail(List<EmailAddress> mailList ,string subject, string content)
         {
             //var apiKey = Environment.GetEnvironmentVariable("NAME_OF_THE_ENVIRONMENT_VARIABLE_FOR_YOUR_SENDGRID_KEY");
-            var apiKey = "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";
+            var apiKey = "";
             var client = new SendGridClient(apiKey);
             var from = new EmailAddress("sys@sys.com", "系統帳號");
             //var to = new EmailAddress("hahalin@gmail.com", "Frank 林");
