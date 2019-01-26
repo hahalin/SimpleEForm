@@ -11,6 +11,7 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using eform.Models;
+using eform.App_Start;
 
 namespace eform
 {
@@ -38,6 +39,17 @@ namespace eform
         public ApplicationUserManager(IUserStore<ApplicationUser> store)
             : base(store)
         {
+            PasswordValidator = new PasswordValidator
+            {
+                RequiredLength = 6,
+                RequireNonLetterOrDigit = true,
+                RequireDigit = true,
+                RequireLowercase = true,
+                RequireUppercase = false,
+            };
+
+
+            //CustomizePasswordValidation(8);
         }
 
         public static ApplicationUserManager Create(IdentityFactoryOptions<ApplicationUserManager> options, IOwinContext context) 
@@ -55,14 +67,16 @@ namespace eform
             };
 
             // 設定密碼的驗證邏輯
-            manager.PasswordValidator = new PasswordValidator
-            {
-                RequiredLength = 4,
-                RequireNonLetterOrDigit = false,
-                RequireDigit = false,
-                RequireLowercase = false,
-                RequireUppercase = false,
-            };
+            //manager.PasswordValidator = new PasswordValidator
+            //{
+            //    RequiredLength = 6,
+            //    RequireNonLetterOrDigit = true,
+            //    RequireDigit = true,
+            //    RequireLowercase = true,
+            //    RequireUppercase = true,
+            //};
+
+            //manager.PasswordValidator = new CustomizePasswordValidation(6);
 
             // 設定使用者鎖定詳細資料
             manager.UserLockoutEnabledByDefault = true;

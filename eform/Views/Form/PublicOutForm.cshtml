@@ -118,28 +118,31 @@
     </div>
     </div>
 
-    @section Scripts {
-        <script type="text/javascript">
-            function doSubmit() {
-                //alert("系統開發中...");
-                return true;
+@section Scripts {
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    <script src="~/Scripts/jquery.blockUI.js"></script>
+
+    <script type="text/javascript">
+        function doSubmit() {
+            $.blockUI({ message: '<h2>表單儲存中...</h2>' });
+            return true;
+        }
+        $(function () {
+            var pickerOption = {
+                format: 'YYYY-MM-DD',
+                locale: 'zh-tw',
+                defaultDate: getLocalDateStr()
+            };
+            $('#datetimepicker1').datetimepicker(pickerOption);
+            $('#datetimepicker2').datetimepicker(pickerOption);
+
+            $('textarea').css('max-width', '700px');
+            $('input[type=text]').css('max-width', '700px');
+
+            if ($($('.validation-summary-errors')[0]).text() == "") {
+                $('#billDate').val(getLocalDateStr());
             }
-            $(function () {
-                var pickerOption = {
-                    format: 'YYYY-MM-DD',
-                    locale: 'zh-tw',
-                    defaultDate: getLocalDateStr()
-                };
-                $('#datetimepicker1').datetimepicker(pickerOption);
-                $('#datetimepicker2').datetimepicker(pickerOption);
 
-                $('textarea').css('max-width', '700px');
-                $('input[type=text]').css('max-width', '700px');
-
-                if ($($('.validation-summary-errors')[0]).text() == "") {
-                    $('#billDate').val(getLocalDateStr());
-                }
-
-            });
-        </script>
-    }
+        });
+    </script>
+}

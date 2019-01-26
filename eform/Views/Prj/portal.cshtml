@@ -1,0 +1,130 @@
+﻿@using eform.Models
+@model eform.Models.PrjPortal
+@{
+    ViewBag.Title = "portal";
+    Layout = "~/Views/Shared/_PrjLayout.cshtml";
+}
+<section class="content">
+    <div class="row" style="overflow:auto;width:1280px;" id="divA" >
+        <div class="col-md-3">
+            <div class="box box-warning">
+                <div class="box-header">
+                    <h3 class="box-title">我的專案</h3>
+                </div>
+                <div class="box-body">
+                    <table id="gdprj" class="table table-bordered" style="height:450px;overflow:auto;display:block;">
+                        <thead>
+                            <tr>
+                                <th>專案名稱</th>
+                                <th>專案代碼</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (prjCode prj in Model.prjCodeList)
+                            {
+                                string sclass="";
+                                if (prj.code==Model.prjCode)
+                                {
+                                    sclass = "highlight";
+                                }
+
+                                <tr class="@sclass">
+                                    <td><input type="hidden" class="hid" value='@prj.id' />
+                                        <a href="@Url.Action("portal","prj",new {code=prj.code})">@prj.nm</a>
+                                    </td>
+                                    <td>@prj.code</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="box box-danger">
+                <div class="box-header">
+                    <h3 class="box-title">專案月曆</h3>
+                </div>
+                <div class="box-header">
+                    <button class="btn btn-default" id="btnAddEvent">
+                        新增
+                    </button>
+                </div>
+                <div class="box-body">
+                    <table class="table table-bordered" style="height:450;overflow:auto;display:block;">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>aa</th>
+                                <th>bb</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>aa1</td>
+                                <td>bb1</td>
+                            </tr>
+                            <tr>
+                                <td>aa1</td>
+                                <td>bb1</td>
+                            </tr>
+                            <tr>
+                                <td>aa1</td>
+                                <td>bb1</td>
+                            </tr>
+                            <tr>
+                                <td>aa1</td>
+                                <td>bb1</td>
+                            </tr>
+                            <tr>
+                                <td>aa1</td>
+                                <td>bb1</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="box box-info" style="height:300px;">
+            </div>
+            <div class="box box-default" style="height:300px;width:700px;">
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12" style="height:500px;">
+            <div class="box box-info">
+            </div>
+        </div>
+    </div>
+</section>
+@Html.Partial("Prj/_PrjEvent");
+
+<style>
+    .table tbody tr.highlight td {
+        background-color: #ddd;
+        background-color: skyblue;
+        color: darkblue;
+    }
+</style>
+
+
+@section scripts
+   {
+    <script type="text/javascript">
+
+        function loadPrjEvent(id) {
+
+        }
+
+        $(function () {
+
+            $('#btnAddEvent').on('click', function () {
+                $('#fmApplyEvent')[0].reset();
+                $('#winEventInput').modal('show');
+            });
+
+        });
+    </script>
+}

@@ -28,6 +28,37 @@ namespace eform.Repo
             con = new SqlConnection(constring);
         }
 
+        public Boolean isGMDep()
+        {
+                dbHelper dbh = new dbHelper();
+                string sql = @"select count(b.depNo) as cnt
+                            from PoUsers a inner join jobPoes b on a.poNO=b.poNo 
+                                           inner join deps c on b.depNo=c.depNo
+                            where a.UserId='@workno' and a.applicationUser_id is not null and b.depNo='001'";
+                sql = sql.Replace("@workno", this.emp.workNo);
+                return dbh.sql2count(sql) > 0;
+        }
+
+        public Boolean isMgr()
+        {
+            Boolean r = false;
+            List<String> poList = con.Query<String>("select poNo from PoUsers where UserId =@uid", new { uid = this.emp.workNo }).ToList<String>();
+            r = ctx.jobPos.Where(x => poList.Contains(x.poNo) && x.isFormSigner).Count() > 0;
+            return r;
+        }
+
+        public List<string> getDepList()
+        {
+            List<String> depList = (from item in this.emp.poList select item.depNo).ToList<String>();
+            return depList;
+        }
+        public List<string> getDepListByWorkNo(string workNo)
+        {
+            vwEmployee empObj = ctx.getUserByWorkNo(workNo);
+            List<String> depList = (from item in empObj.poList select item.depNo).ToList<String>();
+            return depList;
+        }
+
         public DataTable queryMyDayOffList(int y)
         {
             DataTable tb = new DataTable();

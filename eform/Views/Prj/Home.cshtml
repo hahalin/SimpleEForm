@@ -1,0 +1,117 @@
+﻿@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq
+@using eform.Models;
+@{
+    ViewBag.Title = "";
+    Layout = "~/Views/Shared/_PrjLayout.cshtml";
+}
+
+<link href="~/Content/fullcalendar.min.css" rel="stylesheet" />
+<style>
+    th {
+        font-family: 微軟正黑體,新細明體;
+        font-size: 15px;
+    }
+
+    /*https://stackoverflow.com/questions/13597136/fullcalender-event-title-only-allowed-one-line*/
+
+    .fc-event-time, .fc-event-title {
+        padding: 0 1px;
+        white-space: nowrap;
+    }
+
+    .fc-title {
+        white-space: normal;
+    }
+</style>
+<script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+<script src="~/Scripts/jquery.blockUI.js"></script>
+<script type="text/javascript">
+    $.blockUI({ message: '<h2>資料讀取中...</h2>' });
+</script>
+
+
+@if (User.Identity.IsAuthenticated)
+{
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box col-xs-10 col-md-12" style="padding-top:10px;">
+                 <div id='calendar'></div>
+            </div>
+        </div>
+    </div>
+
+
+
+@section scripts {
+    <script src="~/Scripts/fullcalendar.min.js"></script>
+    <script src="~/Scripts/locale-all.js"></script>
+    <script type="text/javascript">
+         $(function () {
+                @if (TempData["changepwdsucess"] != null && TempData["changepwdsucess"].ToString() == "Y")
+                {
+                    //@:toastr["info"]("個人密碼修改完成!");
+                }
+
+                var eventPrjWorks = { events: [] };
+                try {
+                    eventPrjWorks = { events: @Html.Raw((ViewBag.eventPrjWorks))};
+                }
+                catch (e)
+                {
+                    eventPrjWorks = { events: [] };
+                }
+                
+                $('#calendar').fullCalendar({
+                     defaultView: 'month',
+                     locale:'zh-tw',
+                     defaultDate: $('#calendar').fullCalendar('today'),
+                     editable: true,
+                     navLinks: false,
+                     selectable: true,
+                     eventLimit: true,
+                     displayEventTime: false,
+                     eventOrder: "title",
+                     height: 'auto',
+                     header: {
+                         left: 'prev,next today',
+                         center: 'title',
+                         right: ''
+                     },
+                     titleFormat:"YYYY-MMM",
+                     views: {
+                         month: {
+                             eventLimit: 7
+                         },
+                         agendaTwoDay: {
+                             type: 'agenda',
+                             duration: { days: 2 },
+                             groupByResource: true
+                         }
+                     },
+                     eventSources: [
+                         eventPrjWorks
+                     ],
+
+                     eventClick: function (event) {
+                         alert('功能開發中');
+
+                         if (event.url) {
+                             window.open(event.url, "_blank");
+                             return false;
+                         }
+                         //return true;
+                     },
+                     select: function (start, end, jsEvent, view, resource) {
+                     },
+                     dayClick: function (date, jsEvent, view, resource) {
+                     }
+               });
+
+               $.unblockUI();
+
+         })
+    </script>
+}
+
+}

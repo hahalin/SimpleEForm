@@ -195,9 +195,11 @@
 </div>
 
 @section Scripts {
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    <script src="~/Scripts/jquery.blockUI.js"></script>
     <script type="text/javascript">
         function doSubmit() {
-            //alert("系統開發中...");
+            $.blockUI({ message: '<h2>表單儲存中...</h2>' });
             return true;
         }
         $(function () {

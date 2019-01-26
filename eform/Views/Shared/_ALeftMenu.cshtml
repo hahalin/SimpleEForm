@@ -80,7 +80,12 @@
                                 </li>
                                 <li>
                                     <a href="@Url.Action("GuestForm", "Form", null)">
-                                        <i class="fa fa-pencil-square"></i>訪客申請單
+                                        <i class="fa fa-pencil-square-o"></i>訪客申請單
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("reqInHouse", "Form", null)" style="font-size:12.5px;">
+                                        <i class="fa fa-pencil-square"></i>廠務派工及總務需求申請單
                                     </a>
                                 </li>
                             </ul>
@@ -108,7 +113,7 @@
                                 <i class="fa fa-circle-o"></i>個人薪資查詢
                             </a>
                         </li>
-                        @if (permList.Where(x => x.mod == "ReportSalary").Count() > 0)
+                        @if (permList.Where(x => x.mod == "ReportUpload").Count() > 0)
                         {
                         <li>
                             <a href="@Url.Action("All", "Salary", null)" hrefa="#">
@@ -116,7 +121,7 @@
                             </a>
                         </li>
                         }
-                        @if (permList.Where(x => x.mod == "ReportUpload").Count() > 0)
+                        @if (permList.Where(x => x.mod == "ReportSalary").Count() > 0)
                         {
                         <li>
                             <a href="@Url.Action("Upload", "Salary", null)" hrefa="#">
@@ -129,16 +134,37 @@
 
                 <!--專案管理區-->
                 <li>
-                    <a href="@Url.Action("Index","Prj")">
-                        <i class="fa fa-calendar"></i> <span>專案管理區</span>
+                        <a href="@Url.Action("Home","Prj")">
+                            <i class="fa fa-book"></i> <span>專案管理區</span>
+                        </a>
+                </li>
+
+                <li class="treeview">
+                    <a href="#">
+                        <i class="fa fa-calendar"></i> <span>公司行程規劃管理</span>
+                        <i class="fa fa-angle-left pull-right"></i>
                     </a>
+                    <ul class="treeview-menu">
+                        <li>
+                            <a href="@Url.Action("ListEventSchedule","Form")">
+                                <i class="fa fa-th-list"></i>
+                                公司行程規劃清單
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("eventSchedule","Form",new {id=""})">
+                                <i class="fa fa-plus-square"></i>
+                                新增公司行程規劃
+                            </a>
+                        </li>
+                    </ul>
                 </li>
 
                 <!--庫存管理查詢-->
-                 if(
-                     (permList.Where(x => x.mod == "StockInit").Count() > 0)
-                     || (permList.Where(x => x.mod == "StockQuery").Count() > 0)
-                  )
+                if (
+                    (permList.Where(x => x.mod == "StockInit").Count() > 0)
+                    || (permList.Where(x => x.mod == "StockQuery").Count() > 0)
+                 )
                 {
                     <li class="treeview">
                         <a href="#">
@@ -146,7 +172,7 @@
                         </a>
                         <ul class="treeview-menu">
                             @if (permList.Where(x => x.mod == "StockInit").Count() > 0)
-                            { 
+                            {
                                 <li>
                                     <a href="@Url.Action("UploadInit", "StockMgr")">
                                         <i class="fa fa-upload"></i>初始庫存上傳

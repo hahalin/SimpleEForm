@@ -5,7 +5,7 @@ using System.Web;
 using System.Threading.Tasks;
 using SendGrid;
 using SendGrid.Helpers.Mail;
-
+using System.Configuration;
 
 namespace eform.Service
 {
@@ -15,6 +15,7 @@ namespace eform.Service
         {
             //var apiKey = Environment.GetEnvironmentVariable("NAME_OF_THE_ENVIRONMENT_VARIABLE_FOR_YOUR_SENDGRID_KEY");
             var apiKey = "";
+            apiKey=ConfigurationManager.AppSettings["sendgrid"].ToString();
             var client = new SendGridClient(apiKey);
             var from = new EmailAddress("sys@sys.com", "系統帳號");
             //var to = new EmailAddress("hahalin@gmail.com", "Frank 林");

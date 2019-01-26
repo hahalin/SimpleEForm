@@ -30,6 +30,7 @@ namespace eform.Models
         [Display(Name = "確認密碼")]
         [DataType(DataType.Password)]
         [System.ComponentModel.DataAnnotations.Compare("Password", ErrorMessage = "密碼和確認密碼不相符。")]
+        //[RegularExpression(@"^(?=.*[a-z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{6,}", ErrorMessage = "密碼需要有至少一個數字一個小寫英文字母與一個特殊字元")]
         public string rePassword { get; set; }
 
         [Display(Name = "職稱")]

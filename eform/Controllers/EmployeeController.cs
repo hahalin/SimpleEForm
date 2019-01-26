@@ -483,7 +483,12 @@ namespace eform.Controllers
                 ApplicationUserManager mgr = new ApplicationUserManager(store);
                 var user = mgr.FindById(id);
                 mgr.RemovePassword(id);
-                mgr.AddPassword(id, model.NewPassword);
+                var r=mgr.AddPassword(id, model.NewPassword);
+                if (r.Errors.Count()>0)
+                {
+                    ModelState.AddModelError("", r.Errors.First().ToString());
+                    return View(model);
+                }
                 TempData["changepwdsucess"] = "Y";
                 return RedirectToAction("Edit", new { id = id });
             }
@@ -522,10 +527,18 @@ namespace eform.Controllers
                 var store = new UserStore<ApplicationUser>(context);
                 ApplicationUserManager mgr = new ApplicationUserManager(store);
                 var user = mgr.FindById(id);
-                mgr.RemovePassword(id);
-                mgr.AddPassword(id, model.NewPassword);
-                TempData["changepwdsucess"] = "Y";
-                return RedirectToAction("Index", "Home");
+                try
+                {
+                    mgr.RemovePassword(id);
+                    mgr.AddPassword(id, model.NewPassword);
+                    TempData["changepwdsucess"] = "Y";
+                    return RedirectToAction("Index", "Home");
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
+                    return View(model);
+                }
             }
         }
 

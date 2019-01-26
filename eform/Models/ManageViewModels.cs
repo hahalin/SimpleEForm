@@ -50,6 +50,7 @@ namespace eform.Models
 
         [Required]
         [StringLength(100, ErrorMessage = "{0} 的長度至少必須為 {2} 個字元。", MinimumLength = 6)]
+        //[RegularExpression(@"^(?=.*[a-z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{6,}", ErrorMessage = "密碼需要有至少一個數字一個小寫英文字母與一個特殊字元")]
         [DataType(DataType.Password)]
         [Display(Name = "新密碼")]
         public string NewPassword { get; set; }

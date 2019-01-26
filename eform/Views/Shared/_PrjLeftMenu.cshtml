@@ -44,35 +44,44 @@
                     <a href="@Url.Action("Index", "Home", null)"><i class="fa fa-undo"></i><span>返回上層</span></a>
                 </li>
                 <li>
-                    <a href="@Url.Action("Index","Prj")">
-                        <i class="fa fa-th-list"></i><span>工單號碼管理</span>
+                    <a href="@Url.Action("Home","Prj")">
+                        <i class="fa fa-calendar"></i><span>專案月曆</span>
                     </a>
-                    <a href="#">
-                        <i class="fa fa-pencil-square-o"></i><span>工時輸入</span>
-                    </a>
-                    <a href="#">
-                        <i class="fa fa-table"></i><span>工時報表</span>
-                    </a>
-                    @*<a href="#">
-                        <i class="fa fa-key"></i><span>專案權限設定</span>
-                    </a>*@
                 </li>
-                @*<li class="treeview">
+                <li class="treeview-menu">
                     <a href="#">
-                        <i class="fa fa-pencil-square-o"></i><span></span>
-                        <i class="fa fa-angle-left pull-right"></i>
+                        <i class="fa fa-gears"></i>專案設定
+                        <span class="pull-right-container">
+                            <i class="fa fa-angle-left pull-right"></i>
+                        </span>
                     </a>
                     <ul class="treeview-menu">
-                        <li class="treeview">
-                            <a href="#">
-                                <i class="fa fa-circle-o"></i>表單申請
-                                <span class="pull-right-container">
-                                    <i class="fa fa-angle-left pull-right"></i>
-                                </span>
+                        @if (permList.Where(x => x.mod == "PrjCreateCode").Count() > 0 || User.Identity.Name.ToUpper().Contains("ADMIN"))
+                        {
+                        <li>
+                            <a href="@Url.Action("CodeList","Prj")">
+                                <i class="fa fa-gear"></i><span>專案代碼管理</span>
+                            </a>
+                        </li>
+                        }
+                        <li>
+                            <a href="@Url.Action("ForumUsers", "Prj", null)">
+                                <i class="fa fa-user-plus"></i>討論區成員設定
                             </a>
                         </li>
                     </ul>
-                </li>*@
+                </li>
+                <li>
+                    <a href="@Url.Action("MyPrjWorkList","Prj")">
+                        <i class="fa fa-th-list"></i><span>個人工時報表清單</span>
+                    </a>
+                </li>
+                <li>
+                    @*<a href="@Url.Action("#","Prj")">*@
+                    <a href="@Url.Action("MgrPrjWorkList","Prj")">
+                        <i class="fa fa-check-square"></i><span>主管工時報表審核</span>
+                    </a>
+                </li>
             }
             else
             {
@@ -81,8 +90,6 @@
                 <li><a href='@Url.Action("Login", "Account")'><i class="fa fa-sign-in"></i> <span>登入</span></a></li>
             }
         </ul>
-
-        }
         <!-- /.sidebar-menu -->
     </section>
     <!-- /.sidebar -->

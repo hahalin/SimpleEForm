@@ -20,7 +20,7 @@ using eform.Repo;
 namespace eform.Controllers
 {
     [AdminAuthorize(Roles = "Admin,Employee")]
-    public class FormController : Controller
+    public partial class FormController : Controller
     {
         ApplicationDbContext ctx;
         SqlConnection con;
@@ -136,6 +136,19 @@ namespace eform.Controllers
             var context = new ApplicationDbContext();
             List<vwFlowSub> list = new List<vwFlowSub>();
             List<FlowSub> fsubList = ctx.FlowSubList.Where(x => x.pid == id).OrderBy(x => x.seq).ToList<FlowSub>();
+
+            FlowMain fmain = ctx.FlowMainList.Where(x => x.id == id).FirstOrDefault();
+            if (!User.Identity.Name.ToUpper().Contains("ADMIN")) //&& (fmain.defId!="EventSchedule"))
+            {
+                if ((ctx.FlowSubList.Where(x => x.pid == id && x.workNo == User.Identity.Name).Count() == 0)
+                    && (null != fmain && fmain.senderNo != User.Identity.Name)
+                    )
+                {
+                    return RedirectToAction("AccessDenied", "Account");
+                }
+            }
+
+
             foreach (FlowSub sitem in fsubList)
             {
                 var signResultObj = context.signResultList().Where(x => x.id == sitem.signResult).FirstOrDefault();
@@ -152,8 +165,6 @@ namespace eform.Controllers
                 };
                 list.Add(item);
             }
-
-            FlowMain fmain = ctx.FlowMainList.Where(x => x.id == id).FirstOrDefault();
 
             vwEmployee employee = ctx.getUserByWorkNo(fmain.senderNo);
             ViewBag.Employee = employee;
@@ -236,6 +247,49 @@ namespace eform.Controllers
                         area4 = formObj.area4,
                         area41 = formObj.area41,
                         sMemo =formObj.sMemo
+                    };
+                    ViewBag.SubModel = subModel;
+                    return View("Details", list);
+                }
+
+                if (fmain.defId == "ReqInHouse")
+                {
+                    fmain.flowName += "(P020A1)";
+                    ReqInHouse formObj = ctx.reqInHouseList.Where(x => x.flowId == fmain.id).FirstOrDefault();
+                    vwReqInHouse subModel = new vwReqInHouse
+                    {
+                        id = formObj.id,
+                        user = ctx.getUserByWorkNo(fmain.senderNo),
+                        billDate = fmain.billDate,
+                        contact = formObj.contact,
+                        depNo = formObj.depNo,
+                        reqLimit = formObj.reqLimit,
+                        reqMemo = formObj.reqMemo,
+                        sMemo = formObj.sMemo
+                    };
+                    ViewBag.SubModel = subModel;
+                    return View("Details", list);
+                }
+
+                if (fmain.defId == "EventSchedule")
+                {
+                    fmain.flowName += "(B001A1)";
+                    EventSchedule formObj = ctx.eventScheduleList.Where(x => x.flowId == fmain.id).FirstOrDefault();
+                    vwEventSchedule subModel = new vwEventSchedule
+                    {
+                        id = formObj.id,
+                        user = ctx.getUserByWorkNo(fmain.senderNo),
+                        billDate = fmain.billDate,
+                        subject= formObj.subject,
+                        beginHH= formObj.beginHH,
+                        beginMM= formObj.beginMM,
+                        endHH=formObj.endHH,
+                        endMM=formObj.endMM,
+                        beginDate = formObj.beginDate,
+                        endDate = formObj.endDate,
+                        location = formObj.location,
+                        eventType=formObj.eventType,
+                        sMemo = formObj.sMemo
                     };
                     ViewBag.SubModel = subModel;
                     return View("Details", list);
@@ -546,30 +600,28 @@ namespace eform.Controllers
                 jobj["poNo"] = Model.poNo;
 
                 dbh.execSql("update ReqOverTimes set jext =N'" + jobj.ToString() + "' where flowId='" + fmain.id + "'");
-
-                List<EmailAddress> mailList = new List<EmailAddress>();
-                foreach (FlowDefSub defItem in fDefSubList)
-                {
-                    vwEmployee emp = ctx.getUserByWorkNo(defItem.workNo);
-                    if (!string.IsNullOrEmpty(emp.Email))
-                    {
-                        mailList.Add(new EmailAddress
-                        {
-                            Email = emp.Email,
-                            Name = emp.workNo + " " + emp.UserCName
-                        });
-                    }
-                }
-
                 StringBuilder sb = new StringBuilder();
                 sb.Append("您好," + "<br/><br/>");
-                sb.Append(sender.workNo + " " + sender.cName + " 送出非工作時間廠務申請單：" +fmain.billNo+"<br/><br/>");
+                sb.Append(sender.workNo + " " + sender.cName + " 送出非工作時間廠務申請單：" + fmain.billNo + "<br/><br/>");
                 sb.AppendFormat("<a href='{0}'>{1}</a><br/>",
                     Url.Action("Details", "FormMgr", new RouteValueDictionary(new { id = fmain.id }), HttpContext.Request.Url.Scheme, HttpContext.Request.Url.Authority),
                     "單據網址"
                 );
                 sb.Append("<br/>此信件為系統發出，請勿直接回信<br/>");
-                await SendGridSrv.sendEmail(mailList, "非工作時間廠務申請單送出通知", sb.ToString());
+                foreach (string signer in signerList)
+                {
+                    vwEmployee emp = ctx.getUserByWorkNo(signer);
+                    if (!string.IsNullOrEmpty(emp.Email))
+                    {
+                        List<EmailAddress> mailList = new List<EmailAddress>();
+                        mailList.Add(new EmailAddress
+                        {
+                            Email = emp.Email,
+                            Name = emp.workNo + " " + emp.UserCName
+                        });
+                        await SendGridSrv.sendEmail(mailList, "非工作時間廠務申請單送出通知", sb.ToString());
+                    }
+                }
 
                 return RedirectToAction("Index");
             }
@@ -748,10 +800,18 @@ namespace eform.Controllers
             try
             {
                 context.SaveChanges();
-                List<EmailAddress> mailList = new List<EmailAddress>();
-                foreach (FlowDefSub defItem in fDefSubList)
+                StringBuilder sb = new StringBuilder();
+                sb.Append("您好," + "<br/><br/>");
+                sb.Append(Model.user.workNo + " " + Model.user.UserCName + " 送出請假單：" + fmain.billNo + "<br/><br/>");
+                sb.AppendFormat("<a href='{0}'>{1}</a><br/>",
+                    Url.Action("Details", "FormMgr", new RouteValueDictionary(new { id = fmain.id }), HttpContext.Request.Url.Scheme, HttpContext.Request.Url.Authority),
+                    "單據網址"
+                );
+                sb.Append("<br/>此信件為系統發出，請勿直接回信<br/>");
+                foreach (string signer in signerList)
                 {
-                    vwEmployee emp = ctx.getUserByWorkNo(defItem.workNo);
+                    vwEmployee emp = ctx.getUserByWorkNo(signer);
+                    List<EmailAddress> mailList = new List<EmailAddress>();
                     if (!string.IsNullOrEmpty(emp.Email))
                     {
                         mailList.Add(new EmailAddress
@@ -760,17 +820,8 @@ namespace eform.Controllers
                             Name = emp.workNo + " " + emp.UserCName
                         });
                     }
+                    await SendGridSrv.sendEmail(mailList, "請假單送出通知", sb.ToString());
                 }
-
-                StringBuilder sb = new StringBuilder();
-                sb.Append("您好," + "<br/><br/>");
-                sb.Append(Model.user.workNo + " " + Model.user.UserCName + " 送出請假單："+fmain.billNo + "<br/><br/>");
-                sb.AppendFormat("<a href='{0}'>{1}</a><br/>",
-                    Url.Action("Details", "FormMgr", new RouteValueDictionary(new { id = fmain.id }), HttpContext.Request.Url.Scheme, HttpContext.Request.Url.Authority),
-                    "單據網址"
-                );
-                sb.Append("<br/>此信件為系統發出，請勿直接回信<br/>");
-                await SendGridSrv.sendEmail(mailList, "請假單送出通知", sb.ToString());
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
@@ -949,29 +1000,29 @@ namespace eform.Controllers
 
                 dbh.execSql("update ReqOverTimes set jext =N'" + jobj.ToString() + "' where flowId='" + fmain.id + "'");
 
-                List<EmailAddress> mailList = new List<EmailAddress>();
-                foreach (FlowDefSub defItem in fDefSubList)
-                {
-                    vwEmployee emp = ctx.getUserByWorkNo(defItem.workNo);
-                    if (!string.IsNullOrEmpty(emp.Email))
-                    {
-                        mailList.Add(new EmailAddress
-                        {
-                            Email = emp.Email,
-                            Name = emp.workNo + " " + emp.UserCName
-                        });
-                    }
-                }
-
                 StringBuilder sb = new StringBuilder();
                 sb.Append("您好," + "<br/><br/>");
-                sb.Append(sender.workNo + " " + sender.cName + " 送出加班申請單：" +fmain.billNo+ "<br/><br/>");
+                sb.Append(sender.workNo + " " + sender.cName + " 送出加班申請單：" + fmain.billNo + "<br/><br/>");
                 sb.AppendFormat("<a href='{0}'>{1}</a><br/>",
                     Url.Action("Details", "FormMgr", new RouteValueDictionary(new { id = fmain.id }), HttpContext.Request.Url.Scheme, HttpContext.Request.Url.Authority),
                     "單據網址"
                 );
                 sb.Append("<br/>此信件為系統發出，請勿直接回信<br/>");
-                await SendGridSrv.sendEmail(mailList, "加班申請單送出通知", sb.ToString());
+                foreach (string signer in signerList)
+                {
+                    vwEmployee emp = ctx.getUserByWorkNo(signer);
+                    
+                    if (!string.IsNullOrEmpty(emp.Email))
+                    {
+                        List<EmailAddress> mailList = new List<EmailAddress>();
+                        mailList.Add(new EmailAddress
+                        {
+                            Email = emp.Email,
+                            Name = emp.workNo + " " + emp.UserCName
+                        });
+                        await SendGridSrv.sendEmail(mailList, "加班申請單送出通知", sb.ToString());
+                    }
+                }
 
                 return RedirectToAction("Index");
             }
@@ -1129,30 +1180,29 @@ namespace eform.Controllers
             try
             {
                 context.SaveChanges();
-
-                List<EmailAddress> mailList = new List<EmailAddress>();
-                foreach (FlowDefSub defItem in fDefSubList)
-                {
-                    vwEmployee emp = ctx.getUserByWorkNo(defItem.workNo);
-                    if (!string.IsNullOrEmpty(emp.Email))
-                    {
-                        mailList.Add(new EmailAddress
-                        {
-                            Email = emp.Email,
-                            Name = emp.workNo + " " + emp.UserCName
-                        });
-                    }
-                }
-
                 StringBuilder sb = new StringBuilder();
                 sb.Append("您好," + "<br/><br/>");
-                sb.Append(sender.workNo + " " + sender.cName + " 送出外出申請單：" +fmain.billNo+"<br/><br/>");
+                sb.Append(sender.workNo + " " + sender.cName + " 送出外出申請單：" + fmain.billNo + "<br/><br/>");
                 sb.AppendFormat("<a href='{0}'>{1}</a><br/>",
                     Url.Action("Details", "FormMgr", new RouteValueDictionary(new { id = fmain.id }), HttpContext.Request.Url.Scheme, HttpContext.Request.Url.Authority),
                     "單據網址"
                 );
                 sb.Append("<br/>此信件為系統發出，請勿直接回信<br/>");
-                await SendGridSrv.sendEmail(mailList, "外出申請單送出通知", sb.ToString());
+                foreach (string signer in signerList)
+                {
+                    vwEmployee emp = ctx.getUserByWorkNo(signer);
+                    if (!string.IsNullOrEmpty(emp.Email))
+                    {
+                        List<EmailAddress> mailList = new List<EmailAddress>();
+
+                        mailList.Add(new EmailAddress
+                        {
+                            Email = emp.Email,
+                            Name = emp.workNo + " " + emp.UserCName
+                        });
+                        await SendGridSrv.sendEmail(mailList, "外出申請單送出通知", sb.ToString());
+                    }
+                }
 
                 return RedirectToAction("Index");
             }
@@ -1322,20 +1372,6 @@ namespace eform.Controllers
             {
                 ctx.SaveChanges();
 
-                List<EmailAddress> mailList = new List<EmailAddress>();
-                foreach (FlowDefSub defItem in fDefSubList)
-                {
-                    vwEmployee emp = ctx.getUserByWorkNo(defItem.workNo);
-                    if (!string.IsNullOrEmpty(emp.Email))
-                    {
-                        mailList.Add(new EmailAddress
-                        {
-                            Email = emp.Email,
-                            Name = emp.workNo + " " + emp.UserCName
-                        });
-                    }
-                }
-
                 StringBuilder sb = new StringBuilder();
                 sb.Append("您好," + "<br/><br/>");
                 sb.Append(sender.workNo + " " + sender.cName + " 送出訪客申請單：" + fmain.billNo + "<br/><br/>");
@@ -1344,7 +1380,20 @@ namespace eform.Controllers
                     "單據網址"
                 );
                 sb.Append("<br/>此信件為系統發出，請勿直接回信<br/>");
-                await SendGridSrv.sendEmail(mailList, "訪客申請單送出通知", sb.ToString());
+                foreach (string signer in signerList)
+                {
+                    vwEmployee emp = ctx.getUserByWorkNo(signer);
+                    if (!string.IsNullOrEmpty(emp.Email))
+                    {
+                        List<EmailAddress> mailList = new List<EmailAddress>();
+                        mailList.Add(new EmailAddress
+                        {
+                            Email = emp.Email,
+                            Name = emp.workNo + " " + emp.UserCName
+                        });
+                        await SendGridSrv.sendEmail(mailList, "訪客申請單送出通知", sb.ToString());
+                    }
+                }
 
                 return RedirectToAction("Index");
             }

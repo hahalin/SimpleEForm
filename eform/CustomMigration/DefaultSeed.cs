@@ -70,6 +70,57 @@ namespace eform.CustomMigration
             return true;
         }
 
+        static void createFlowDef(ApplicationDbContext ctx)
+        {
+            int idx = 6;
+            if (ctx.FlowDefMainList.Where(x=>x.code== "P020A1").Count()==0)
+            {
+                FlowDefMain defObj = new FlowDefMain
+                {
+                    id = Guid.NewGuid().ToString(),
+                    code = "P020A1",
+                    nm= "廠務派工及總務需求申請單",
+                    seq=6,
+                    enm="ReqInHouse"
+                };
+                ctx.FlowDefMainList.Add(defObj);
+                ctx.SaveChanges();
+            }
+            if (ctx.FlowDefMainList.Where(x => x.code == "B001A1").Count() == 0)
+            {
+                FlowDefMain defObj = new FlowDefMain
+                {
+                    id = Guid.NewGuid().ToString(),
+                    code = "B001A1",
+                    nm = "公司行程規劃表",
+                    seq = 7,
+                    enm = "EventSchedule"
+                };
+                ctx.FlowDefMainList.Add(defObj);
+                ctx.SaveChanges();
+            }
+        }
+
+        static void createPermMod(ApplicationDbContext ctx)
+        {
+            if (ctx.permModList.Where(x=>x.mod=="PrjCreateCode").Count()==0)
+            {
+                permMod obj = new permMod
+                {
+                    mod = "PrjCreateCode",
+                    modCname = "專案代碼管理"
+                };
+                ctx.permModList.Add(obj);
+                ctx.SaveChanges();
+            }
+            else
+            {
+                permMod obj = ctx.permModList.Where(x => x.mod == "PrjCreate").FirstOrDefault();
+                obj.modCname = "專案代碼管理";
+                ctx.SaveChanges();
+            }
+        }
+
         public static bool doMigrate(DbMigrationsConfiguration config)
         {
             var migrator = new DbMigrator(config);
@@ -110,6 +161,9 @@ namespace eform.CustomMigration
                     context.dayOffTypeList.Add(new dayOffType { k = 14, v = "補休" });
                     context.SaveChanges();
                 }
+
+                createFlowDef(context);
+                createPermMod(context);
             }
             return true;
         }

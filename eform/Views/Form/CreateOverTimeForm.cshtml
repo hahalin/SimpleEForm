@@ -4,7 +4,8 @@
 @{
     ViewBag.Title = "非工作時間廠務申請單(P016A1)";
 }
-@*<link rel="stylesheet" type="text/css" href="~/Content/bootstrap-datetimepicker.min.css" />*@
+
+
 <div class="row">
     <div class="col-md-10">
         <div class="box">
@@ -141,21 +142,11 @@
 </div>
 
 @section Scripts {
-    @*<script type="text/javascript" src="~/Scripts/moment-with-locales.min.js"></script>
-    <script type="text/javascript" src="~/Scripts/bootstrap-datetimepicker.min.js"></script>*@
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    <script src="~/Scripts/jquery.blockUI.js"></script>
     <script type="text/javascript">
         function doSubmit() {
-            //var dtend = new Date($('#dtEnd').val()).getTime();
-            //var dtbegin = new Date($('#dtBegin').val()).getTime();
-            //if ((dtend - dtbegin) < 0) {
-            //    toastr["error"]("結束時間不得小於開始時間", "Error");
-            //    return false;
-            //}
-            //if ($('#place').val() == '')
-            //{
-            //    alert('請輸入工作地點');
-            //    return false;
-            //}
+            $.blockUI({ message: '<h2>表單儲存中...</h2>' });
             return true;
         }
         $(function () {
@@ -173,8 +164,6 @@
             if ($($('.validation-summary-errors')[0]).text() == "")
             {
                 $('#billDate').val(getLocalDateStr());
-                //$('#dtBegin').val(getLocalDateTimeStr());
-                //$('#dtEnd').val(getLocalDateTimeStr());
             }
 
             var depList = @Html.Raw(JsonConvert.SerializeObject(ViewBag.depList));
@@ -199,23 +188,6 @@
                 $('#poNo').val($('#poNo option:nth-child(2)').val());
             }
 
-
-            //$(cboDepList).on("change", function (e) {
-            //    var depV = this.value;
-            //    $('#poNo option').remove();
-            //    $(cboPoList).append(
-            //        $('<option></option>').val("").html("選擇職稱")
-            //    );
-            //    if (depV != "0") {
-            //        $.each(poList, function (val, obj) {
-            //            if (obj.depNo == depV) {
-            //                $(cboPoList).append(
-            //                    $('<option></option>').val(obj.poNo).html(obj.poNm)
-            //                );
-            //            }
-            //        });
-            //    }
-            //});
         });
     </script>
 }

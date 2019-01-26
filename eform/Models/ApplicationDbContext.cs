@@ -46,10 +46,18 @@ namespace eform.Models
         public DbSet<publicOut> publicOutList { get; set; }
         public DbSet<guestForm> guestFormList { get; set; }
 
+        public DbSet<ReqInHouse> reqInHouseList { get; set; }
+
         //stock begin
         public DbSet<stockItemInit> stockItemInitList { get; set; }
         //stock end
 
+        public DbSet<EventSchedule> eventScheduleList { get; set; }
+        public DbSet<prjCode> prjCodeList { get; set; }
+        public DbSet<prjWork> prjWorkList { get; set; }
+        public DbSet<prjWorkItem> prjWorkItemList { get; set; }
+        public DbSet<prjPM> prjPMList { get; set; }
+        public DbSet<prjForumUser> prjForumUserList { get; set; }
 
         public List<vwSignType> signTypeList()
         {
@@ -197,7 +205,24 @@ namespace eform.Models
             return JsonConvert.SerializeObject(userlist);
         }
 
-        //請假單 P018A1
+        public string getDepList(int level=3)
+        {
+            var depList0 = this.deps.Where(x => x.depLevel == level).OrderBy(x => x.depNm).ToList();
+            List<dynamic> depList = new List<dynamic>();
+            foreach (var dep in depList0)
+            {
+                dynamic obj = new ExpandoObject();
+                obj.id = dep.depNo;
+                obj.text = dep.depNm;
+                depList.Add(obj);
+            }
+            dynamic depSelTitle = new ExpandoObject();
+            depSelTitle.id = ""; depSelTitle.text = "請選擇部門";
+            depList.Insert(0, depSelTitle);
+
+            return JsonConvert.SerializeObject(depList);
+        }
+
         public string genBillNo(string formType)
         {
             string r = "";
@@ -221,6 +246,14 @@ namespace eform.Models
             if (formType == "GuestForm")
             {
                 code = "P011A1";
+            }
+            if (formType == "ReqInHouse")
+            {
+                code = "P020A1";
+            }
+            if (formType == "EventSchedule")
+            {
+                code = "B001A1";
             }
             string preCode = code + "-" + getLocalTiime().ToString("yyMM");
             var list = from fmain in this.FlowMainList.Where(x => x.billNo != null && x.billNo.Contains(preCode))

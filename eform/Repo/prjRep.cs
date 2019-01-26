@@ -68,11 +68,27 @@ namespace eform.Repo
 
             return JsonConvert.SerializeObject(r);
         }
+        public string prjCodeList(prjStatus status = prjStatus.active)
+        {
+            string sql = "select a.* from prjCodes a left join AspNetUsers b on a.owner=b.workNo ";
+            sql +=" where a.status=@status order by a.code asc";
+            List<vwPrjCode> list = con.Query<vwPrjCode>(sql, new { status = "使用中" }).ToList<vwPrjCode>();
+            dynamic r = new ExpandoObject();
+            r.data = list;
+            return JsonConvert.SerializeObject(r);
+        }
 
         public prj loadPrj(string prjId)
         {
             string sql = "select * from prjs where prjId=@prjId";
             prj prjObj = con.Query<prj>(sql, new { prjId = prjId }).FirstOrDefault<prj>();
+            return prjObj;
+        }
+
+        public vwPrjCode loadPrjCode(string id)
+        {
+            string sql = "select * from prjCodes where id=@id";
+            vwPrjCode prjObj = con.Query<vwPrjCode>(sql, new { id = id }).FirstOrDefault<vwPrjCode>();
             return prjObj;
         }
 
@@ -167,6 +183,70 @@ namespace eform.Repo
             }
         }
 
+        public string createPrjCode(prjCode prjObj,string creator, JArray userList=null)
+        {
+            string r = "";
+            string sql = "";
+
+            if (string.IsNullOrEmpty(prjObj.code))
+            {
+                return "專案編號不得空白";
+            }
+
+            if (string.IsNullOrEmpty(prjObj.nm))
+            {
+                return "專案名稱不得空白";
+            }
+
+            if (string.IsNullOrEmpty(prjObj.owner))
+            {
+                return "專案經理不得空白";
+            }
+
+
+            sql = "select count(code) as cnt from prjCodes where code=@code";
+            int icnt = (int)con.ExecuteScalar(sql, new { code = prjObj.code });
+            if (icnt > 0)
+            {
+                return "專案編號重複";
+            }
+
+            sql = "insert into prjCodes ";
+            sql += "(id,code,nm,owner,status,mmo1,mmo2,mmo3,mmo4,mmo5,mmo6,mmo7,mmo8,mmo9,mmo10,creator,createDate) ";
+            sql += " values ";
+            sql += " (@id,@code,@nm,@owner,@status,@mmo1,@mmo2,@mmo3,@mmo4,@mmo5,@mmo6,@mmo7,@mmo8,@mmo9,@mmo10,@creator,@createDate)";
+
+            List<DynamicParameters> paramList = new List<DynamicParameters>();
+            DynamicParameters param = new DynamicParameters();
+            param.Add("@id", prjObj.id);
+            param.Add("@code", prjObj.code);
+            param.Add("@nm", prjObj.nm);
+            param.Add("@owner", prjObj.owner);
+            param.Add("@status", prjObj.status);
+            param.Add("@mmo1", prjObj.mmo1);
+            param.Add("@mmo2", prjObj.mmo2);
+            param.Add("@mmo3", prjObj.mmo3);
+            param.Add("@mmo4", prjObj.mmo4);
+            param.Add("@mmo5", prjObj.mmo5);
+            param.Add("@mmo6", prjObj.mmo6);
+            param.Add("@mmo7", prjObj.mmo7);
+            param.Add("@mmo8", prjObj.mmo8);
+            param.Add("@mmo9", prjObj.mmo9);
+            param.Add("@mmo10", prjObj.mmo10);
+            param.Add("@creator", creator);
+            param.Add("@createDate", ctx.getLocalTiime());
+            paramList.Add(param);
+
+            try
+            {
+                con.Execute(sql, paramList);
+                return "";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
         public string updatePrj(prj prjObj, JArray userList)
         {
             string r = "";
@@ -258,5 +338,117 @@ namespace eform.Repo
             }
         }
 
+        public string updatePrjCode(prjCode prjCodeObj,string workNo)
+        {
+            string r = "";
+            string sql = "";
+
+            //if (prjCodeObj.owner != workNo && workNo.ToUpper().Contains("ADMIN")==false)
+            //{
+                //return "專案代碼管理人才能修改此專案";
+            //}
+            if (string.IsNullOrEmpty(prjCodeObj.code))
+            {
+                return "專案代碼不得空白";
+            }
+            sql = "select count(id) as cnt from prjCodes where code=@code and id != @id";
+            int icnt = (int)con.ExecuteScalar(sql, new { code = prjCodeObj.code, id = prjCodeObj.id });
+            if (icnt > 0)
+            {
+                return "專案代碼重複";
+            }
+
+            sql = "update prjCodes set code=@code,nm=@nm,owner=@owner,status=@status, ";
+            sql += " mmo1=@mmo1,mmo2=@mmo2,mmo3=@mmo3,mmo4=@mmo4,mmo5=@mmo5,";
+            sql += " mmo6=@mmo6,mmo7=@mmo7,mmo8=@mmo8,mmo9=@mmo9,mmo10=@mmo10";
+            sql += " where id=@id";
+
+            List<DynamicParameters> paramList = new List<DynamicParameters>();
+            DynamicParameters param = new DynamicParameters();
+            param.Add("@id", prjCodeObj.id);
+            param.Add("@code", prjCodeObj.code);
+            param.Add("@nm", prjCodeObj.nm);
+            param.Add("@owner", prjCodeObj.owner);
+            param.Add("@status", prjCodeObj.status);
+            param.Add("@mmo1", prjCodeObj.mmo1);
+            param.Add("@mmo2", prjCodeObj.mmo2);
+            param.Add("@mmo3", prjCodeObj.mmo3);
+            param.Add("@mmo4", prjCodeObj.mmo4);
+            param.Add("@mmo5", prjCodeObj.mmo5);
+            param.Add("@mmo6", prjCodeObj.mmo6);
+            param.Add("@mmo7", prjCodeObj.mmo7);
+            param.Add("@mmo8", prjCodeObj.mmo8);
+            param.Add("@mmo9", prjCodeObj.mmo9);
+            param.Add("@mmo10", prjCodeObj.mmo10);
+            paramList.Add(param);
+
+            try
+            {
+                con.Execute(sql, paramList);
+                if (string.IsNullOrEmpty(prjCodeObj.creator))
+                {
+                    con.Execute("update prjCodes set creator=@creator,createDate=@createDate where id=@id",
+                        new
+                        {
+                            @id= prjCodeObj.id,
+                            @creator = workNo,
+                            @createDate=ctx.getLocalTiime()
+                        }
+                    );
+                }
+
+                return "";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        public string getPrjList()
+        {
+            var prjs = this.ctx.prjCodeList.ToList<prjCode>();
+            List <dynamic> prjlist = new List<dynamic>();
+            foreach (var prj in prjs)
+            {
+                dynamic obj = new ExpandoObject();
+                obj.id = prj.code;
+                obj.text = prj.nm;
+                obj.owner = prj.owner;
+                prjlist.Add(obj);
+            }
+            dynamic prjSelTitle = new ExpandoObject();
+            prjSelTitle.id = ""; prjSelTitle.text = "請選擇專案代碼";
+            prjlist.Insert(0, prjSelTitle);
+
+            return JsonConvert.SerializeObject(prjlist);
+        }
+
+        public string getPrjCodeList()
+        {
+            //var prjs = this.ctx.prjCodeList.ToList<prjCode>();
+            string sql = "select a.* from prjCodes a left join AspNetUsers b on a.owner=b.workNo ";
+            sql += " where a.status=@status order by a.code asc";
+            List<vwPrjCode> prjs = con.Query<vwPrjCode>(sql, new { status = "使用中" }).ToList<vwPrjCode>();
+
+
+            List<dynamic> prjlist = new List<dynamic>();
+            foreach (var prj in prjs)
+            {
+                dynamic obj = new ExpandoObject();
+                obj.id = prj.code;
+                obj.text = prj.code+"-"+prj.nm;
+                obj.nm =prj.nm;
+                obj.owner = prj.owner;
+                obj.ownerStr = prj.ownerStr;
+                prjlist.Add(obj);
+            }
+            dynamic prjSelTitle = new ExpandoObject();
+            prjSelTitle.id = ""; prjSelTitle.text = "請選擇工時代碼";
+            prjSelTitle.nm = "請選擇工時代碼";
+            prjlist.Insert(0, prjSelTitle);
+
+            return JsonConvert.SerializeObject(prjlist);
+        }
     }
 }

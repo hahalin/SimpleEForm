@@ -1,0 +1,116 @@
+﻿<!--P050A1-19010001-->
+<div id="winEventInput" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="border-bottom-width:0px;">
+                <h4 class="modal-title text-center" id="winTitle">新增專案月曆</h4>
+            </div>
+            @using (Html.BeginForm("ApplyPrjEvent", "Prj", FormMethod.Post, new { id = "fmApplyEvent" }))
+            {
+                <div class="modal-body">
+                    <div class="col-md-12" style="background-color:white;">
+                        <ul class="nav nav-tabs" role="tablist" id="myTabs">
+                            <li role="presentation" class="active"><a href="#tab1" aria-controls="tab1" role="tab" data-toggle="tab">專案月曆</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div role="tabpanel" class="tab-pane active" id="tab1">
+                                <div class="form-group">
+                                    <label class="control-label col-md-2">專案代碼</label>
+                                    <div class="col-md-4">
+                                        @*<input type="hidden" id="hid" name="hid" value="@Model.id" />*@
+                                        <input type="text" id="code" name="code" class="form-control" autocomplete="off" />
+                                    </div>
+                                    <label class="control-label col-md-2">表單編號</label>
+                                    <div class="col-md-4">
+                                        <input type="text" id="nm" name="nm" class="form-control" autocomplete="off" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.Label("標題", htmlAttributes: new { @class = "control-label col-md-2" })
+                                    <div class="col-md-4">
+                                        @*<input type="text" id="owner" name="owner" class="form-control" />*@
+                                        <input type="hidden" value="@User.Identity.Name" id="hUserId" name="hUserId" />
+                                        @Html.DropDownList("owner", new List<SelectListItem>(), new { htmlAttributes = new { @class = "form-control select2-input select2" }, style = "max-width:800px;width:100%;" })
+                                    </div>
+                                    @Html.Label("內容", htmlAttributes: new { @class = "control-label col-md-2" })
+                                    <div class="col-md-4">
+                                        @*@Html.TextAreaFor(model => model.sMemo, htmlAttributes: new { @class = "form-control", rows = "3", style = "width:630px;" })*@
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.Label("備註", htmlAttributes: new { @class = "control-label col-md-2" })
+                                    <div class="col-md-4">
+                                        <input type="text" id="creator" name="creator" class="form-control" value="" readonly />
+                                    </div>
+                                    @Html.Label("", htmlAttributes: new { @class = "control-label col-md-2" })
+                                    <div class="col-md-4">
+                                        <input type="text" id="createDate" name="createDate" class="form-control" value="" readonly />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2">開始日期</label>
+                                    <div class="col-md-4">
+                                        <div class='input-group date' id='datetimepicker2'>
+                                            @*@Html.EditorFor(model => model.beginDate, new { htmlAttributes = new { @class = "form-control", type = "text" } })*@
+                                            <span class="input-group-addon">
+                                                <span class="glyphicon glyphicon-calendar"></span>
+                                            </span>
+                                        </div>
+                                        @*@Html.ValidationMessageFor(model => model.beginDate, "", new { @class = "text-danger" })*@
+                                    </div>
+                                    <label class="control-label col-md-2">開始時間</label>
+                                    <div class="col-md-1">
+                                        @*@Html.DropDownListFor(model => model.beginHH, (SelectList)ViewBag.beginHHList, new { @class = "form-control", style = "width:70px;" })*@
+                                    </div>
+                                    <label class="control-label col-md-1">時</label>
+                                    <div class="col-md-1">
+                                        @*@Html.DropDownListFor(model => model.beginMM, (SelectList)ViewBag.beginMMList, new { @class = "form-control", style = "width:70px;" })*@
+                                    </div>
+                                    <label class="control-label col-md-1">分</label>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2">結束日期</label>
+                                    <div class="col-md-4">
+                                        <div class='input-group date' id='datetimepicker3'>
+                                            @*@Html.EditorFor(model => model.endDate, new { htmlAttributes = new { @class = "form-control", type = "text" } })*@
+                                            <span class="input-group-addon">
+                                                <span class="glyphicon glyphicon-calendar"></span>
+                                            </span>
+                                        </div>
+                                        @*@Html.ValidationMessageFor(model => model.endDate, "", new { @class = "text-danger" })*@
+                                    </div>
+                                    @Html.Label("結束時間", htmlAttributes: new { @class = "control-label col-md-2" })
+                                    <div class="col-md-1">
+                                        @*@Html.DropDownListFor(model => model.endHH, (SelectList)ViewBag.beginHHList, new { @class = "form-control", style = "width:70px;" })*@
+                                    </div>
+                                    <label class="control-label col-md-1">時</label>
+                                    <div class="col-md-1">
+                                        @*@Html.DropDownListFor(model => model.endMM, (SelectList)ViewBag.beginMMList, new { @class = "form-control", style = "width:70px;" })*@
+                                    </div>
+                                    <label class="control-label col-md-1">分</label>
+                                </div>
+                                <div class="form-group">
+                                    @Html.Label("備註1", htmlAttributes: new { @class = "control-label col-md-2" })
+                                    <div class="col-md-4">
+                                        <input type="text" id="mmo1" name="mmo1" class="form-control" />
+                                    </div>
+                                    @Html.Label("備註2", htmlAttributes: new { @class = "control-label col-md-2" })
+                                    <div class="col-md-4">
+                                        <input type="text" id="mmo2" name="mmo2" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="text-center col-md-12" style="margin-top:10px;">
+                            <button id="btnRemovePM" class="btn btn-danger"><span class="fa fa-minus"></span>刪除</button>
+                            <button id="btnSave" type="button" class="btn btn-primary">儲存</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        </div>
+                    </div>
+                </div><!-- /.modal-content -->
+            }
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</div>

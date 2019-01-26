@@ -192,7 +192,10 @@ namespace eform.Controllers
             var user = ctx.Users.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
             if (user != null)
             {
-                if (ctx.permList.Where(x => x.workNo == user.workNo && x.mod == "ReportSalary").Count() == 0)
+                if (
+                    //(ctx.permList.Where(x => x.workNo == user.workNo && x.mod == "ReportSalary").Count() == 0)
+                     (ctx.permList.Where(x => x.workNo == user.workNo && x.mod == "ReportUpload").Count() == 0)
+                   )
                 {
                     return RedirectToAction("AccessDenied", "Account");
                 }

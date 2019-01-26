@@ -207,7 +207,7 @@ namespace eform.Controllers
             dbHelper dbh = new dbHelper();
             dbh.execSql("delete from jobpoes where depNo='" + hid + "'");
             dbh.execSql("delete from deps where depNo='" + hid + "'");
-            dbh.execSql("delete from PoUsers where poNo in (select poNo from jobPoes)");
+            //dbh.execSql("delete from PoUsers where poNo in (select poNo from jobPoes)");
             return RedirectToAction("Index");
         }
 

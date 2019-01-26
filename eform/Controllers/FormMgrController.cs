@@ -29,6 +29,7 @@ namespace eform.Controllers
 
             var unSignMainList = from item in context.FlowMainList
                                  where item.flowStatus == 1
+                                 && item.defId != "EventSchedule"
                                  select item.id;
 
             var mySignSubList = (from item in context.FlowSubList
@@ -93,20 +94,26 @@ namespace eform.Controllers
 
             var store = new UserStore<ApplicationUser>(ctx);
             var manager = new UserManager<ApplicationUser>(store);
-            var user= manager.FindByName(User.Identity.Name);
+            var user = manager.FindByName(User.Identity.Name);
             var roleStore = new RoleStore<ApplicationRole>(ctx);
             var roleManager = new RoleManager<ApplicationRole>(roleStore);
             bool isAdmin = false;
+
+            FlowMain fmain = ctx.FlowMainList.Where(x => x.id == id).FirstOrDefault();
+            ViewBag.flowMain = fmain;
+            vwEmployee employee = ctx.getUserByWorkNo(fmain.senderNo);
+            ViewBag.Employee = employee;
+
             foreach (var role in roleManager.Roles)
             {
-                if (user.Roles.Where(x=>x.RoleId==role.Id && role.Name.ToUpper()=="ADMIN").Count()>0)
+                if (user.Roles.Where(x => x.RoleId == role.Id && role.Name.ToUpper() == "ADMIN").Count() > 0)
                 {
                     isAdmin = true;
                     break;
                 }
             }
 
-            if (!isAdmin)
+            if (!isAdmin && fmain.defId != "EventSchedule")
             {
                 if (ctx.FlowSubList.Where(x => x.pid == id && x.workNo == User.Identity.Name).Count() == 0)
                 {
@@ -117,6 +124,11 @@ namespace eform.Controllers
             if (ctx.FlowSubList.Where(x => x.pid == id && x.workNo == User.Identity.Name && x.signType == 701).Count() > 0)
             {
                 FlowPageType = "HRCheck";
+            }
+
+            if (FlowPageType == "") 
+            {
+                FlowPageType = fmain.defId == "EventSchedule" ? "EventSchedule" : "";
             }
 
             var context = new ApplicationDbContext();
@@ -143,10 +155,6 @@ namespace eform.Controllers
                 list.Add(item);
             }
 
-            FlowMain fmain = context.FlowMainList.Where(x => x.id == id).FirstOrDefault();
-            ViewBag.flowMain = fmain;
-            vwEmployee employee = ctx.getUserByWorkNo(fmain.senderNo);
-            ViewBag.Employee = employee;
 
             #region "非工作時間廠務申請單"
             if (fmain.defId == "OverTime")
@@ -301,7 +309,49 @@ namespace eform.Controllers
                 ViewBag.SubModel = subModel;
                 return View("Details", list);
             }
+            #endregion
+            
+            #region "廠務派工及總務需求申請單"
+            if (fmain.defId == "ReqInHouse")
+            {
+                fmain.flowName += "(P020A1)";
+                ReqInHouse formObj = ctx.reqInHouseList.Where(x => x.flowId == fmain.id).FirstOrDefault();
+                vwReqInHouse subModel = new vwReqInHouse
+                {
+                    id = formObj.id,
+                    user = ctx.getUserByWorkNo(fmain.senderNo),
+                    billDate = fmain.billDate,
+                    contact = formObj.contact,
+                    depNo = formObj.depNo,
+                    reqLimit = formObj.reqLimit,
+                    reqMemo = formObj.reqMemo,
+                    sMemo = formObj.sMemo
+                };
+                ViewBag.SubModel = subModel;
+                return View("Details", list);
+            }
+            #endregion
 
+            #region "公司行程規劃表"
+            if (fmain.defId == "EventSchedule")
+            {
+                fmain.flowName += "(B001A1)";
+                EventSchedule formObj = ctx.eventScheduleList.Where(x => x.flowId == fmain.id).FirstOrDefault();
+                vwEventSchedule subModel = new vwEventSchedule
+                {
+                    id = formObj.id,
+                    user = ctx.getUserByWorkNo(fmain.senderNo),
+                    billDate = fmain.billDate,
+                    beginHH= formObj.beginHH,
+                    beginMM= formObj.beginMM,
+                    subject= formObj.subject,
+                    location=formObj.location,
+                    eventType=formObj.eventType,
+                    sMemo = formObj.sMemo
+                };
+                ViewBag.SubModel = subModel;
+                return View("Details", list);
+            }
             #endregion
 
             return View(list);
@@ -449,9 +499,28 @@ namespace eform.Controllers
                         dbh.execSql("update FlowMains set flowStatus=3 where id='" + id + "'");
                     }
                 }
+
+                if (fmain.defId == "ReqInHouse")
+                {
+                    fsub.signDate = context.getLocalTiime();
+                    fsub.signResult = Convert.ToInt16(signValue);
+                    fsub.comment = signMemo;
+                    context.SaveChanges();
+
+                    dbHelper dbh = new dbHelper();
+                    if (fsub.signResult == 1)
+                    {
+                        dbh.execSql("update FlowMains set flowStatus=2 where id='" + id + "'");
+                    }
+
+                    if (fsub.signResult == 2)
+                    {
+                        dbh.execSql("update FlowMains set flowStatus=3 where id='" + id + "'");
+                    }
+                }
             }
 
-            return RedirectToAction("Query", "FormMgr");
+            return RedirectToAction("Index", "FormMgr");
         }
 
         [AdminAuthorize(Roles = "Admin,Employee")]
@@ -463,7 +532,7 @@ namespace eform.Controllers
 
 
             var signOkSubList = from item in context.FlowSubList
-                                where item.signResult != 0 && item.signResult != 99 
+                                where item.signResult != 0 && item.signResult != 99
                                 select item.pid;
 
 
@@ -606,7 +675,7 @@ namespace eform.Controllers
         public ActionResult SetupWording()
         {
             List<string> inStr = new List<string>();
-            inStr.Add("DayOff");inStr.Add("RealOverTime");
+            inStr.Add("DayOff"); inStr.Add("RealOverTime"); inStr.Add("EventSchedule");
             List<FlowDefMain> model = ctx.FlowDefMainList.Where(x => inStr.Contains(x.enm)).ToList<FlowDefMain>();
             return View(model);
         }
@@ -615,7 +684,7 @@ namespace eform.Controllers
         public ActionResult SetupWording(List<FlowDefMain> model)
         {
 
-            foreach(FlowDefMain defItem in model)
+            foreach (FlowDefMain defItem in model)
             {
                 var defObj = ctx.FlowDefMainList.Where(x => x.code == defItem.code).FirstOrDefault();
                 if (defObj != null)

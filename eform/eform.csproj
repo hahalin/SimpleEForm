@@ -225,6 +225,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="App_Start\CustomizePasswordValidation.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
@@ -237,6 +238,7 @@
     <Compile Include="Controllers\DepController.cs" />
     <Compile Include="Controllers\EmployeeController.cs" />
     <Compile Include="Controllers\FlowDefController.cs" />
+    <Compile Include="Controllers\FormMgnController.cs" />
     <Compile Include="Controllers\FormMgrController.cs" />
     <Compile Include="Controllers\FormController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -363,12 +365,61 @@
     <Compile Include="Migrations\201810292247209_updateStockItemInit.Designer.cs">
       <DependentUpon>201810292247209_updateStockItemInit.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201811111114017_addReqInHouse.cs" />
+    <Compile Include="Migrations\201811111114017_addReqInHouse.Designer.cs">
+      <DependentUpon>201811111114017_addReqInHouse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201811181345124_addEventSchedule.cs" />
+    <Compile Include="Migrations\201811181345124_addEventSchedule.Designer.cs">
+      <DependentUpon>201811181345124_addEventSchedule.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201811191342209_updateEventSchedule.cs" />
+    <Compile Include="Migrations\201811191342209_updateEventSchedule.Designer.cs">
+      <DependentUpon>201811191342209_updateEventSchedule.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201811252247244_EventScheduleAddTwoDate.cs" />
+    <Compile Include="Migrations\201811252247244_EventScheduleAddTwoDate.Designer.cs">
+      <DependentUpon>201811252247244_EventScheduleAddTwoDate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201811272235089_addPrjCode.cs" />
+    <Compile Include="Migrations\201811272235089_addPrjCode.Designer.cs">
+      <DependentUpon>201811272235089_addPrjCode.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201811292319127_addPrjWork.cs" />
+    <Compile Include="Migrations\201811292319127_addPrjWork.Designer.cs">
+      <DependentUpon>201811292319127_addPrjWork.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201812021417159_addPrjWorkItem.cs" />
+    <Compile Include="Migrations\201812021417159_addPrjWorkItem.Designer.cs">
+      <DependentUpon>201812021417159_addPrjWorkItem.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201812032227459_updatePrjCode.cs" />
+    <Compile Include="Migrations\201812032227459_updatePrjCode.Designer.cs">
+      <DependentUpon>201812032227459_updatePrjCode.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201812050235013_updatePrjWorkItem.cs" />
+    <Compile Include="Migrations\201812050235013_updatePrjWorkItem.Designer.cs">
+      <DependentUpon>201812050235013_updatePrjWorkItem.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201812081426355_addColorTag2EventSchedule.cs" />
+    <Compile Include="Migrations\201812081426355_addColorTag2EventSchedule.Designer.cs">
+      <DependentUpon>201812081426355_addColorTag2EventSchedule.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201812241149053_addPrjPM.cs" />
+    <Compile Include="Migrations\201812241149053_addPrjPM.Designer.cs">
+      <DependentUpon>201812241149053_addPrjPM.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201901061559051_addPrjForumUser.cs" />
+    <Compile Include="Migrations\201901061559051_addPrjForumUser.Designer.cs">
+      <DependentUpon>201901061559051_addPrjForumUser.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ApplicationDbContext.cs" />
     <Compile Include="Models\dayOff.cs" />
     <Compile Include="Models\dayOffSum.cs" />
     <Compile Include="Models\dep.cs" />
+    <Compile Include="Models\EventSchedule.cs" />
     <Compile Include="Models\FlowDefMain.cs" />
     <Compile Include="Models\FlowMain.cs" />
     <Compile Include="Models\guestForm.cs" />
@@ -379,7 +430,12 @@
     <Compile Include="Models\newsType.cs" />
     <Compile Include="Models\permission.cs" />
     <Compile Include="Models\prj.cs" />
+    <Compile Include="Models\prjCode.cs" />
+    <Compile Include="Models\PrjEvent.cs" />
+    <Compile Include="Models\PrjPortal.cs" />
+    <Compile Include="Models\prjWork.cs" />
     <Compile Include="Models\publicOut.cs" />
+    <Compile Include="Models\ReqInHouse.cs" />
     <Compile Include="Models\ReqOverTime.cs" />
     <Compile Include="Models\salary.cs" />
     <Compile Include="Models\stockItemInit.cs" />
@@ -485,6 +541,7 @@
     <Content Include="Content\font-awesome-4.7.0\HELP-US-OUT.txt" />
     <Content Include="Content\font-awesome.css" />
     <Content Include="Content\font-awesome.min.css" />
+    <Content Include="Content\fullcalendar.min.css" />
     <Content Include="Content\ionicons.min.css" />
     <Content Include="Content\select2.min.css" />
     <Content Include="Content\tether\tether-theme-arrows-dark.css" />
@@ -1163,6 +1220,7 @@
     <Content Include="Scripts\ckeditor\skins\v2\templates.css" />
     <Content Include="Scripts\ckeditor\themes\default\theme.js" />
     <Content Include="Scripts\DateUtil.js" />
+    <Content Include="Scripts\fullcalendar.min.js" />
     <Content Include="Scripts\gulpfile.js" />
     <Content Include="Scripts\jquery-3.3.1.js" />
     <Content Include="Scripts\jquery-3.3.1.min.js" />
@@ -1172,10 +1230,12 @@
     <Content Include="Scripts\jquery-ui-1.12.1.js" />
     <Content Include="Scripts\jquery-ui-1.12.1.min.js" />
     <Content Include="Scripts\jquery.blockUI.js" />
+    <Content Include="Scripts\jquery.doubleScroll.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\locale-all.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="Scripts\moment-with-locales.js" />
     <Content Include="Scripts\moment-with-locales.min.js" />
@@ -1253,6 +1313,7 @@
     </Content>
     <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
+      <SubType>Designer</SubType>
     </Content>
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
@@ -1366,10 +1427,29 @@
     <Content Include="Views\StockMgr\UploadInit.cshtml" />
     <Content Include="Views\StockMgr\Query.cshtml" />
     <Content Include="Views\StockMgr\UploadStockIn.cshtml" />
+    <Content Include="Views\Form\reqInHouse.cshtml" />
+    <Content Include="Views\Shared\Form\_ReqInHouse.cshtml" />
+    <Content Include="Views\Form\eventSchedule.cshtml" />
+    <Content Include="Views\Shared\Form\_EventSchedule.cshtml" />
+    <Content Include="Views\Form\ListEventSchedule.cshtml" />
+    <Content Include="Views\Prj\CodeList.cshtml" />
+    <Content Include="Views\Prj\Home.cshtml" />
+    <Content Include="Views\Prj\createPrjWork.cshtml" />
+    <Content Include="Views\Prj\_tmpPrjWork.cshtml" />
+    <Content Include="Views\Prj\MyPrjWorkList.cshtml" />
+    <Content Include="Views\Shared\_PrjLayoutBase.cshtml" />
+    <Content Include="Views\Prj\MgrPrjWorkList.cshtml" />
+    <Content Include="Views\Prj\SignPrjWork.cshtml" />
+    <Content Include="Views\Prj\ForumUsers.cshtml" />
+    <Content Include="Views\Prj\ForumUserList.cshtml" />
+    <Content Include="Views\Prj\AddForumUser.cshtml" />
+    <Content Include="Views\Prj\portal.cshtml" />
+    <Content Include="Views\Shared\Prj\_PrjEvent.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="upload\" />
+    <Folder Include="Views\FormMgn\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
@@ -1468,6 +1548,42 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201810292247209_updateStockItemInit.resx">
       <DependentUpon>201810292247209_updateStockItemInit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201811111114017_addReqInHouse.resx">
+      <DependentUpon>201811111114017_addReqInHouse.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201811181345124_addEventSchedule.resx">
+      <DependentUpon>201811181345124_addEventSchedule.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201811191342209_updateEventSchedule.resx">
+      <DependentUpon>201811191342209_updateEventSchedule.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201811252247244_EventScheduleAddTwoDate.resx">
+      <DependentUpon>201811252247244_EventScheduleAddTwoDate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201811272235089_addPrjCode.resx">
+      <DependentUpon>201811272235089_addPrjCode.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201811292319127_addPrjWork.resx">
+      <DependentUpon>201811292319127_addPrjWork.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201812021417159_addPrjWorkItem.resx">
+      <DependentUpon>201812021417159_addPrjWorkItem.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201812032227459_updatePrjCode.resx">
+      <DependentUpon>201812032227459_updatePrjCode.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201812050235013_updatePrjWorkItem.resx">
+      <DependentUpon>201812050235013_updatePrjWorkItem.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201812081426355_addColorTag2EventSchedule.resx">
+      <DependentUpon>201812081426355_addColorTag2EventSchedule.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201812241149053_addPrjPM.resx">
+      <DependentUpon>201812241149053_addPrjPM.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901061559051_addPrjForumUser.resx">
+      <DependentUpon>201901061559051_addPrjForumUser.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
