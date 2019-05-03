@@ -1,0 +1,366 @@
+﻿@model eform.Models.prj
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_PrjLayout.cshtml";
+}
+
+<style>
+    .ui-autocomplete {
+        z-index: 2147483647 !important;
+    }
+</style>
+
+<div class="section">
+    <div class="row col-md-12">
+        <div class="box">
+            <div class="box-header">
+                <button id="btn-add" class="btn btn-primary"><span class="fa fa-plus"></span>新增專案</button>
+            </div>
+            <div class="box-body">
+                <table id="tbPrj" class="table table-bordered table-hover table-responsive table-info">
+                    <thead>
+                        <tr>
+                            <th>
+                            </th>
+                            <th>專案編號</th>
+                            <th>名稱</th>
+                            <th class="hidden-xs">客戶編號</th>
+                            <th class="hidden-xs">客戶名稱</th>
+                            <th class="hidden-sm hidden-xs">開始日期</th>
+                            <th class="hidden-sm hidden-xs">結束日期</th>
+                            <th class="hidden-sm hidden-xs">建立人員</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="winInput" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="border-bottom-width:0px;">
+                    <h4 class="modal-title text-center" id="winTitle">建立專案</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="col-md-12" style="background-color:white;">
+                        <ul class="nav nav-tabs" role="tablist" id="myTabs">
+                            <li role="presentation" class="active"><a href="#tab1" aria-controls="tab1" role="tab" data-toggle="tab">專案資料</a></li>
+                            <li role="presentation"><a href="#tab2" aria-controls="tab2" role="tab" data-toggle="tab">指定人員</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div role="tabpanel" class="tab-pane active" id="tab1">
+                                <form id="fmInput" name="fmInput" class="form-horizontal" method="post" enctype="multipart/form-data" style="margin-top:10px;">
+                                    <div class="form-group">
+                                        <label class="control-label col-md-2">建立人員</label>
+                                        <div class="col-md-4">
+                                            <input type="hidden" id="hCreator" name="hCreator" value="@Model.creator" />
+                                            <input type="hidden" id="hid" name="hid" value="@Model.id" />
+                                            <div class="form-control">@Model.creator-@Model.creatorNm</div>
+                                        </div>
+                                        @Html.Label("建立日期", htmlAttributes: new { @class = "control-label col-md-2" })
+                                        <div class="col-md-4">
+                                            <input type="date" id="createDate" name="createDate" class="form-control" value="@Convert.ToDateTime(Model.createDate).ToString("yyyy-MM-dd")" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-2">專案編號</label>
+                                        <div class="col-md-4">
+                                            <input type="text" id="prjId" name="prjId" class="form-control" autocomplete="off" />
+                                        </div>
+                                        <label class="control-label col-md-2">專案名稱</label>
+                                        <div class="col-md-4">
+                                            <input type="text" id="nm" name="nm" class="form-control" autocomplete="off" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.Label("開始日期", htmlAttributes: new { @class = "control-label col-md-2" })
+                                        <div class="col-md-4">
+                                            <input type="date" id="beginDate" name="beginDate" class="form-control" />
+                                        </div>
+                                        @Html.Label("結束日期", htmlAttributes: new { @class = "control-label col-md-2" })
+                                        <div class="col-md-4">
+                                            <input type="date" id="endDate" name="endDate" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-2">客戶編號</label>
+                                        <div class="col-md-4">
+                                            <input type="text" id="custId" name="custId" class="form-control" />
+                                        </div>
+                                        <label class="control-label col-md-2">客戶名稱</label>
+                                        <div class="col-md-4">
+                                            <input type="text" id="custNm" name="custNm" class="form-control" autocomplete="off" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-2">合同價格</label>
+                                        <div class="col-md-4">
+                                            <input type="number" id="amt" name="amt" class="form-control" />
+                                        </div>
+                                        <label class="control-label col-md-2">預估毛利率</label>
+                                        <div class="col-md-4">
+                                            <input type="number" id="grossProfit" name="grossProfit" class="form-control" autocomplete="off" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-2">備註</label>
+                                        <div class="col-md-10">
+                                            <textarea id="sMemo" name="sMemo" class="form-control" style="max-width:800px;"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-2">預算工作時間</label>
+                                        <div class="col-md-10">
+                                            <textarea id="dtMemo" name="dtMemo" class="form-control col-md-10" style="max-width:800px;" rows="2"></textarea>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div id="tab2" class="tab-pane">
+                                <button id="btnAddSub" class="btn btn-default"><span class="fa fa-plus"></span></button>
+                                <div id="diva"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="text-center col-md-12" style="margin-top:10px;">
+                            <button id="btnSave" type="button" class="btn btn-primary">儲存</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        </div>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+    </div>
+</div>
+@section Scripts
+{
+    <script type="text/javascript">
+
+        $.blockUI({ message: '<h2>loading...</h2>' });
+        var empList = [];
+        $.ajax({
+            dataType: 'json',
+            url: "@Url.Action("empList")",
+            context: this,
+            async:false,
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(errorThrown);
+            },
+            success: function (r) {
+                r.data.forEach(function (obj) {
+                    empList.push(obj.workNo + "-" + obj.cName);
+                });
+            }
+        });
+
+        var autocompEditor = function (cell, onRendered, success, cancel) {
+            var input = $("<input type='text'/>");
+            input.autocomplete({
+                source: empList
+            });
+
+            input.css({
+                "padding": "4px",
+                "width": "100%",
+                "box-sizing": "border-box",
+            }).val(cell.getValue());
+
+            onRendered(function () {
+                input.focus();
+                input.css("height", "100%");
+            });
+
+            input.on("change blur", function (e) {
+                if (input.val() != cell.getValue()) {
+                    success(input.val());
+                } else {
+                    cancel();
+                }
+            });
+
+            input.on("keydown", function (e) {
+                if (e.keyCode == 13) {
+                    //success(input.val());
+                }
+
+                if (e.keyCode == 27) {
+                    cancel();
+                }
+            });
+            return input;
+        };
+
+        var editPrj = function ()
+        {
+            var prjId = $(event.target).attr('prjId');
+            $.blockUI({ message: '<h2>資料讀取中...</h2>' });
+            var param = {prjId:prjId};
+
+            $.ajax({
+                dataType: 'json',
+                data:param,
+                url: "@Url.Action("prjDetail")",
+                context: this,
+                async: true,
+                error: function (jqXHR, textStatus, errorThrown) {
+                    $.unblockUI();
+                    console.log(errorThrown);
+                },
+                success: function (r) {
+                    var prj = r.prj;
+                    console.log(prj);
+                    document.getElementById("fmInput").reset();
+
+                    $('#hid').val(prj.id);
+                    $('#prjId').val(prj.prjId);
+                    $('#nm').val(prj.nm);
+                    $('#creator').val(prj.creator);
+                    $('#beginDate').val(prj.sBeginDate.replace('/', '-').replace('/', '-'));
+                    $('#endDate').val(prj.sEndDate.replace('/', '-').replace('/', '-'));
+                    $('#createDate').val(prj.sCreateDate.replace('/', '-').replace('/', '-'));
+                    $('#custId').val(prj.custId);
+                    $('#custNm').val(prj.custNm);
+                    $('#dtMemo').val(prj.dtMemo);
+                    $('#sMemo').val(prj.sMemo);
+                    $('#grossProfit').val(prj.grossProfit);
+                    $('#amt').val(prj.amt);
+
+                    $('#winTitle').text('編輯專案');
+
+                    r.empList.forEach(function (obj) {
+                        if (obj.perm === 2)
+                        {
+                            obj.perm = '2.部分';
+                        }
+                        else {
+                            obj.perm = '1.全部';
+                        }
+                    });
+                    console.log(r.empList);
+                    $("#diva").tabulator("setData", r.empList);
+
+                    $('#myTabs a[href="#tab1"]').tab('show')
+                    $('#winInput').modal('show');
+
+                    $.unblockUI();
+
+                }
+            });
+        }
+
+        var loadData = function () {
+            $.blockUI({ message: '<h2>loading...</h2>' });
+            $.ajax({
+                dataType: 'json',
+                url: "@Url.Action("prjList")",
+                context: this,
+                async:false,
+                error: function (jqXHR, textStatus, errorThrown) {
+                    $.unblockUI();
+                    console.log(errorThrown);
+                },
+                success: function (r) {
+                    $('#tbPrj > tbody').empty();
+                    var obj = JSON.parse(r);
+                    obj.data.forEach(function (obj) {
+                        var r = "";
+                        r += "<tr>";
+                        r += "<td><button type='button' class='btn btn-info' prjId='" + obj.prjId + "' onclick='editPrj();'>編輯</button></td>";
+                        r += "<td>";
+                        r += "<input type='hidden' value='" + obj.id + "'></input>";
+                        r += obj.prjId;
+                        r +="</td>";
+                        r += "<td>" + obj.nm + "</td>";
+                        r += "<td class='hidden-xs'>" + obj.custId + "</td>";
+                        r += "<td class='hidden-xs'>" + obj.custNm + "</td>";
+                        r += "<td class='hidden-sm hidden-xs'>" + obj.sBeginDate+ "</td>";
+                        r += "<td class='hidden-sm hidden-xs'>" + obj.sEndDate + "</td>";
+                        r += "<td class='hidden-sm hidden-xs'>" + obj.creator +"-"+obj.creatorNm+"</td>";
+                        r += "</tr>";
+                        $('#tbPrj > tbody:last-child').append(r);
+                        $.unblockUI();
+                    });
+                }
+            });
+        }
+
+        $(function () {
+
+            $("#diva").tabulator({
+                height: "350px",
+                columns: [
+                    { title: "序號", field: "seq", width: 80, editor: "input" },
+                    { title: "名稱", field: "title", width: 130, editor: "input" },
+                    { title: "工號", field: "workNo", width: 150, editor: autocompEditor},
+                    { title: "權限", field: "perm", width:100,editor: "select", editorParams: { "1.全部": "1.全部", "2.部分": "2.部分" } }
+                ]
+            });
+
+            $("#diva").tabulator("setData", "@Url.Action("initEmpList")");
+
+            $("#btn-add").click(function () {
+                document.getElementById("fmInput").reset();
+                $('#beginDate').val(getLocalDateStr);
+                $('#endDate').val(getLocalDateStr);
+                $("#diva").tabulator("setData", "@Url.Action("initEmpList")");
+
+                $('#myTabs a[href="#tab1"]').tab('show')
+                $('#winTitle').text('建立專案');
+                $('#winInput').modal('show');
+            });
+
+
+            $('#btnAddSub').click(function () {
+                $("#diva").tabulator("addRow", { nm: "指定人員" });
+            });
+
+            $("#btnSave").click(function () {
+
+                var o = $('#diva').tabulator('getRows');
+                var list = [];
+                for (var i = 0; i < o.length; i++) {
+                    list.push(o[i].row.data);
+                }
+
+                $.blockUI({ baseZ: 2000, message: '<h2>資料儲存中...</h2>' });
+                var fData = new FormData(document.getElementById("fmInput"));
+                fData.append("userList", JSON.stringify(list));
+                $.ajax({
+                    url: "@Url.Action("Create","Prj")",
+                    type: "POST",
+                    data: fData,
+                    processData: false,  // tell jQuery not to process the data
+                    contentType: false,   // tell jQuery not to set contentType
+                    success: function (r)
+                    {
+                        if (r.success)
+                        {
+                            $.unblockUI();
+                            $('#winInput').modal('hide');
+                            toastr["info"]("已儲存!");
+                            loadData();
+                        }
+                        else
+                        {
+                            $.unblockUI();
+                            alert(r.message);
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        $.unblockUI();
+                        alert(errorThrown);
+                    }
+                });
+
+            });
+
+            loadData();
+
+            $.unblockUI();
+        });
+
+    </script>
+}

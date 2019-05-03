@@ -52,6 +52,21 @@ namespace eform.Controllers
             }
         }
 
+        public ActionResult onWorking()
+        {
+            
+
+            return View();
+        }
+
+
+        public ActionResult AccessDenied()
+        {
+            ViewBag.PreviousUrl = System.Web.HttpContext.Current.Request.UrlReferrer;
+
+            return View();
+        }
+
         //
         // GET: /Account/Login
         [AllowAnonymous]
@@ -151,7 +166,7 @@ namespace eform.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.workNo};
+                var user = new ApplicationUser { UserName = model.workNo,workNo=model.workNo};
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
@@ -388,7 +403,7 @@ namespace eform.Controllers
         //
         // POST: /Account/LogOff
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        //[ValidateAntiForgeryToken]
         public ActionResult LogOff()
         {
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);

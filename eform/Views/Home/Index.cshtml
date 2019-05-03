@@ -1,9 +1,295 @@
-﻿
+﻿@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq
+@using eform.Models;
 @{
-    ViewBag.Title = "Index";
+    //ViewBag.Title = "Index";
+    IEnumerable<news> newslist = ViewBag.newslist;
 }
 
+<link href="~/Content/fullcalendar.min.css" rel="stylesheet" />
+
+<style>
+    th {
+        font-family: 微軟正黑體,新細明體;
+        font-size: 15px;
+    }
+
+    /*https://stackoverflow.com/questions/13597136/fullcalender-event-title-only-allowed-one-line*/
+
+    .fc-event-time, .fc-event-title {
+        padding: 0 1px;
+        white-space: nowrap;
+    }
+
+    .fc-title {
+        white-space: normal;
+    }
+</style>
+<script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+<script src="~/Scripts/jquery.blockUI.js"></script>
+<script type="text/javascript">
+    $.blockUI({ message: '<h2>資料讀取中...</h2>' });
+</script>
+
+
+@if (User.Identity.IsAuthenticated)
+{
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box col-xs-10 col-md-10" style="padding_:2px;padding-top:10px;display:none_;">
+                <div class="nav-tabs-custom">
+                    <ul class="nav nav-tabs">
+                        <li class="active">
+                            <a href="#tab2" class="" data-toggle="tab" aria-expanded="true">
+                                行事曆
+                            </a>
+                        </li>
+                        <li class="">
+                            <a href="#tab1" data-toggle="tab" aria-expanded="false">
+                                公告事項
+                            </a>
+                        </li>
+
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane" id="tab1">
+
+                            <div class="box-header">
+                                <table class="table table-hover table-bordered table-striped">
+                                    <tr>
+                                        <th style="width:110px;">
+                                            公告日期
+                                        </th>
+                                        <th style="width:120px;">
+                                            公告類別
+                                        </th>
+                                        <th>
+                                            標題
+                                        </th>
+                                        <th>
+                                            附檔
+                                        </th>
+                                    </tr>
+                                    <tbody>
+
+                                        @foreach (var item in newslist)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @{
+                                                        string ndate = Convert.ToDateTime(item.ndate).ToString("yyyy-MM-dd");
+                                                    }
+
+                                                    @ndate
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.newsType)
+                                                </td>
+                                                <td>
+                                                    <a href="@Url.Action("NewsDetail", "Home", new { id = item.id })" class="text text-info">
+                                                        @Html.DisplayFor(modelItem => item.title)
+                                                    </a>
+                                                </td>
+                                                <td style="font-size:12px;">
+                                                    @if (!string.IsNullOrEmpty(item.fileUrl))
+                                                    {
+                                                        JArray list = new JArray();
+                                                        if (!string.IsNullOrEmpty(item.fileUrl))
+                                                        {
+                                                            try
+                                                            {
+                                                                list = JArray.Parse(item.fileUrl);
+                                                            }
+                                                            catch (Exception ex)
+                                                            {
+                                                            }
+                                                        }
+
+                                                        <ul>
+
+                                                            @foreach (JObject jobj in list)
+                                                            {
+                                                                string fileName = jobj["fileName"].ToString();
+                                                                string fileUrl = jobj["fileUrl"].ToString();
+
+                                                                <li style="padding-bottom:3px;">
+                                                                    <a href="@Url.Content("/upload/" + HttpUtility.UrlDecode(fileUrl))" target="_blank">
+                                                                        @fileName
+                                                                    </a>
+                                                                </li>
+                                                            }
+
+                                                        </ul>
+                                                    }
+                                                </td>
+                                            </tr>
+                                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+
+                        <div id="tab2" class="tab-pane active">
+
+                            <div class="box-header col-xs-12 col-md-12" style="margin-top:10px;">
+                                @using (Html.BeginForm("Index", "Home", FormMethod.Get))
+                                {
+                                    <div class="form-group">
+                                        @*<label class="control-label col-md-2">選擇專案:</label>*@
+                                        <div class="col-md-3">
+                                            @Html.DropDownList("selForm", (IEnumerable<SelectListItem>)ViewBag.myForms, new { @class = "form-control" })
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">查詢</button>
+                                    </div>
+                                }
+                            </div>
+                            <div class="box col-xs-12 col-md-12" style="padding-top:10px;">
+                                <div id='calendar'></div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+
+            </div>
+        </div>
+    </div>
+                                                        }
 
 @section scripts {
+    <script src="~/Scripts/fullcalendar.min.js"></script>
+    <script src="~/Scripts/locale-all.js"></script>
     <!-- We would add slider scripts here -->
+    <script type="text/javascript">
+         $(function () {
+                @if (TempData["changepwdsucess"] != null && TempData["changepwdsucess"].ToString() == "Y")
+                {
+                    @:toastr["info"]("個人密碼修改完成!");
+                }
+
+                var eventDayOffs = { events: [] };
+                try {
+                    eventDayOffs = { events: @Html.Raw((ViewBag.dayOffList))};
+                }
+                catch (e)
+                {
+                    eventDayOffs = { events: [] };
+                }
+                var eventPublicOuts = { events: [] };
+                try {
+                    eventPublicOuts = { events:@Html.Raw((ViewBag.publicOutList))};
+                } catch (e) {
+                    eventPublicOuts = { events: [] };
+                }
+
+                var eventGustForms = { events: [] };
+
+                try {
+                   eventGustForms = { events:@Html.Raw((ViewBag.guestFormList))};
+                } catch (e) {
+                    eventGustForms = { events: [] };
+                }
+
+                var eventScheduleList = { events: [] };
+
+                try {
+                   eventScheduleList = { events:@Html.Raw((ViewBag.eventScheduleList))};
+                } catch (e) {
+                   eventScheduleList = { events: [] };
+                }
+
+                $('#calendar').fullCalendar({
+                     defaultView: 'month',
+                     locale:'zh-tw',
+                     defaultDate: $('#calendar').fullCalendar('today'),
+                     editable: true,
+                     navLinks: false,
+                     selectable: true,
+                     eventLimit: true, // allow "more" link when too many events
+                     displayEventTime: false,
+                     eventOrder: "title",
+                     height: 'auto',
+                     header: {
+                         left: 'prev,next today',
+                         center: 'title',
+                         right: ''
+                         //right: 'agendaDay,agendaTwoDay,agendaWeek,month'
+                     },
+                     //buttonText: {
+                     //    today:'今天'
+                     //},
+                     titleFormat:"YYYY-MMM",
+                     views: {
+                         month: {
+                             eventLimit: 7
+                         },
+                         agendaTwoDay: {
+                             type: 'agenda',
+                             duration: { days: 2 },
+                             // views that are more than a day will NOT do this behavior by default
+                             // so, we need to explicitly enable it
+                             groupByResource: true
+                             //// uncomment this line to group by day FIRST with resources underneath
+                             //groupByDateAndResource: true
+                         }
+                     },
+
+                     //// uncomment this line to hide the all-day slot
+                     //allDaySlot: false,
+
+                     //resources: [
+                     //    { id: 'a', title: 'Room A' },
+                     //    { id: 'b', title: 'Room B', eventColor: 'green' },
+                     //    { id: 'c', title: 'Room C', eventColor: 'orange' },
+                     //    { id: 'd', title: 'Room D', eventColor: 'red' }
+                     //],
+                     events2: [
+                         { id: '1', resourceId: 'a', start: '2018-11-06', end: '2018-11-08', title: 'event 1',formId: "a0" },
+                         { id: '2', resourceId: 'a', start: '2018-11-07T09:00:00', end: '2018-11-07T14:00:00', title: 'event 2', formId:"a1" },
+                         { id: '3', resourceId: 'b', start: '2018-11-07T12:00:00', end: '2018-11-08T06:00:00', title: 'event 3', formId:"a2" },
+                         { id: '4', resourceId: 'c', start: '2018-11-07T07:30:00', end: '2018-11-07T09:30:00', title: 'event 4', formId:"a3" },
+                         { id: '5', resourceId: 'd', start: '2018-11-07T10:00:00', end: '2018-11-07T15:00:00', title: 'event 5', formId:"a4" }
+                     ],
+                     //events: eventData,
+
+                     eventSources: [
+                         eventDayOffs, eventPublicOuts, eventGustForms, eventScheduleList
+                     ],
+
+                     eventClick: function (event) {
+                         // opens events in a popup window
+                         //window.open(event.url, 'gcalevent', 'width=700,height=600');
+                         //alert('開發討論中');
+                         //alert(event.formId);
+
+                         if (event.url) {
+                             window.open(event.url, "_blank");
+                             return false;
+                         }
+                         //return true;
+                     },
+                     select: function (start, end, jsEvent, view, resource) {
+                         console.log(
+                             'select',
+                             start.format(),
+                             end.format(),
+                             resource ? resource.id : '(no resource)'
+                         );
+                     },
+                     dayClick: function (date, jsEvent, view, resource) {
+                         console.log(
+                             'dayClick',
+                             date.format(),
+                             resource ? resource.id : '(no resource)'
+                         );
+                     }
+               });
+
+               $.unblockUI();
+
+         })
+    </script>
 }

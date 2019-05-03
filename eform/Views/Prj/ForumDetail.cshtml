@@ -1,0 +1,229 @@
+﻿@using eform.Models
+@model eform.Models.vwForumDetail
+@{
+    ViewBag.Title = "ForumDetail";
+    Layout = "~/Views/Shared/_PrjLayout.cshtml";
+}
+
+<div class="row">
+
+    <div class="box box-primary">
+        <div class="box-header">
+            <div class="box-title text-left">
+                <a href="@Url.Action("portal","Prj",new {code=ViewBag.code,mobile=ViewBag.mobile})" class="btn btn-primary">
+                    <i class="fa fa-undo"></i>
+                    返回專案討論區
+                    @if (ViewBag.mobile)
+                    {
+                        @:-Mobile
+                        }
+                </a>
+                <a href="@Url.Action("ReplyForumItem","Prj",new {Model.Mitem.id,Model.Mitem.prjId,code=Model.code,mobile=ViewBag.mobile})" class="btn btn-info">回覆</a>
+            </div>
+        </div>
+        <div class="box-body" style="overflow:scroll;width:100%;margin:0;padding:0;">
+            <table class="table table-bordered table-responsive">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>原文主題</th>
+                        @if (!ViewBag.mobile)
+                        {
+                            <th>正本/副本</th>
+                        }
+                        <th>作者</th>
+                        <th>日期時間</th>
+                        <th>回文標題</th>
+                        <th>內容</th>
+                        <th>順序</th>
+                        <th>附件</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td></td>
+                        <td>
+                            @Model.Mitem.subject
+                        </td>
+                        @if (!ViewBag.mobile)
+                        {
+                            <td>
+                                正:@Model.Mitem.othersA <br />
+                                副:@Model.Mitem.othersB
+                            </td>
+                        }
+                        <td>
+                            @Model.Mitem.creator.UserCName
+                        </td>
+                        <td>
+                            @Model.Mitem.billDate.ToString("yyyy-MM-dd HH:mm:ss")
+                        </td>
+                        <td></td>
+                        <td>
+                            <p style="white-space: pre-line;background-color:white;border-bottom:rgb(210, 214, 222) 1px solid;padding:0px;vertical-align:top;margin-top:-20px;overflow-auto;">
+                                @Model.Mitem.smemo
+                            </p>
+                        </td>
+                        <td>
+                            樓主
+                        </td>
+                        <td>
+                            <ul>
+                                @if (!String.IsNullOrEmpty(Model.Mitem.sfile))
+                                {
+                                    <li>
+                                        <a href="@Url.Content("/upload/"+HttpUtility.UrlDecode(@Model.Mitem.sfile))" target="_blank">
+                                            @Model.Mitem.sfile.Split('\\')[2]
+                                        </a>
+                                    </li>
+                                }
+                                @if (!String.IsNullOrEmpty(Model.Mitem.sfile2))
+                                {
+                                    <li>
+                                        <a href="@Url.Content("/upload/"+HttpUtility.UrlDecode(@Model.Mitem.sfile2))" target="_blank">
+                                            @Model.Mitem.sfile2.Split('\\')[2]
+                                        </a>
+                                    </li>
+                                }
+                                @if (!String.IsNullOrEmpty(Model.Mitem.sfile3))
+                                {
+                                    <li>
+                                        <a href="@Url.Content("/upload/"+HttpUtility.UrlDecode(@Model.Mitem.sfile3))" target="_blank">
+                                            @Model.Mitem.sfile3.Split('\\')[2]
+                                        </a>
+                                    </li>
+                                }
+                                @if (!String.IsNullOrEmpty(Model.Mitem.sfile4))
+                                {
+                                    <li>
+                                        <a href="@Url.Content("/upload/"+HttpUtility.UrlDecode(@Model.Mitem.sfile4))" target="_blank">
+                                            @Model.Mitem.sfile4.Split('\\')[2]
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        </td>
+
+                    </tr>
+
+
+                    @foreach (vwForumItem fitem in Model.SubItemList)
+                    {
+                        bool isMyMsg = false;
+                        isMyMsg = isMyMsg || User.Identity.Name == fitem.othersA1;
+                        isMyMsg = isMyMsg || User.Identity.Name == fitem.othersA2;
+                        isMyMsg = isMyMsg || User.Identity.Name == fitem.othersA3;
+                        isMyMsg = isMyMsg || User.Identity.Name == fitem.othersA4;
+                        isMyMsg = isMyMsg || User.Identity.Name == fitem.othersA5;
+                        isMyMsg = isMyMsg || User.Identity.Name == fitem.othersA6;
+                        isMyMsg = isMyMsg || User.Identity.Name == fitem.othersA7;
+                        isMyMsg = isMyMsg || User.Identity.Name == fitem.othersA8;
+                        isMyMsg = isMyMsg || User.Identity.Name == fitem.othersA9;
+                        isMyMsg = isMyMsg || User.Identity.Name == fitem.othersA10;
+                        isMyMsg = isMyMsg || User.Identity.Name == fitem.creator.workNo;
+
+                        if (fitem.isPrivate && !isMyMsg)
+                        {
+                            <tr>
+                                <td>
+                                    @if (Model.prjCodeObj.owner == User.Identity.Name)
+                                    {
+                                        <a href="@Url.Action("DeleteForumItem", "Prj", new { fitem.id, code = Model.code, page = "ForumDetail", pid = Model.Mitem.id,mobile=ViewBag.mobile })" class="btn btn-danger" onclick="return confirm('確定刪除?');">刪除</a>
+                                    }
+                                </td>
+                                <td>
+                                    @Model.Mitem.subject
+                                </td>
+                                <td colspan="7">
+                                    ***其他人私訊***
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr>
+                                <td>
+                                    @if (Model.prjCodeObj.owner == User.Identity.Name || fitem.workNo == User.Identity.Name)
+                                    {
+                                        <a href="@Url.Action("DeleteForumItem", "Prj", new { fitem.id, code = Model.code, page = "ForumDetail", pid = Model.Mitem.id,mobile=ViewBag.mobile })" class="btn btn-danger" onclick="return confirm('確定刪除?');">刪除</a>
+                                            <a href="@Url.Action("UpdateForumItem", "Prj", new { fitem.id,prjId=Model.prjCodeObj.id,code = Model.code, page = "ForumDetail", pid = Model.Mitem.id,mobile=ViewBag.mobile })" class="btn btn-warning">編輯</a>
+                                    }
+                                </td>
+
+                                <td>
+                                    @Model.Mitem.subject
+                                </td>
+                                <td>
+                                    @if (fitem.isPrivate)
+                                    {
+                                        @:私訊:@fitem.othersA
+                                        }
+                                    else
+                                    {
+                                        @:正:@fitem.othersA <br />
+                                            @:副:@fitem.othersB
+                                        }
+                                </td>
+                                <td>
+                                    @fitem.creator.UserCName
+                                </td>
+                                <td>
+                                    @fitem.billDate.ToString("yyyy-MM-dd HH:mm:ss")
+                                </td>
+                                <td>
+                                    @fitem.subTitle
+                                </td>
+                                <td>
+                                    <p style="white-space: pre-line;background-color:white;border-bottom:rgb(210, 214, 222) 1px solid;padding:0px;vertical-align:top;margin-top:-20px;overflow-auto;">
+                                        @fitem.smemo
+                                    </p>
+                                </td>
+                                <td>
+                                    @fitem.floor
+                                </td>
+                                <td>
+                                    <ul>
+                                        @if (!String.IsNullOrEmpty(fitem.sfile))
+                                        {
+                                            <li>
+                                                <a href="@Url.Content("/upload/"+HttpUtility.UrlDecode(@fitem.sfile))" target="_blank">
+                                                    @fitem.sfile.Split('\\')[2]
+                                                </a>
+                                            </li>
+                                        }
+                                        @if (!String.IsNullOrEmpty(fitem.sfile2))
+                                        {
+                                            <li>
+                                                <a href="@Url.Content("/upload/"+HttpUtility.UrlDecode(@fitem.sfile2))" target="_blank">
+                                                    @fitem.sfile2.Split('\\')[2]
+                                                </a>
+                                            </li>
+                                        }
+                                        @if (!String.IsNullOrEmpty(fitem.sfile3))
+                                        {
+                                            <li>
+                                                <a href="@Url.Content("/upload/"+HttpUtility.UrlDecode(@fitem.sfile3))" target="_blank">
+                                                    @fitem.sfile3.Split('\\')[2]
+                                                </a>
+                                            </li>
+                                        }
+                                        @if (!String.IsNullOrEmpty(fitem.sfile4))
+                                        {
+                                            <li>
+                                                <a href="@Url.Content("/upload/"+HttpUtility.UrlDecode(@fitem.sfile4))" target="_blank">
+                                                    @fitem.sfile4.Split('\\')[2]
+                                                </a>
+                                            </li>
+                                        }
+                                    </ul>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+</div>

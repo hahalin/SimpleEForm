@@ -1,0 +1,131 @@
+﻿@model eform.Models.vwReqInHouse
+@using Newtonsoft.Json;
+@using eform.Models;
+@using System.Data;
+@{
+    ViewBag.Title = "廠務派工及總務需求申請單(P020A1)";
+}
+
+<script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+<script src="~/Scripts/jquery.blockUI.js"></script>
+<script type="text/javascript">
+    $.blockUI({ message: '<h2>資料讀取中...</h2>' });
+</script>
+
+
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap-datetimepicker.min.css" />
+<div class="row">
+    <div class="col-md-10">
+        <div class="box box-primary">
+            <div class="box-header text-center">
+                <div class="box-title ">
+                    <h3><span class="label label-default">@Model.user.Company</span></h3>
+                    <h3><span class="label label-info">@ViewBag.Title</span></h3>
+                </div>
+            </div>
+            <div class="box-body">
+                @using (Html.BeginForm("reqInHouse", "Form", FormMethod.Post, new { id = "fmMain" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-horizontal col-md-10">
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger", style = "font-size:15px;font-weight:bold;" })
+
+                        <div class="form-group">
+                            <label class="control-label col-md-2">申請人</label>
+                            <div class="col-md-4">
+                                <div class="form-control">@Model.user.workNo-@Model.user.UserCName</div>
+                                <input type="hidden" name="userId" value="@Model.user.Id" />
+                            </div>
+                            @Html.LabelFor(model => model.billDate, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                @Html.EditorFor(model => model.billDate, new { htmlAttributes = new { @class = "form-control", type = "date", @readonly = "readonly" } })
+                                @Html.ValidationMessageFor(model => model.billDate, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.contact, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                @Html.DropDownListFor(model => model.contact, new List<SelectListItem>(), new { htmlAttributes = new { @class = "form-control select2-input select2" }, style = "max-width:800px;width:100%;" })
+                                @Html.ValidationMessageFor(model => model.contact, "", new { @class = "text-danger" })
+                            </div>
+                            @Html.LabelFor(model => model.depNo, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                @Html.DropDownListFor(model => model.depNo, new List<SelectListItem>(), new { htmlAttributes = new { @class = "form-control select2-input select2" }, style = "max-width:800px;width:100%;" })
+                                @Html.ValidationMessageFor(model => model.depNo, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.reqMemo, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10" style="margin-bottom:10px;">
+                                @Html.TextAreaFor(model => model.reqMemo, htmlAttributes: new { @class = "form-control", rows = "3", style = "width:630px;" })
+                                @Html.ValidationMessageFor(model => model.reqMemo, "", new { @class = "text-danger" })
+                            </div>
+                            
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.reqLimit, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10" style="margin-bottom:10px;">
+                                @Html.TextAreaFor(model => model.reqLimit, htmlAttributes: new { @class = "form-control", rows = "3", style = "width:630px;" })
+                                @Html.ValidationMessageFor(model => model.reqLimit, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-10 text-center">
+                                <input type="submit" value="送出" class="btn-lg btn-primary" onclick="return doSubmit();" />
+                            </div>
+                        </div>
+                    </div>
+                }
+
+            </div>
+            <div class="box-footer">
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript" src="~/Scripts/moment-with-locales.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap-datetimepicker.min.js"></script>
+    <link href="~/Scripts/tabulator-master/dist/css/tabulator.min.css" rel="stylesheet" />
+    <script src="~/Scripts/tabulator-master/dist/js/tabulator.min.js"></script>
+    <script type="text/javascript">
+        function doSubmit() {
+            //alert('系統開發中');
+            //return false;
+            $.blockUI({ message: '<h2>表單儲存中...</h2>' });
+            return true;
+        }
+        function formatRepoSelection(repo) {
+            return repo.id + "-" + repo.text;
+        }
+        $(function () {
+            $('textarea').css('max-width', '700px');
+            if ($($('.validation-summary-errors')[0]).text() == "") {
+                $('#billDate').val(getLocalDateStr());
+            }
+            $("#contact").select2({
+                data: @Html.Raw((ViewBag.userList)),
+                placeholder: '選擇聯繫窗口',
+                templateSelection: formatRepoSelection
+            });
+
+            $("#depNo").select2({
+                data: @Html.Raw((ViewBag.depList)),
+                placeholder: '選擇處理單位',
+                templateSelection: formatRepoSelection
+            });
+
+
+            $.unblockUI();
+
+        });
+    </script>
+}

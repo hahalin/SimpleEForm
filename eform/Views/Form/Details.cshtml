@@ -1,0 +1,110 @@
+﻿@model IEnumerable<eform.Models.vwFlowSub>
+@using eform.Models
+@{
+    ViewBag.Title = "";
+    //vwReqOverTime subModel = (vwReqOverTime)ViewBag.SubModel;
+    FlowMain flowMain = (FlowMain)ViewBag.flowMain;
+    vwEmployee employee = (vwEmployee)ViewBag.Employee;
+}
+
+<div class="row">
+    <div class="col-md-10">
+        <div class="box box-primary">
+            <div class="box-header text-center">
+                <div class="box-title">
+                    <h3><span class="label label-default">@employee.Company</span></h3>
+                    <h3><span class="label label-info">@flowMain.flowName-明細</span></h3>
+                </div>
+            </div>
+            @if (flowMain.defId == "OverTime")
+            {
+                @Html.Partial("Form/_OverTimeForm", (vwReqOverTime)ViewBag.SubModel)
+            }
+            @if (flowMain.defId == "RealOverTime")
+            {
+                @Html.Partial("Form/_RealOverTimeForm", (vwRealOverTime)ViewBag.SubModel)
+            }
+            @if (flowMain.defId == "DayOff")
+            {
+                @Html.Partial("Form/_DayOffForm", (vwDayOffForm)ViewBag.SubModel)
+            }
+            @if (flowMain.defId == "PublicOut")
+            {
+                @Html.Partial("Form/_PublicOutForm", (vwPublicOut)ViewBag.SubModel)
+            }
+            @if (flowMain.defId == "GuestForm")
+            {
+                @Html.Partial("Form/_GuestForm", (vwGuestForm)ViewBag.SubModel)
+            }
+            @if (flowMain.defId == "ReqInHouse")
+            {
+                @Html.Partial("Form/_ReqInHouse", (vwReqInHouse)ViewBag.SubModel)
+            }
+            @if (flowMain.defId == "EventSchedule")
+            {
+                @Html.Partial("Form/_EventSchedule", (vwEventSchedule)ViewBag.SubModel)
+            }
+        </div>
+    </div>
+    @if (flowMain.defId != "EventSchedule")
+    {
+        <div class="col-md-10">
+            <div class="box box-info">
+                <div class="box-header">
+                    <h3><span class="label label-success">簽核清單</span></h3>
+                </div>
+                <div class="box-body">
+                    <table class="table table-bordered table-hover table-striped">
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(model => model.seq)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.signDate)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.signer)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.signType)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.signResult)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.comment)
+                            </th>
+                        </tr>
+
+                        @foreach (var item in Model)
+                    {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.seq)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.signDate)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.signer)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.signType)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.signResult)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.comment)
+                        </td>
+                    </tr>
+                    }
+                    </table>
+                </div>
+                <div class="box-footer">
+                    <a href="@Url.Action("Index","Form")" class="btn btn-primary">返回表單清單</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

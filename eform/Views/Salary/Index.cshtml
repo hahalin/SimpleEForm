@@ -1,0 +1,161 @@
+﻿@using System.Data
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq
+@model IEnumerable<eform.Models.salary>
+@{
+    DataTable dtData = null;
+    List<KeyValuePair<string, int>> fdList;
+
+    if (ViewBag.data != null)
+    {
+        dtData = (DataTable)ViewBag.data;
+    }
+    string sYm = "";
+
+    if (ViewBag.ym != null)
+    {
+        sYm = ViewBag.ym;
+    }
+    else
+    {
+        sYm = DateTime.Now.ToString("yyyy-MM");
+    }
+
+    int idx = 0;
+    fdList = (List<KeyValuePair<string, int>>)ViewBag.fdList;
+    string action = Convert.ToString(ViewBag.Action);
+}
+
+
+<h3>@ViewBag.Title</h3>
+<div class="row" id="div1">
+    @using (Html.BeginForm(action, "Salary", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-horizontal">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div class="form-group">
+                <label class="control-label col-md-1">年-月</label>
+                <div class="col-md-3" style="float:left;position:relative;width:300px;">
+                    <input type="month" name="ym" class="form-control" style="width:150px;" value="@sYm" />
+                    <input type="submit" value="查詢" class="btn btn-primary" onclick="doLoading();" style="float:left;position:absolute;left:170px;top:2px;" />
+                </div>
+                
+            </div>
+        </div>
+    }
+</div>
+<div class="row" >
+    <div class="box" id="box1" style="overflow:auto;position:relative;right:10px;left:5px;bottom:10px;height:500px;">
+        <div class="box-header">
+            @*<div class="box-title">
+            </div>*@
+        </div>
+        <div class="box-body" style="overflow:auto;float:left;position:absolute;">
+            @if (dtData != null)
+            {
+                <table class="table table-responsive" id="tb1" style="font-size:12px;margin-bottom:20px;">
+                    <tr>
+                        @foreach (var fd in fdList)
+                        {
+                            if (fd.Value == 1)
+                            {
+                                <th nowrap rowspan="2" style="text-align:center;vertical-align:middle;">@dtData.Columns[idx].ColumnName</th>
+                                idx++;
+                            }
+                            else
+                            {
+                                <th nowrap colspan="@fd.Value" style="text-align:center;"> @fd.Key</th>
+                                idx += fd.Value;
+                            }
+
+                        }
+                    </tr>
+                    <tr>
+                        @{
+                            idx = 0;
+                        }
+
+                        @foreach (var fd in fdList)
+                        {
+                            if (fd.Value == 1)
+                            {
+                                idx++;
+                            }
+                            else
+                            {
+                                for (int itmp=0;itmp<fd.Value;itmp++)
+                                {
+                                    if (idx<dtData.Columns.Count)
+                                    {
+                                        string colName = dtData.Columns[idx].ColumnName;
+                                        if (colName.Split('-').Count()>1)
+                                        {
+                                            colName = colName.Split('-')[1];
+                                        }
+                                        <th nowrap style="text-align:center;">@colName</th>
+                                    }
+                                    idx++;
+                                }
+                            }
+
+                        }
+                    </tr>
+                    
+                    @*<tr>
+                        @foreach (DataColumn col in dtData.Columns)
+                        {
+                            string fd = col.ColumnName;
+                            if (fd.Split('-').Count() > 1)
+                            {
+                                fd = fd.Split('-')[1];
+                            }
+                            <th nowrap>@fd</th>
+                        }
+                    </tr>*@
+
+                    @foreach (DataRow r in dtData.Rows)
+                    {
+                        <tr>
+
+                            @foreach (DataColumn col in dtData.Columns)
+                            {
+                                <td nowrap style="text-align:center;">@r[col.ColumnName].ToString()</td>
+                            }
+                        </tr>
+                    }
+                </table>
+            }
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript" src="~/Scripts/jquery.blockUI.js"></script>
+    <script type="text/javascript">
+
+        function doLoading() {
+            $.blockUI({
+                message: '<h2>資料查詢中...</h2>'
+            });
+            return true;
+        }
+
+        $(function () {
+            $('.container').css('width', '100%');
+            //$('.box').css('overflow', 'atuo');
+            $('table th').css('border', '1px solid #525050'); $('table td').css('border', '1px solid #525050');
+            //$($('table').parent()).width = $('table').width + 150;
+            //$('#tb1').css('width', '95%');
+            //$('#tb1').css('right', '10px');
+            //$('#tb1').css('float', 'left');
+            $('#box1').height($(window).height() - 230);
+            
+            
+            
+        })
+    </script>
+}

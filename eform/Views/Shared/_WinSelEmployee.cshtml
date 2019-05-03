@@ -1,0 +1,162 @@
+﻿@model eform.Models.FlowDefSub
+
+
+<div class="modal fade" id="WinSelEmployee" role="dialog" aria-labelledby="WinSelEmployee">
+    @using (Html.BeginForm("SubmitSetupFLow", "FlowDef",FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    簽核人員設定
+                </div>
+                <div class="modal-body">
+                    <div class="form-horizontal">
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(model => model.pid)
+                        @Html.HiddenFor(model => model.id)
+
+                        <div class="form-group">
+                            <label class="control-label col-md-2">序號</label>
+                            <div class="col-md-3">
+                                @Html.EditorFor(model => model.seq, new { htmlAttributes = new { type = "number", @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.seq, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-2">工號</label>
+                            <div class="col-md-10">
+                                @Html.DropDownListFor(model => model.workNo,new List<SelectListItem>(),new { htmlAttributes = new {@class = "form-control select2-input select2"} })
+                                @*<select id="workNo" name="workNo" class="form-control select2-input select2" style="width:200px"></select>*@
+                                @Html.ValidationMessageFor(model => model.workNo, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-2">簽核類型</label>
+                            <div class="col-md-10">
+                                @Html.DropDownListFor(model => model.signType, new List<SelectListItem>(), new { htmlAttributes = new { @class = "form-control select2-input select2" } })
+                                @*<select id="signType" name="signType" class="form-control select2-input select2" style="width:200px">
+                                    <option value="1">1.會簽</option>
+                                    <option value="2">2.會簽-全部同意</option>
+                                    <option value="3">3.直接許可</option>
+                                </select>*@
+                                @Html.ValidationMessageFor(model => model.signType, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="text-center">
+                        <input type="hidden" id="h_selworkno" />
+                        <button type="submit" class="btn btn-primary" id="btnSubmitFlowDefSub"><i class="fa fa-save"></i>儲存</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-undo"></i>取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<script type="text/javascript">
+
+    function formatRepo2(repo) {
+        return "<div class='select2-result-repository clearfix'><div class='select2-result-repository__statistics'>" + repo.id + "-" + repo.text + "</div></div>";
+    }
+
+    function formatRepo(repo) {
+        if (repo.loading) {
+            return repo.text;
+        }
+
+        var markup = "<div class='select2-result-repository clearfix'>" +
+            "<div class='select2-result-repository__avatar'><img src='" + repo.owner.avatar_url + "' /></div>" +
+            "<div class='select2-result-repository__meta'>" +
+            "<div class='select2-result-repository__title'>" + repo.full_name + "</div>";
+
+        if (repo.description) {
+            markup += "<div class='select2-result-repository__description'>" + repo.description + "</div>";
+        }
+
+        markup += "<div class='select2-result-repository__statistics'>" +
+            "<div class='select2-result-repository__forks'><i class='fa fa-flash'></i> " + repo.forks_count + " Forks</div>" +
+            "<div class='select2-result-repository__stargazers'><i class='fa fa-star'></i> " + repo.stargazers_count + " Stars</div>" +
+            "<div class='select2-result-repository__watchers'><i class='fa fa-eye'></i> " + repo.watchers_count + " Watchers</div>" +
+            "</div>" +
+            "</div></div>";
+
+        return markup;
+    }
+
+    function formatRepoSelection(repo) {
+        //return repo.full_name || repo.text;
+        return repo.id + "-" + repo.text;
+    }
+
+    function select2_search($el, term) {
+        $el.select2('open');
+
+        // Get the search box within the dropdown or the selection
+        // Dropdown = single, Selection = multiple
+        var $search = $el.data('select2').dropdown.$search || $el.data('select2').selection.$search;
+        // This is undocumented and may change in the future
+
+        $search.val(term);
+        $search.trigger('keyup');
+    }
+
+    $(function () {
+
+        $("#workNo").css('width', '200px');
+        $("#signType").css('width', '200px');
+
+        $('#btnSubmitFlowDefSub').on('click', function () {
+            $('#fmAddFlowDefSub').submit();
+            //$('#WinSelEmployee').modal('hide');
+        });
+
+        var data = @Html.Raw((ViewBag.userlist));
+
+        $("#workNo").select2({
+            data: data
+            , placeholder: '選擇人員'
+            //,minimumInputLength: 1
+            , templateSelection: formatRepoSelection
+        });
+
+        var signTypeList = [
+            { "id": 0, "text": "選擇簽核類別" },
+            { "id": 1, "text": "1.會簽" },
+            { "id": 2, "text": "2.會簽-全部同意" },
+            { "id": 3, "text": "3.直接許可" }
+        ];
+
+        $("#signType").select2({
+            data: signTypeList,
+            placeholder: '選擇簽核類別'
+        });
+
+        return;
+
+        $("#edWorkNo").select2({
+            ajax: {
+                url: '@Url.Action("Search","Employee")',
+                //url:'https://api.github.com/search/repositories',
+                dataType: 'json',
+                type: 'POST',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        q: params.term, // search term
+                        page: params.page
+                    };
+                },
+                cache: true
+            },
+            placeholder: '選擇人員',
+            //escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+            minimumInputLength: 1
+            //,templateResult: formatRepo2
+            ,templateSelection: formatRepoSelection
+        });
+    });
+</script>

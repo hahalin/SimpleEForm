@@ -1,0 +1,444 @@
+﻿@model eform.Models.vwPrjCode
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_PrjLayout.cshtml";
+}
+
+<style>
+    .ui-autocomplete {
+        z-index: 2147483647 !important;
+    }
+</style>
+
+<div class="section">
+    <div class="row col-md-12">
+        <div class="box">
+            <div class="box-title text-center">
+                <h3><span class="" style="font-weight:bold;">群翌能源股份有限公司</span></h3>
+                <h3><span class="label label-info">專案代碼管理表(P022A1)</span></h3>
+            </div>
+            <div class="box-header">
+                <button id="btn-add" class="btn btn-primary"><span class="fa fa-plus"></span>新增專案代碼/工時代碼</button>
+            </div>
+            <div class="box-body">
+                <table id="tbPrj" class="table table-bordered table-hover table-responsive table-info">
+                    <thead>
+                        <tr>
+                            <th>
+                            </th>
+                            <th>專案編號</th>
+                            <th>專案名稱</th>
+                            <th class="hidden-xs">專案經理</th>
+                            <th class="hidden-xs">專案狀態</th>
+                            <th class="hidden-xs">建立日期</th>
+                            <th class="hidden-xs">建立人</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="winInput" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="border-bottom-width:0px;">
+                    <h4 class="modal-title text-center" id="winTitle">新增專案代碼/工時代碼</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="col-md-12" style="background-color:white;">
+                        <ul class="nav nav-tabs" role="tablist" id="myTabs">
+                            <li role="presentation" class="active"><a href="#tab1" aria-controls="tab1" role="tab" data-toggle="tab">專案代碼</a></li>
+                            <li role="presentation"><a href="#tab2" aria-controls="tab2" role="tab" data-toggle="tab">其他專案經理</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div role="tabpanel" class="tab-pane active" id="tab1">
+                                <form id="fmInput" name="fmInput" class="form-horizontal" method="post" enctype="multipart/form-data" style="margin-top:10px;">
+                                    <div class="form-group">
+                                        <label class="control-label col-md-2">專案編號</label>
+                                        <div class="col-md-4">
+                                            <input type="hidden" id="hid" name="hid" value="@Model.id" />
+                                            <input type="hidden" id="hPMList" name="hPMList" value="@Model.hPMList" />
+                                            <input type="text" id="code" name="code" class="form-control" autocomplete="off" />
+                                        </div>
+                                        <label class="control-label col-md-2">專案名稱</label>
+                                        <div class="col-md-4">
+                                            <input type="text" id="nm" name="nm" class="form-control" autocomplete="off" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.Label("專案經理", htmlAttributes: new { @class = "control-label col-md-2" })
+                                        <div class="col-md-4">
+                                            <input type="hidden" value="@User.Identity.Name" id="hUserId" name="hUserId" />
+                                            @Html.DropDownList("owner", new List<SelectListItem>(), new { htmlAttributes = new { @class = "form-control select2-input select2" }, style = "max-width:800px;width:100%;" })
+                                        </div>
+                                        <label class="control-label col-md-2">專案狀態</label>
+                                        <div class="col-md-4">
+                                            @Html.DropDownList("status", (IEnumerable<SelectListItem>)ViewBag.statusList, new { @class = "form-control" })
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.Label("建立人	", htmlAttributes: new { @class = "control-label col-md-2" })
+                                        <div class="col-md-4">
+                                            <input type="text" id="creator" name="creator" class="form-control" value="@Model.creatorStr" readonly />
+                                        </div>
+                                        @Html.Label("建立日期", htmlAttributes: new { @class = "control-label col-md-2" })
+                                        <div class="col-md-4">
+                                            <input type="text" id="createDate" name="createDate" class="form-control" value="@Model.createDateStr" readonly />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.Label("備註1", htmlAttributes: new { @class = "control-label col-md-2" })
+                                        <div class="col-md-4">
+                                            <input type="text" id="mmo1" name="mmo1" class="form-control" />
+                                        </div>
+                                        @Html.Label("備註2", htmlAttributes: new { @class = "control-label col-md-2" })
+                                        <div class="col-md-4">
+                                            <input type="text" id="mmo2" name="mmo2" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.Label("備註3", htmlAttributes: new { @class = "control-label col-md-2" })
+                                        <div class="col-md-4">
+                                            <input type="text" id="mmo3" name="mmo3" class="form-control" />
+                                        </div>
+                                        @Html.Label("備註4", htmlAttributes: new { @class = "control-label col-md-2" })
+                                        <div class="col-md-4">
+                                            <input type="text" id="mmo4" name="mmo4" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.Label("備註5", htmlAttributes: new { @class = "control-label col-md-2" })
+                                        <div class="col-md-4">
+                                            <input type="text" id="mmo5" name="mmo5" class="form-control" />
+                                        </div>
+                                        @Html.Label("備註6", htmlAttributes: new { @class = "control-label col-md-2" })
+                                        <div class="col-md-4">
+                                            <input type="text" id="mmo6" name="mmo6" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.Label("備註7", htmlAttributes: new { @class = "control-label col-md-2" })
+                                        <div class="col-md-4">
+                                            <input type="text" id="mmo7" name="mmo7" class="form-control" />
+                                        </div>
+                                        @Html.Label("備註7", htmlAttributes: new { @class = "control-label col-md-2" })
+                                        <div class="col-md-4">
+                                            <input type="text" id="mmo8" name="mmo8" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.Label("備註9", htmlAttributes: new { @class = "control-label col-md-2" })
+                                        <div class="col-md-4">
+                                            <input type="text" id="mmo9" name="mmo9" class="form-control" />
+                                        </div>
+                                        @Html.Label("備註10", htmlAttributes: new { @class = "control-label col-md-2" })
+                                        <div class="col-md-4">
+                                            <input type="text" id="mmo10" name="mmo10" class="form-control" />
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div id="tab2" class="tab-pane">
+                                <button id="btnAddSub" class="btn btn-default"><span class="fa fa-plus"></span>新增</button>
+                                <button id="btnRemoveSub" class="btn btn-danger"><span class="fa fa-minus"></span>刪除</button>
+                                <div id="diva">
+                                    <table id="tbPMList" class="table table-bordered table-hover table-responsive table-info" style="">
+                                        <thead>
+                                            <tr>
+                                                <th style="width:30px;">
+                                                </th>
+                                                <th>指定人員</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="text-center col-md-12" style="margin-top:10px;">
+                            <button id="btnSave" type="button" class="btn btn-primary">儲存</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        </div>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+    </div>
+</div>
+<table id="tmp1" style="display:none;">
+    <tr>
+        <td style="text-align:center;">
+            <input type="checkbox" class="chk" style="width:20px;padding:0;margin:0 auto;" />
+            <input type="hidden" class="itemId" />
+        </td>
+        <td style="text-align:left;padding-left:0;padding-right:0;">
+            <select class="form-control select2 pm" style="width:275px;" />
+        </td>
+    </tr>
+</table>
+@section Scripts
+{
+    <script type="text/javascript">
+        var iCnt = 1;
+        $.blockUI({ message: '<h2>loading...</h2>' });
+        var empList = [];
+
+        var data = @Html.Raw((ViewBag.userlist));
+
+        function formatRepoSelection(repo) {
+            return repo.id + "-" + repo.text;
+        }
+
+        $("#owner").select2({
+            data: data,
+            placeholder: ''
+            , templateSelection: formatRepoSelection
+        });
+
+        var autocompEditor = function (cell, onRendered, success, cancel) {
+            var input = $("<input type='text'/>");
+            input.autocomplete({
+                source: empList
+            });
+
+            input.css({
+                "padding": "4px",
+                "width": "100%",
+                "box-sizing": "border-box",
+            }).val(cell.getValue());
+
+            onRendered(function () {
+                input.focus();
+                input.css("height", "100%");
+            });
+
+            input.on("change blur", function (e) {
+                if (input.val() != cell.getValue()) {
+                    success(input.val());
+                } else {
+                    cancel();
+                }
+            });
+
+            input.on("keydown", function (e) {
+                if (e.keyCode == 13) {
+                    //success(input.val());
+                }
+
+                if (e.keyCode == 27) {
+                    cancel();
+                }
+            });
+            return input;
+        };
+
+        var editPrjCode = function ()
+        {
+            var prjCodeId = $(event.target).attr('prjCodeId');
+            $.blockUI({ message: '<h2>資料讀取中...</h2>' });
+            var param = { id: prjCodeId};
+
+            $.ajax({
+                dataType: 'json',
+                data:param,
+                url: "@Url.Action("prjCodeDetail")",
+                context: this,
+                async: true,
+                error: function (jqXHR, textStatus, errorThrown) {
+                    $.unblockUI();
+                    console.log(errorThrown);
+                },
+                success: function (r) {
+                    var prjCode = r.prjCode;
+                    document.getElementById("fmInput").reset();
+
+                    $('#hid').val(prjCode.id);
+                    $('#code').val(prjCode.code);
+                    $('#nm').val(prjCode.nm);
+                    $('#owner').val(prjCode.owner).trigger('change');
+                    $('#creator').val(prjCode.creatorStr);
+                    $('#createDate').val(prjCode.createDateStr);
+                    $('#status').val(prjCode.status);
+                    $('#mmo1').val(prjCode.mmo1);
+                    $('#mmo2').val(prjCode.mmo2);
+                    $('#mmo3').val(prjCode.mmo3);
+                    $('#mmo4').val(prjCode.mmo4);
+                    $('#mmo5').val(prjCode.mmo5);
+                    $('#mmo6').val(prjCode.mmo6);
+                    $('#mmo7').val(prjCode.mmo7);
+                    $('#mmo8').val(prjCode.mmo8);
+                    $('#mmo9').val(prjCode.mmo9);
+                    $('#mmo10').val(prjCode.mmo10);
+
+                    $('#hPMList').val(prjCode.hPMList);
+
+                    $('#winTitle').text('編輯專案代碼/工時代碼');
+
+                    loadRow();
+                    $('#myTabs a[href="#tab1"]').tab('show');
+
+                    $('#winInput').modal('show');
+
+                    $.unblockUI();
+
+                }
+            });
+        }
+
+        var loadData = function () {
+            $.blockUI({ message: '<h2>loading...</h2>' });
+            $.ajax({
+                dataType: 'json',
+                url: "@Url.Action("prjCodeList")",
+                context: this,
+                async:false,
+                error: function (jqXHR, textStatus, errorThrown) {
+                    $.unblockUI();
+                    console.log(errorThrown);
+                },
+                success: function (r) {
+                    $('#tbPrj > tbody').empty();
+                    var obj = JSON.parse(r);
+                    obj.data.forEach(function (obj) {
+                        var r = "";
+                        r += "<tr>";
+                        r += "<td><button type='button' class='btn btn-info' prjCodeId='" + obj.id + "' onclick='editPrjCode();'>編輯</button></td>";
+                        r += "<td>";
+                        r += "<input type='hidden' value='" + obj.id + "'></input>";
+                        r += obj.code;
+                        r +="</td>";
+                        r += "<td>" + obj.nm + "</td>";
+                        r += "<td class='hidden-xs'>" + obj.owner+"-"+obj.ownerNm + "</td>";
+                        r += "<td class='hidden-xs'>" + obj.status + "</td>";
+                        r += "<td class='hidden-xs'>" + obj.createDateStr + "</td>";
+                        r += "<td class='hidden-xs'>" + obj.creatorStr+"</td>";
+                        r += "</tr>";
+                        $('#tbPrj > tbody:last-child').append(r);
+                        $.unblockUI();
+                    });
+                }
+            });
+        }
+
+        function addRow() {
+            var template = jQuery.validator.format($.trim($("#tmp1 tbody").html()));
+            $(template(iCnt)).appendTo("#tbPMList tbody");
+            $("#tbPMList tr:last .pm").select2({ data: data, templateSelection: formatRepoSelection });
+        }
+
+        function saveRow() {
+            var list = [];
+            $('#tbPMList tr').each(function (i, item) {
+                if ($(item).find('.pm').length > 0) {
+                    var obj = {};
+                    obj.pm = $($(item).find('.pm')[0]).val();
+                    list.push(obj);
+                }
+            });
+            try {
+                $('#hPMList').val(JSON.stringify(list));
+                console.log($('#hPMList').val());
+            }
+            catch (ex) {
+                $('#hPMList').val(JSON.stringify(""));
+            }
+        }
+
+        function loadRow() {
+            var lista = $('#tbPMList tbody').find('.pm');
+            $('#tbPMList tbody').empty();
+
+            var list = [];
+            try {
+                list = JSON.parse($("#hPMList").val());
+            }
+            catch (ex) {
+                list = [];
+            }
+            list.forEach(function (item) {
+                addRow();
+                $($("#tbPMList tr:last").find('.pm')[0]).val(item.pm).trigger('change');
+            });
+        }
+
+
+        $(function () {
+
+
+            $("#btn-add").click(function () {
+                document.getElementById("fmInput").reset();
+
+                $('#myTabs a[href="#tab1"]').tab('show')
+                $('#winTitle').text('新增專案代碼/工時代碼');
+                $('#owner').val("").trigger('change');
+                loadRow();
+                $('#winInput').modal('show');
+            });
+
+
+            $('#btnAddSub').click(function () {
+                addRow();
+            });
+
+            $('#btnRemoveSub').click(function () {
+                var list = $('#tbPMList').find('input[type="checkbox"]:checked');
+                for (var i = 0; i < list.length; i++) {
+                    if ($($($(list[i]).closest('tr')).find('.itemId')).val() != '') {
+                        removeList.push($($($(list[i]).closest('tr')).find('.itemId')).val());
+                    }
+                    $($(list[i]).closest('tr')).remove();
+                }
+                return false;
+            });
+
+            $("#btnSave").click(function () {
+
+                //var o = $('#diva').tabulator('getRows');
+                //var list = [];
+                //for (var i = 0; i < o.length; i++) {
+                //    list.push(o[i].row.data);
+                //}
+                //fData.append("userList", JSON.stringify(list));
+                $.blockUI({ baseZ: 2000, message: '<h2>資料儲存中...</h2>' });
+                saveRow();
+                var fData = new FormData(document.getElementById("fmInput"));
+                $.ajax({
+                    url: "@Url.Action("CreatePrjCode", "Prj")",
+                    type: "POST",
+                    data: fData,
+                    processData: false,  // tell jQuery not to process the data
+                    contentType: false,   // tell jQuery not to set contentType
+                    success: function (r)
+                    {
+                        if (r.success)
+                        {
+                            $.unblockUI();
+                            $('#winInput').modal('hide');
+                            toastr["info"]("已儲存!");
+                            loadData();
+                        }
+                        else
+                        {
+                            $.unblockUI();
+                            alert(r.message);
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        $.unblockUI();
+                        alert(errorThrown);
+                    }
+                });
+
+            });
+
+            loadData();
+
+            $.unblockUI();
+        });
+
+    </script>
+}

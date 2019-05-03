@@ -1,0 +1,115 @@
+﻿@model eform.Models.FlowDefSub
+
+@{
+    ViewBag.Title = "設定簽核人員";
+
+}
+
+@{ 
+    string title = ViewBag.EditMode == "Create" ? "加入簽核人員" : "編輯簽核人員";
+}
+
+<h3><span class="label label-info">@ViewBag.FlowDefName</span> @title</h3>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="box">
+            <div class="box-header">
+            </div>
+            @using (Html.BeginForm("AddDefSub", "FlowDef", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                <div class="form-horizontal">
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    @Html.HiddenFor(model => model.pid)
+                    @Html.HiddenFor(model => model.id)
+
+                    <div class="form-group">
+                        <label class="control-label col-md-2">序號</label>
+                        <div class="col-md-3">
+                            @Html.EditorFor(model => model.seq, new { htmlAttributes = new { type = "number", @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.seq, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-2">工號</label>
+                        <div class="col-md-10">
+                            @Html.DropDownListFor(model => model.workNo, new List<SelectListItem>(), new { htmlAttributes = new { @class = "form-control select2-input select2" } })
+                            @*<select id="workNo" name="workNo" class="form-control select2-input select2" style="width:200px"></select>*@
+                            @Html.ValidationMessageFor(model => model.workNo, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-2">簽核類別</label>
+                        <div class="col-md-10">
+                            @Html.DropDownListFor(model => model.signType, new List<SelectListItem>(), new { htmlAttributes = new { @class = "form-control select2-input select2" } })
+                            @*<select id="signType" name="signType" class="form-control select2-input select2" style="width:200px">
+                                    <option value="1">1.會簽</option>
+                                    <option value="2">2.會簽-全部同意</option>
+                                    <option value="3">3.直接許可</option>
+                                </select>*@
+                            @Html.ValidationMessageFor(model => model.signType, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            <input type="submit" value="儲存" class="btn btn-primary"> @*onclick="return doSubmit();"*@
+                            <a class="btn btn-default" href="@Url.Action("SetupFlow",new { id = Model.pid })"><i class="fa fa-ban"></i>取消</a>
+                        </div>
+                    </div>
+                    <br />                
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+    <script type="text/javascript">
+
+    function formatRepoSelection(repo) {
+        return repo.id + "-" + repo.text;
+    }
+
+    $(function () {
+
+        $("#workNo").css('width', '200px');
+        $("#signType").css('width', '200px');
+
+        var signTypeList = [
+            { "id": 0, "text":"選擇簽核類別" },
+            { "id": 1, "text":"會簽" },
+            //{ "id": 2, "text":"2.會簽-全部同意" },
+            { "id": 3, "text": "直接許可" },
+            { "id": 4, "text": "串簽" },
+            { "id": 701, "text": "人事登錄" }
+        ];
+
+        $("#signType").select2({
+            data: signTypeList,
+            placeholder: '選擇簽核類別'
+        });
+
+        var data = @Html.Raw((ViewBag.userlist));
+
+        $("#workNo").select2({
+            data: data,
+            placeholder: '選擇人員'
+            ,templateSelection: formatRepoSelection
+        });
+
+        var signType=@Html.Raw(Model.signType);
+        if (signType!='')
+        {
+            $("#signType").val(signType).trigger('change');
+        }
+
+        var workNo='@Html.Raw(Model.workNo)';
+        if (workNo != '' && workNo !='0') {
+            $("#workNo").val(workNo).trigger('change');
+        }
+    });
+    </script>
+}

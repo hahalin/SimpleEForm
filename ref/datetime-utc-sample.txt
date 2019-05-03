@@ -1,0 +1,23 @@
+﻿https://codepen.io/franklin168/pen/jKgYGR?editors=1111
+
+//https://stackoverflow.com/questions/3066586/get-string-in-yyyymmdd-format-from-js-date-object
+var dateControl = document.querySelector('input[name="partydate"]');
+var dateControl2 = document.querySelector('input[name="partydatetime"]');
+//var dateControl = document.querySelector('input[type="date"]');
+var today = new Date();
+var rightNow = new Date();
+//var var res = rightNow.toISOString().slice(0,16);
+var rightNow=(new Date())-(new Date()).getTimezoneOffset()*60000;
+//var res = (rightNow.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+res=new Date(rightNow).toISOString();
+console.log(res);
+dateControl.value = res.slice(0,10);
+dateControl2.value = res.slice(0,16);
+
+<!-- Learn about this code on MDN: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local -->
+
+<label for="party">Enter a date and time for your party booking:</label>
+<br/><br/>
+<input id="party" type="date" name="partydate" value="2017-06-01T08:30">
+<br/><br/> 
+<input id="party" type="datetime-local" name="partydatetime" value="2017-06-01T08:30">

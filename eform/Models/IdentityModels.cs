@@ -3,6 +3,8 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
+using System.Collections.Generic;
+using System;
 
 namespace eform.Models
 {
@@ -17,19 +19,34 @@ namespace eform.Models
             return userIdentity;
         }
         public string workNo { get; set; }
-        public string depNo { get; set; }
+        public string cName { get; set; }
+        public string eName { get; set; }
+        public int status { get; set; } = 1;
+        public DateTime? beginWorkDate { get; set; }
+        public ICollection<PoUser> poList { get; set; }
     }
 
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    public class ApplicationRole : IdentityRole
     {
-        public ApplicationDbContext()
-            : base("DefaultConnection", throwIfV1Schema: false)
-        {
-        }
-
-        public static ApplicationDbContext Create()
-        {
-            return new ApplicationDbContext();
-        }
+        public ApplicationRole() : base() { }
+        public ApplicationRole(string name) : base(name) { }
+        public string Description { get; set; }
+        public bool isDefault { get; set; } = false;
     }
+
+    //public class ApplicationRoleManager : RoleManager<IdentityRole>
+    //{
+    //    public ApplicationRoleManager(IRoleStore<IdentityRole, string> roleStore)
+    //        : base(roleStore)
+    //    {
+    //    }
+
+    //    public static ApplicationRoleManager Create(
+    //        IdentityFactoryOptions<ApplicationRoleManager> options, IOwinContext context)
+    //    {
+    //        return new ApplicationRoleManager(
+    //            new RoleStore<IdentityRole>(context.Get<ApplicationDbContext>()));
+    //    }
+    //}
+
 }

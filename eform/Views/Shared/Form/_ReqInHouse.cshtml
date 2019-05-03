@@ -1,0 +1,64 @@
+﻿@using eform.Models;
+@{
+    vwReqInHouse subModel = (vwReqInHouse)ViewBag.SubModel;
+    FlowMain flowMain = (FlowMain)ViewBag.flowMain;
+}
+
+<div class="box-body">
+    <div class="form-horizontal col-md-10">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger", style = "font-size:15px;font-weight:bold;" })
+
+        <div class="form-group">
+            <label class="control-label col-md-2">申請人</label>
+            <div class="col-md-4">
+                <div class="form-control">@Model.user.workNo-@Model.user.UserCName</div>
+                <input type="hidden" name="worker" value="@Model.user.workNo" />
+            </div>
+            @Html.LabelFor(model => subModel.billDate, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-4">
+                <div class="form-control">@Convert.ToDateTime(Model.billDate).ToString("yyyy-MM-dd")</div>
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => subModel.contact, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="form-control">
+                    @subModel.contact
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => subModel.depNo, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="form-control">
+                    @{ 
+                        string depName = "";
+                        ApplicationDbContext ctx = new ApplicationDbContext();
+                        var dep = ctx.deps.Where(x => x.depNo == subModel.depNo).FirstOrDefault();
+                        if (dep!=null)
+                        {
+                            depName = dep.depNm;
+                        }
+                    }
+                    @depName
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => subModel.reqMemo, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <p style="white-space: pre-line">@subModel.reqMemo</p>
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => subModel.reqLimit, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <p style="white-space: pre-line">@subModel.reqLimit</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+

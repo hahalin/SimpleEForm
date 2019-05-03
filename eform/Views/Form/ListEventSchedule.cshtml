@@ -1,0 +1,67 @@
+﻿@model IEnumerable<eform.Models.vwEventSchedule>
+
+@{
+    ViewBag.Title = "公司行程規劃管理清單";
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="box">
+            <div class="box-header text-center">
+                <div class="box-title">
+                    <h3><span class="label label-danger">@ViewBag.Title</span></h3>
+                </div>
+            </div>
+            <div class="box-header">
+                <a href="@Url.Action("eventSchedule", "Form")" class="btn btn-primary"><i class="fa fa-plus"></i>新增</a>
+            </div>
+            <div class="box-body>">
+                <table class="table table-bordered table-hover table-striped">
+                    <tr>
+                        <th>
+                            申請人
+                        </th>
+                        <th>
+                            申請日期
+                        </th>
+                        <th>
+                            單號
+                        </th>
+                        <th>
+                            活動種類
+                        </th>
+                        <th></th>
+                    </tr>
+
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @{ 
+                                    string user = item.user.workNo + " " + @item.user.UserCName;
+                                }
+                                @user
+                            </td>
+                            <td>
+                                @{
+                                    DateTime billdate = Convert.ToDateTime(item.billDate.ToString());
+                                }
+                                @billdate.ToString("yyyy-MM-dd HH:mm:ss")
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.billNo)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.vEventType)
+                            </td>
+                            <td>
+                                <a href="@Url.Action("Details","Form",new {id=item.flowId})" target="_blank" class="btn btn-info">表單明細</a>
+                            </td>
+                        </tr>
+                                    }
+
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

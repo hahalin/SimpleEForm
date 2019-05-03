@@ -1,0 +1,128 @@
+﻿@using Newtonsoft.Json;
+@using eform.Models;
+@{
+    ViewBag.Title = "公司行程規劃表(B001A1)";
+    FlowMain flowMain = (FlowMain)ViewBag.flowMain;
+    vwEventSchedule subModel = (vwEventSchedule)ViewBag.SubModel;
+    vwEmployee employee = (vwEmployee)ViewBag.Employee;
+}
+<style>
+    span, label, button, th {
+        font-family: 微軟正黑體;
+    }
+
+    th {
+        text-align: center;
+    }
+    .form-control-static {
+        border-bottom: solid 1px rgb(210, 214, 222);
+    }
+</style>
+
+<div class="box-body">
+    <div class="form-horizontal col-md-10" style="margin-top:10px;">
+        <div class="form-group">
+            <label class="control-label col-md-2">單號</label>
+            <div class="col-md-4">
+                <div class="form-control-static">
+                    @flowMain.billNo
+                </div>
+            </div>
+            <label class="control-label col-md-2">申請人</label>
+            <div class="col-md-4">
+                <div class="form-control-static">
+                    @employee.workNo @employee.UserCName
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => flowMain.billDate, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-4">
+                @{
+                    string billdate = ((DateTime)flowMain.billDate).ToString("yyyy-MM-dd");
+                }
+                <div class="form-control-static">
+                    @billdate
+                </div>
+            </div>
+            <label class="control-label col-md-2">活動種類</label>
+            <div class="col-md-4">
+                <div class="form-control-static">
+                    @subModel.vEventType
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">標題</label>
+            <div class="col-md-10">
+                <div class="form-control-static">
+                    @subModel.subject
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-2">地點</label>
+            <div class="col-md-10">
+                <div class="form-control-static">
+                    @subModel.location
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">開始日期</label>
+            <div class="col-md-4">
+                @{
+                    string beginDateStr = Convert.ToDateTime(subModel.beginDate).ToString("yyyy-MM-dd") + " " + String.Format("{0:00}", subModel.beginHH) + ":" + String.Format("{0:00}", subModel.beginMM);
+                    string endDateStr = Convert.ToDateTime(subModel.endDate).ToString("yyyy-MM-dd") + " " + String.Format("{0:00}", subModel.endHH) + ":" + String.Format("{0:00}", subModel.endMM);
+                }
+                <div class="form-control-static">
+                    @beginDateStr
+                </div>
+            </div>
+            <label class="control-label col-md-2">結束日期</label>
+            <div class="col-md-4">
+                <div class="form-control-static">
+                     @endDateStr                    
+                </div>
+            </div>
+        </div>       
+
+        <div class="form-group">
+            @Html.LabelFor(model => subModel.sMemo, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <p style="white-space: pre-line;background-color:white;border-bottom:rgb(210, 214, 222) 1px solid;padding:5px;vertical-align:top;margin-top:-20px;">
+                    @subModel.sMemo
+                </p>
+
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10 text-center">
+                @{ 
+                    string url = Url.Action("eventSchedule", "Form", new { id = subModel.id });
+                }
+                <input type="button" value="修改" class="btn-lg btn-primary" onclick="document.location = '@url';" />
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    <script src="~/Scripts/jquery.blockUI.js"></script>
+    <script type="text/javascript">
+        function doSubmit() {
+            $.blockUI({ message: '<h2>表單儲存中...</h2>' });
+            return true;
+        }
+        $(function () {
+
+
+            return;
+
+        });
+    </script>
+}

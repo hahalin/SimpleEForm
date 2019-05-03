@@ -1,0 +1,115 @@
+﻿@model IEnumerable<eform.Models.vwEmployee>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h4>員工管理</h4>
+
+@*<script type="text/javascript">
+        //var someArray = [<%foreach(var s in ViewBag.testList){%>'<%=s%>',<%}%>];
+        var yourJavaScriptArray = @Html.Raw(Json.Encode(ViewBag.testList));
+        console.log(yourJavaScriptArray);
+    </script>*@
+
+<div class="row" style="margin-left:0;padding-left:0;">
+    <div class="col-md-10" style="margin-left:0;padding-left:0;">
+        <div class="box" style="margin-left:0;padding-left:0;">
+            <div class="box-header">
+                <a class="btn btn-primary" href="@Url.Action("Create")"><i class="fa fa-plus"></i>新增員工</a>
+                @*@Html.ActionLink("新增部門", "Create", new {}, new { @class = "btn btn-primary" })*@
+            </div>
+            <div class="box-body">
+                <table class="table table-bordered table-hover table-responsive">
+                    <tr>
+                        <th width="130" class="text-center">
+                            @Html.DisplayNameFor(model => model.workNo)
+                        </th>
+                        <th width="140" class="text-center">
+                            @Html.DisplayNameFor(model => model.UserCName)
+                        </th>
+                        <th width="140" class="text-center">
+                            @Html.DisplayNameFor(model => model.UserEName)
+                        </th>
+                        <th class="text-center">
+                            @Html.DisplayNameFor(model => model.Title)
+                        </th>
+                        <th width="140"></th>
+                    </tr>
+
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="text-center">
+                                @Html.HiddenFor(modelItem => item.Id)
+                                @Html.DisplayFor(modelItem => item.workNo)
+                            </td>
+                            <td class="text-center">
+                                @Html.DisplayFor(modelItem => item.UserCName)
+                            </td>
+                            <td class="text-center">
+                                @Html.DisplayFor(modelItem => item.UserEName)
+                            </td>
+                            <td>
+                                @{ 
+                                    List<string> titleArray = item.Title.Split(',').ToList<string>();
+                                }
+                                @if (titleArray.Count()>0)
+                                { 
+                                    <ul style="padding-left:15px;">
+                                        @foreach (string title in titleArray)
+                                        {
+                                            if (!string.IsNullOrEmpty(title))
+                                            { 
+                                                <li>@title</li>
+                                            }
+                                        }
+                                    </ul>
+                                }
+                            </td>
+                            <td >
+                                <a class="btn btn-info btn-sm" href="@Url.Action("Edit",new { id = item.Id })" style="font-size:11px;">
+                                    <i class="fa fa-pencil"></i>
+                                    編輯
+                                </a>
+                                <a class="btn btn-danger btn-sm" data-id="@item.Id" href="#" onclick="checkDelete();" style="font-size:11px;">
+                                    <i class="fa fa-trash"></i>
+                                    刪除
+                                </a>
+                                @if (User.IsInRole("Admin") && (User.Identity.Name != item.workNo))
+                                { 
+                                }
+                                @*<a class="btn btn-success" href="@Url.Action("Details",new { id = item.depNo })">
+                                    <i class="fa fa-group"></i>
+                                    職稱管理
+                                </a>*@
+
+                                @*@Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                                @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                                @Html.ActionLink("Delete", "Delete", new { id = item.Id })*@
+                            </td>
+                        </tr>
+                                    }
+
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script type="text/javascript">
+        function checkDelete() {
+            event.preventDefault();
+            var id = $(event.target).attr('data-id');
+            var r = confirm("確定刪除?");
+            if (r == true)
+            {
+                var url = "@Url.Action("Delete", new {id="xxxx"})";
+                url = url.replace("xxxx", id);
+                document.location = url;
+            }
+        }
+    </script>
+    }

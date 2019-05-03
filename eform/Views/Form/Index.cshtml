@@ -1,0 +1,76 @@
+﻿@model IEnumerable<eform.Models.vwFlowMain>
+
+@{
+    ViewBag.Title = "已送表單紀錄";
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="box">
+            <div class="box-header">
+                <div class="box-title">
+                    <h3><span class="label label-success">@ViewBag.Title</span></h3>
+                </div>
+            </div>
+            <div class="box-body>">
+                <table class="table table-bordered table-hover table-striped">
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.sender)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.billDate)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.signDate)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.flowName)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.billNo)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.flowStatus)
+                        </th>
+                        <th></th>
+                    </tr>
+
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.sender)
+                            </td>
+                            <td>
+                                @{
+                                    DateTime billdate = Convert.ToDateTime(item.billDate.ToString());
+                                }
+                                @billdate.ToString("yyyy-MM-dd HH:mm:ss")
+                            </td>
+                            <td>
+                                @{
+                                    string signDateStr = item.signDate == null ? "" : Convert.ToDateTime(item.signDate.ToString()).ToString("yyyy-MM-dd");
+                                }
+                                @signDateStr
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.flowName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.billNo)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.flowStatus)
+                            </td>
+                            <td>
+                                <a href="@Url.Action("Details",new {id=item.id})" class="btn btn-info">表單明細</a>
+                            </td>
+                        </tr>
+                    }
+
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,73 @@
+﻿@model eform.Models.dep
+@using eform.Models;
+
+@{
+    IEnumerable<jobPo> jobpoList = Model.depJobPos;
+
+    ViewBag.Title = "Details";
+}
+
+<h3> @Model.depNm-職稱管理 </h3>
+
+<p>
+    @if (((string)ViewBag.id) == "001")
+    {
+        <a class="btn btn-primary" href="@Url.Action("Gm","Dep")"><i class="fa fa-arrow-left"></i>返回</a>
+    }
+    else
+    {
+        <a class="btn btn-primary" href="@Url.Action("Edit",new { id = ViewBag.id })"><i class="fa fa-arrow-left"></i>返回</a>
+    }
+    <a class="btn btn-default" href="@Url.Action("CreatePo",new { id = ViewBag.id })"><i class="fa fa-user-plus"></i>新增職稱</a>
+</p>
+<div class="row">
+    <div class="col-md-6">
+        <div class="box">
+            <table class="table">
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.depJobPos.FirstOrDefault<jobPo>().poNm)
+                    </th>
+                    <th>簽核權限</th>
+                    <th></th>
+                </tr>
+
+
+                @if (Model.depJobPos != null)
+                {
+                    foreach (var item in Model.depJobPos)
+                    {
+                           <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.poNm)
+                                </td>
+                               <td>
+                                   @if (item.isFormSigner)
+                                   {
+                                       
+                                       <i class="fa fa-check"></i>
+
+                                   }
+                                   else
+                                   {
+                                   }
+                               </td>
+                                <td>
+                                    <a class="btn btn-success" href="@Url.Action("EditPo",new { id = item.poNo })">
+                                        <i class="fa fa-group"></i>
+                                        編輯
+                                    </a>
+                                    <a class="btn btn-danger" href="@Url.Action("DeletePo",new { id = item.poNo,depNo=item.depNo })">
+                                        <i class="fa fa-minus"></i>
+                                        刪除
+                                    </a>
+                                </td>
+                            </tr>
+                    }
+                }
+            </table>
+        </div>
+    </div>
+</div>
+
+

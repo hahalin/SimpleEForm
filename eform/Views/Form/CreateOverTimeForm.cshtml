@@ -1,0 +1,193 @@
+﻿@model eform.Models.vwReqOverTime
+@using Newtonsoft.Json;
+@using eform.Models;
+@{
+    ViewBag.Title = "非工作時間廠務申請單(P016A1)";
+}
+
+
+<div class="row">
+    <div class="col-md-10">
+        <div class="box">
+            <div class="box-header text-center">
+                <div class="box-title ">
+                    <h3><span class="label label-success">@ViewBag.Title</span></h3>
+                </div>
+            </div>
+            <div class="box-body>">
+                @using (Html.BeginForm("CreateOverTimeForm", "Form", FormMethod.Post, new { id = "fmMain" }))
+                {
+                    @Html.AntiForgeryToken()
+                    
+                    <div class="form-horizontal col-md-10">
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger", style = "font-size:15px;font-weight:bold;" })
+                        <div class="form-group">
+                            <label class="control-label col-md-2">申請人</label>
+                            <div class="col-md-4">
+                                <div class="form-control">@ViewBag.UserName</div>
+                                <input type="hidden" name="worker" value="@ViewBag.UserName" />
+                            </div>
+                            @Html.LabelFor(model => model.billDate, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                @Html.EditorFor(model => model.billDate, new { htmlAttributes = new { @class = "form-control", type = "date", @readonly = "readonly" } })
+                                @Html.ValidationMessageFor(model => model.billDate, "", new { @class = "text-danger," })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.dtBegin, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-3">
+                                <div class='input-group date' id='datetimepicker1'>
+                                    @Html.EditorFor(model => model.dtBegin, new { htmlAttributes = new { @class = "form-control", type = "text" } })
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                @Html.DropDownListFor(model => model.beginHH, (SelectList)ViewBag.beginHHList, new { @class = "form-control", style = "width:70px;"})
+                            </div>
+                            <label class="control-label col-md-1">時</label>
+                            <div class="col-md-1">
+                                @Html.DropDownListFor(model => model.beginMM, (SelectList)ViewBag.beginMMList, new { @class = "form-control", style = "width:70px;"})
+                            </div>
+                            <label class="control-label col-md-1">分</label>
+                            @Html.ValidationMessageFor(model => model.dtBegin, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.dtEnd, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-3">
+                                <div class='input-group date' id='datetimepicker2'>
+                                    @Html.EditorFor(model => model.dtEnd, new { htmlAttributes = new { @class = "form-control", type = "text" } })
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                @Html.DropDownListFor(model => model.endHH, (SelectList)ViewBag.endHHList, new { @class = "form-control", style = "width:70px;" })
+                            </div>
+                            <label class="control-label col-md-1">時</label>
+                            <div class="col-md-1">
+                                @Html.DropDownListFor(model => model.endMM, (SelectList)ViewBag.endMMList, new { @class = "form-control",style = "width:70px;"})
+                            </div>
+                            <label class="control-label col-md-1">分</label>                            
+                            @Html.ValidationMessageFor(model => model.dtEnd, "", new { @class = "text-danger" })
+                        </div>
+
+                        @*<div class="form-group">
+
+                                @Html.LabelFor(model => model.hours, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.hours, new { htmlAttributes = new { @class = "form-control",type="number" } })
+                                    @Html.ValidationMessageFor(model => model.hours, "", new { @class = "text-danger" })
+                                </div>
+                            </div>*@
+
+                        <div class="form-group">
+                            <label class="control-label col-md-2">部門</label>
+                            <div class="col-md-10">
+                                @Html.DropDownListFor(model => model.poNo, new List<SelectListItem>(), new { @class = "form-control", style = "max-width:800px;width:100%;" })
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.sType, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-3">
+                                @Html.RadioButtonFor(model => model.sType, "平日", new { @class = "checkbox-inline" })
+                                平日
+                                @Html.RadioButtonFor(model => model.sType, "假日", new { @class = "checkbox-inline" })
+                                假日
+                            </div>
+                            @Html.LabelFor(model => model.place, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-5" style="float:left;">
+                                @Html.DropDownListFor(model => model.place, ViewBag.placelist as IEnumerable<SelectListItem>, new { @class = "form-control", style = "float:left;width:160px;" })
+                                @Html.TextBoxFor(model => model.otherPlace, new { @class = "form-control", style = "width:120px;float:left;margin-left:5px;width:130px;" })
+                            </div>
+                        </div>
+                        <div class="form-group" style="display:none;">
+                            @Html.LabelFor(model => model.prjId, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-5">
+                                @Html.TextBoxFor(model => model.prjId, new { @class = "form-control", style = "width:630px;" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.sMemo, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10" style="margin-bottom:10px;">
+                                @Html.TextAreaFor(model => model.sMemo, htmlAttributes: new { @class = "form-control", rows = "2", style = "width:630px;" })
+                            </div>
+                            <br />
+                            @Html.LabelFor(model => model.sMemo2, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.TextAreaFor(model => model.sMemo2, htmlAttributes: new { @class = "form-control", rows = "2", style = "width:630px;" })
+                                <span style="color:brown;font-size:12px;margin-top:0px;">有使用水電氣需求者必填</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-10 text-center">
+                                <input type="submit" value="送出" class="btn-lg btn-primary" onclick="return doSubmit();" />
+                            </div>
+                        </div>
+                    </div>
+                }
+
+            </div>
+            <div class="box-footer">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    <script src="~/Scripts/jquery.blockUI.js"></script>
+    <script type="text/javascript">
+        function doSubmit() {
+            $.blockUI({ message: '<h2>表單儲存中...</h2>' });
+            return true;
+        }
+        $(function () {
+            var pickerOption = {
+                format: 'YYYY-MM-DD',
+                locale:'zh-tw',
+                defaultDate: getLocalDateStr()
+            };
+            $('#datetimepicker1').datetimepicker(pickerOption);
+            $('#datetimepicker2').datetimepicker(pickerOption);
+
+            $('textarea').css('max-width', '700px');
+            $('#prjId').css('max-width', '700px');
+
+            if ($($('.validation-summary-errors')[0]).text() == "")
+            {
+                $('#billDate').val(getLocalDateStr());
+            }
+
+            var depList = @Html.Raw(JsonConvert.SerializeObject(ViewBag.depList));
+            var poList = @Html.Raw(JsonConvert.SerializeObject(ViewBag.poList));
+            var cboDepList = $('#depNo');
+            var cboPoList = $('#poNo');
+
+            $(cboDepList).append(
+                $('<option></option>').val("").html("選擇部門")
+            );
+            $(cboPoList).append(
+                $('<option></option>').val("").html("選擇部門")
+            );
+            $.each(poList, function (val, obj) {
+                $(cboPoList).append(
+                    $('<option></option>').val(obj.poNo).html(obj.depNm)
+                );
+            });
+
+            if ($('#poNo option').length > 1)
+            {
+                $('#poNo').val($('#poNo option:nth-child(2)').val());
+            }
+
+        });
+    </script>
+}

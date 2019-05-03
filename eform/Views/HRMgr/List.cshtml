@@ -1,0 +1,176 @@
+﻿@using System.Data
+@{
+
+}
+<style>
+    .ui-datepicker-calendar {
+        display: none;
+    }
+
+    .ui-datepicker-month {
+        display: none;
+    }
+
+    .ui-datepicker-next, .ui-datepicker-prev {
+        display: none;
+    }
+</style>
+
+<script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+<script src="~/Scripts/jquery.blockUI.js"></script>
+<script type="text/javascript">
+    $.blockUI({ message: '<h2>資料讀取中...</h2>' });
+</script>
+
+<h3>@ViewBag.Title</h3>
+
+<div class="col-sm-11 no-padding no-margin">
+    <div class="box box-primary">
+        <div class="box-body">
+            <div class="form-horizontal">
+                <div class="form-group">
+                    @using (Html.BeginForm("List", "HrMgr", FormMethod.Post, new { id = "fmQuery" }))
+                    {
+                        <label class="control-label col-sm-1" style="text-align:right;">
+                            年度:
+                        </label>
+                        <div class="col-md-2" style="width:120px;text-align:left;">
+                            <input type="number" id="year" name="year" class="form-control" value="@ViewBag.y" autocomplete="off" style="text-align:right;font-size:14px;" />
+                        </div>
+
+                    }
+                    <form id="fmUpload" action="@Url.Action("Upload","HrMgr")" method="post" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+                        <div class="col-md-5" style="text-align:left;">
+                            <input type="file" name="file" id="file" class="form-control" />
+                        </div>
+                    </form>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-10 text-left">
+                        <input type="button" value="查詢" class="btn btn-default" onclick="doQuery();" />
+                        <input type="submit" value="上傳" class="btn btn-primary" onclick="doUpload();">
+                    </div>
+                </div>
+                @*<div class="form-group">
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    </div>*@
+            </div>
+        </div>
+
+        <div class="box-body no-padding">
+            <div id="tbdivContainer">
+                <div id="tbdiv" style="width:100%;">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <link href="~/Scripts/tabulator-master/dist/css/tabulator.min.css" rel="stylesheet" />
+    <script src="~/Scripts/tabulator-master/dist/js/tabulator.min.js"></script>
+
+    <script type="text/javascript">
+        //https://stackoverflow.com/questions/34676752/can-i-use-an-html-input-type-date-to-collect-only-a-year
+        function doQuery() {
+            $.blockUI({ message: '<h2>資料處理中...</h2>' });
+            $('#fmQuery').submit();
+        }
+
+        function doUpload() {
+            $.blockUI({ message: '<h2>上傳中...</h2>' });
+            $('#fmUpload').submit();
+        }
+
+        function dosave()
+        {
+            var o = $('#tbdiv').tabulator('getRows');
+            var list = [];
+            for (var i = 0; i < o.length; i++)
+            {
+                list.push(o[i].row.data);
+            }
+            $.blockUI({ message: '<h2>資料儲存中...</h2>' });
+
+            let promise =
+                $.ajax({
+                    url: "@Url.Action("SaveList", "HrMgr")",
+                    method: "POST",
+                    contentType: 'application/json',
+                    data: JSON.stringify({ year: $('#year').val(),data:list})
+                });
+            promise.done(function (data)
+            {
+                console.log(data);
+                $.unblockUI();
+                if (data.success) {
+                    alert('儲存完成');
+                }
+            });
+
+        }
+
+        $(function () {
+            $.unblockUI();
+            var msg = '';
+            @if (TempData["msg"]!=null)
+            {
+                @:msg = '@TempData["msg"].ToString()';
+            }
+            if (msg != '')
+            {
+                alert(msg);
+            }
+        })
+
+
+        var data = [];
+
+        @if (ViewBag.tb != null)
+        {
+            DataTable tb = (DataTable)ViewBag.tb;
+
+            foreach(DataRow r in tb.Rows)
+            {
+                @:obj = {};
+                foreach(DataColumn col in tb.Columns)
+                {
+                    @:obj["@col.ColumnName"] = "@r[col.ColumnName].ToString()";
+                }
+                @:data.push(obj);
+            }
+
+            //@:console.log(data);
+        }
+
+        $("#tbdiv").tabulator({
+            height: "auto",
+            pagination: "local",
+            paginationSize: 20,
+            //layout: "fitColumns",
+            columns: [
+                { title: '類別', field: 'hType' },
+                { title: '工號', field: 'workNo' },
+                { title: '姓名', field: 'cName' },
+                { title: '前期轉入', field: 'm0', editor: 'input', editor: false, validator: ["min:0", "numeric"] },
+                { title: '1月', field: 'm1', editor: 'input', editor: false, validator: ["min:0", "numeric"] },
+                { title: '2月', field: 'm2', editor: 'input', editor: false, validator: ["min:0", "numeric"] },
+                { title: '3月', field: 'm3', editor: 'input', editor: false, validator: ["min:0", "numeric"] },
+                { title: '4月', field: 'm4', editor: 'input', editor: false, validator: ["min:0", "numeric"] },
+                { title: '5月', field: 'm5', editor: 'input', editor: false, validator: ["min:0", "numeric"] },
+                { title: '6月', field: 'm6', editor: 'input', editor: false, validator: ["min:0", "numeric"] },
+                { title: '7月', field: 'm7', editor: 'input', editor: false, validator: ["min:0", "numeric"] },
+                { title: '8月', field: 'm8', editor: 'input', editor: false, validator: ["min:0", "numeric"] },
+                { title: '9月', field: 'm9', editor: 'input', editor: false, validator: ["min:0", "numeric"] },
+                { title: '10月', field: 'm10', editor: 'input', editor: false, validator: ["min:0", "numeric"] },
+                { title: '11月', field: 'm11', editor: 'input', editor: false, validator: ["min:0", "numeric"] },
+                { title: '12月', field: 'm12', editor: 'input', editor: false, validator: ["min:0", "numeric"] },
+            ],
+            data: data
+        });
+        //$('#tbdiv').css('width', '95%');
+
+    </script>
+}

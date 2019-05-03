@@ -1,0 +1,145 @@
+﻿@model IEnumerable<eform.Models.vwFlowMain>
+
+@{
+    ViewBag.Title = "所有表單紀錄";
+    ViewBag.Count = ViewData["totalCounts"];
+    ViewBag.PageSize = ViewData["pageSize"];
+    ViewBag.CurrentPage = ViewData["currentPage"];
+}
+<script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+<script src="~/Scripts/jquery.blockUI.js"></script>
+<script type="text/javascript">
+    $.blockUI({ message: '<h2>資料讀取中...</h2>' });
+</script>
+
+<div class="row">
+    <div class="col-md-10">
+        <div class="box col-xs-10 col-md-10" style="margin:3px;padding:3px;">
+            <div class="box-header">
+                <div class="box-title">
+                    <h3><span class="label label-success">@ViewBag.Title</span></h3>
+                </div>
+            </div>
+            @using (Html.BeginForm("Delete", "FormMgr", FormMethod.Post))
+            {
+                <div class="box-header">
+                    <p>
+                        @Html.DropDownList("status", (IEnumerable<SelectListItem>)ViewBag.SignResultItems)
+                        <button type="button" class="btn btn-primary" id="btnQuery">查詢</button>
+                        <button type="submit" class="btn btn-danger" id="btnDelete">刪除</button>
+                        <input type="hidden" id="ids" name="ids" />
+                    </p>
+                </div>
+
+                <div class="box-body" style="overflow-x:auto;">
+                    <table class="table table-bordered table-hover table-striped table-responsive">
+                        <tr>
+                            <th>
+
+                            </th>
+                            <th class="text-center">
+                                @Html.DisplayNameFor(model => model.sender)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.billDate)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.signDate)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.flowName)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.billNo)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.flowStatus)
+                            </th>
+                            <th></th>
+                        </tr>
+
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="text-center">
+                                    <input type="checkbox" name="ID" value="@item.id" class="custom-checkbox chkCheckBoxId" />
+                                </td>
+                                <td class="text-center">
+                                    @Html.DisplayFor(modelItem => item.sender)
+                                </td>
+                                <td>
+                                    @{
+                                        DateTime billdate = Convert.ToDateTime(item.billDate.ToString());
+                                    }
+                                    @billdate.ToString("yyyy-MM-dd HH:mm:ss")
+                                </td>
+                                <td>
+                                    @{
+                                        string signDateStr = item.signDate == null ? "" : Convert.ToDateTime(item.signDate.ToString()).ToString("yyyy-MM-dd");
+                                    }
+                                    @signDateStr
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.flowName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.billNo)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.flowStatus)
+                                </td>
+                                <td>
+                                    <a href="@Url.Action("Details", new { id = item.id, FlowPageType = "Query",ReturnAction="ListAll" })" class="btn btn-info">表單明細</a>
+                                </td>
+                            </tr>
+                                        }
+                    </table>
+
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination navbar-right">
+                            <li class="@(ViewBag.CurrentPage <= 1 ? "disabled" : "")">
+                                <a href="~/FormMgr/Index?page=@(ViewBag.CurrentPage-1)" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            @for (var page = 1; page < (ViewBag.Count / ViewBag.PageSize) + 1; page++)
+                            {
+                                <li class="@(page == ViewBag.CurrentPage ? "active" : "")"><a href="@Url.Action("ListAll","FormMgr",new { page = page })">@page</a></li>
+                            }
+                            <li class="@(ViewBag.CurrentPage == (ViewBag.Count/ViewBag.PageSize) || (ViewBag.Count/ViewBag.PageSize) == 0 ? "disabled" : "")">
+                                <a href="~/FormMgr/ListAll?page=@(ViewBag.CurrentPage+1)" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script type="text/javascript">
+        $(function () {
+            $.unblockUI();
+            $('#btnQuery').click(function () {
+                $.blockUI({ message: '<h2>資料讀取中...</h2>' });
+                var url = "@Url.Action("ListAll", new { status = "xxx" })";
+                url = url.replace("xxx", $('#status').val());
+                window.location = url;
+            });
+
+            $('#btnDelete').click(function () {
+                var selList = [];
+                for (var i = 0; i < $('.custom-checkbox:checked').length; i++)
+                {
+                    selList.push($($('.custom-checkbox:checked')[i]));
+                };
+
+            });
+
+        });
+    </script>
+}

@@ -1,0 +1,59 @@
+﻿@model eform.Models.prjPM
+
+@{
+    ViewBag.Title = "";
+    Layout = "~/Views/Shared/_PrjLayout.cshtml";
+}
+
+<h3>更新專案成員</h3>
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal col-md-8">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.id)
+        @Html.HiddenFor(model => model.pid)
+        @Html.HiddenFor(model => model.WorkNo)
+        <div class="form-group">
+            @Html.LabelFor(model => model.WorkNo, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Model.WorkNo @ViewBag.PMName
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.Label("職稱", new {@class="control-label col-md-2"})
+            <div class="col-md-10">
+                @Html.TextBoxFor(x => x.Title, new { @class="form-control"})
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="更新" class="btn btn-primary" />
+                <a href="@Url.Action("portal","Prj",new { code=ViewBag.code})" class="btn btn-default">返回</a>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts
+{
+    <script type="text/javascript">
+
+        $(function(){
+            var data = @Html.Raw((ViewBag.userlist));
+
+            function formatRepoSelection(repo) {
+                return repo.id + "-" + repo.text;
+            }
+
+            $("#WorkNo").select2({
+                data: data,
+                placeholder: ''
+                , templateSelection: formatRepoSelection
+            });
+
+        });
+
+    </script>
+}

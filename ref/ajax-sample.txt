@@ -1,0 +1,28 @@
+﻿﻿function GetSite(e) {
+                    $.ajax({
+                        url: "@Url.Action("GetSite")",
+                        data: "sid=" + e.value,
+                        type: "post",
+                        async: false,
+                        success: function (data) {
+                            var d = JSON.parse(data);
+                            $("#SiteID option").remove();
+                            $("#SiteID").material_select("destory");
+                            $("#SiteID").append($("<option></option>").attr("value", "0").text("選擇潛場").width(276));
+                            $.each(d, function (index, value) {
+                                $("#SiteID").append($("<option></option>").attr("value", value.ID).html(value.NameZh));
+                            });
+
+                            $("#SiteID").material_select("destory");
+
+                            if ("@ViewBag.Data.SiteID" != "0")
+                            {
+                               $("#SiteID").val("@ViewBag.Data.SiteID");
+                            }
+
+                            $("#SiteID").material_select();
+
+                        }
+                    });
+
+            }

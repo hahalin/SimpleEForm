@@ -1,0 +1,210 @@
+﻿@model eform.Models.vwGuestForm
+@using Newtonsoft.Json;
+@using eform.Models;
+@{
+    ViewBag.Title = "訪客申請單(P011A1)";
+}
+<style>
+    span, label, button, th {
+        font-family: 微軟正黑體;
+    }
+
+    th {
+        text-align: center;
+    }
+</style>
+<div class="row">
+    <div class="col-md-10">
+        <div class="box">
+            <div class="box-header text-center">
+                <div class="box-title ">
+                    <h3><span class="label label-info">@ViewBag.Title</span></h3>
+                    <h3><span class="" style="font-weight:bold;">@Model.user.Company</span></h3>
+                    <h5><label>工號：</label>@Model.user.workNo @Model.user.UserCName</h5>
+                </div>
+            </div>
+            <div class="box-body">
+                @using (Html.BeginForm("GuestForm", "Form", FormMethod.Post, new { id = "fmMain" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-horizontal col-md-10">
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger", style = "font-size:15px;font-weight:bold;" })
+
+                        <div class="form-group">
+                            <label class="control-label col-md-2">申請人</label>
+                            <div class="col-md-4">
+                                <div class="form-control">@Model.user.workNo-@Model.user.UserCName</div>
+                                <input type="hidden" name="worker" value="@Model.user.workNo" />
+                            </div>
+                            @Html.LabelFor(model => model.requestDate, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                <div class="form-control">@Convert.ToDateTime(Model.requestDate).ToString("yyyy-MM-dd")</div>
+                                @Html.HiddenFor(model => model.requestDate)
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.toDep, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.toDep, new { htmlAttributes = new { @class = "form-control", type = "text" } })
+                                @Html.ValidationMessageFor(model => model.toDep, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.to, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.to, new { htmlAttributes = new { @class = "form-control", type = "text" } })
+                                @Html.ValidationMessageFor(model => model.to, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.subject, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.subject, new { htmlAttributes = new { @class = "form-control", type = "text" } })
+                                @Html.ValidationMessageFor(model => model.subject, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.guestCmp, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.guestCmp, new { htmlAttributes = new { @class = "form-control", type = "text" } })
+                                @Html.ValidationMessageFor(model => model.guestCmp, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.guestName, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.guestName, new { htmlAttributes = new { @class = "form-control", type = "text" } })
+                                @Html.ValidationMessageFor(model => model.guestName, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.guestCnt, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                @Html.EditorFor(model => model.guestCnt, new { htmlAttributes = new { @class = "form-control", type = "number" } })
+                                @Html.ValidationMessageFor(model => model.guestCnt, "", new { @class = "text-danger" })
+                            </div>
+                            @Html.LabelFor(model => model.cellPhone, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                @Html.EditorFor(model => model.cellPhone, new { htmlAttributes = new { @class = "form-control", type = "number" } })
+                                @Html.ValidationMessageFor(model => model.cellPhone, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.dtBegin, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-3">
+                                <div class='input-group date' id='datetimepicker1'>
+                                    @Html.EditorFor(model => model.dtBegin, new { htmlAttributes = new { @class = "form-control", type = "text" } })
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                @Html.DropDownListFor(model => model.beginHH, (SelectList)ViewBag.beginHHList, new { @class = "form-control", style = "width:70px;" })
+                            </div>
+                            <label class="control-label col-md-1">時</label>
+                            <div class="col-md-1">
+                                @Html.DropDownListFor(model => model.beginMM, (SelectList)ViewBag.beginMMList, new { @class = "form-control", style = "width:70px;" })
+                            </div>
+                            <label class="control-label col-md-1">分</label>
+                            @Html.ValidationMessageFor(model => model.dtBegin, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.dtEnd, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-3">
+                                <div class='input-group date' id='datetimepicker2'>
+                                    @Html.EditorFor(model => model.dtEnd, new { htmlAttributes = new { @class = "form-control", type = "text" } })
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                @Html.DropDownListFor(model => model.endHH, (SelectList)ViewBag.endHHList, new { @class = "form-control", style = "width:70px;" })
+                            </div>
+                            <label class="control-label col-md-1">時</label>
+                            <div class="col-md-1">
+                                @Html.DropDownListFor(model => model.endMM, (SelectList)ViewBag.endMMList, new { @class = "form-control", style = "width:70px;" })
+                            </div>
+                            <label class="control-label col-md-1">分</label>
+                            @Html.ValidationMessageFor(model => model.dtEnd, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.area1, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-8">
+                                <div class="col-md-10 row">
+                                    <div class="col-md-5">
+                                        @Html.CheckBox("area1", Model.area1)會議室
+                                    </div>
+                                </div>
+                                <div class="col-md-10 row">
+                                    <div class="col-md-4" style="">
+                                        @Html.CheckBox("area2", Model.area2)生產區域:
+                                    </div>
+                                    <div class="col-md-6" style="text-align:left;">
+                                        @Html.TextBoxFor(m => m.area21, new { @className = "form-control" })
+                                    </div>
+                                </div>
+                                <div class="col-md-10 row">
+                                    <div class="col-md-5">
+                                        @Html.CheckBox("area3", Model.area3)實驗室
+                                    </div>
+                                </div>
+                                <div class="col-md-10 row">
+                                    <div class="col-md-4" style="">
+                                        @Html.CheckBox("area4", Model.area4)其他:
+                                    </div>
+                                    <div class="col-md-6" style="text-align:left;">
+                                        @Html.TextBoxFor(m => m.area41, new { @className = "form-control" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.sMemo, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.TextAreaFor(model => model.sMemo, new { @class = "form-control", style = "", rows = 3 })
+                                @Html.ValidationMessageFor(model => model.sMemo, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="col-md-offset-2 col-md-10 text-center">
+                            <input type="submit" value="送    出" class="btn-lg btn-primary" onclick="return doSubmit();" />
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="box-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    <script src="~/Scripts/jquery.blockUI.js"></script>
+    <script type="text/javascript">
+        function doSubmit() {
+            $.blockUI({ message: '<h2>表單儲存中...</h2>' });
+            return true;
+        }
+        $(function () {
+            var pickerOption = {
+                format: 'YYYY-MM-DD',
+                locale: 'zh-tw',
+                defaultDate: getLocalDateStr()
+            };
+            $('#datetimepicker1').datetimepicker(pickerOption);
+            $('#datetimepicker2').datetimepicker(pickerOption);
+
+            $('textarea').css('max-width', '700px');
+            $('input[type=text]').css('max-width', '700px');
+
+            if ($($('.validation-summary-errors')[0]).text() == "") {
+                $('#billDate').val(getLocalDateStr());
+            }
+
+        });
+    </script>
+}

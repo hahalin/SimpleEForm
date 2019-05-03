@@ -1,0 +1,327 @@
+﻿@model eform.Models.vwDayOffForm
+@using Newtonsoft.Json;
+@using eform.Models;
+@using System.Data;
+@{
+    ViewBag.Title = "請假單(P018A1)";
+    List<FlowMain> dayOffFlowMainList = (List<FlowMain>)ViewBag.dayOffFlowMainList;
+    List<dayOff> dayOffList = (List<dayOff>)ViewBag.dayOffList;
+}
+
+<script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+<script src="~/Scripts/jquery.blockUI.js"></script>
+<script type="text/javascript">
+    $.blockUI({ message: '<h2>資料讀取中...</h2>' });
+</script>
+
+
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap-datetimepicker.min.css" />
+<div class="row">
+    <div class="col-md-10">
+        <div class="box box-primary">
+            <div class="box-header text-center">
+                <div class="box-title ">
+                    <h3><span class="label label-default">@Model.user.Company</span></h3>
+                    <h3><span class="label label-info">@ViewBag.Title</span></h3>
+                </div>
+            </div>
+            <div class="box-body">
+                @using (Html.BeginForm("CreateDayOffForm", "Form", FormMethod.Post, new { id = "fmMain" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-horizontal col-md-10">
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger", style = "font-size:15px;font-weight:bold;" })
+                        <div class="form-group">
+                            <label class="control-label col-md-2">申請人</label>
+                            <div class="col-md-4">
+                                <div class="form-control">@Model.user.workNo-@Model.user.UserCName</div>
+                                <input type="hidden" name="userId" value="@Model.user.Id" />
+                            </div>
+                            @Html.LabelFor(model => model.billDate, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                @Html.EditorFor(model => model.billDate, new { htmlAttributes = new { @class = "form-control", type = "date", @readonly = "readonly" } })
+                                @Html.ValidationMessageFor(model => model.billDate, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.dayOffForm.dtBegin, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-3">
+                                <div class='input-group date' id='datetimepicker1'>
+                                    @Html.EditorFor(model => model.dayOffForm.dtBegin, new { htmlAttributes = new { @class = "form-control", type = "text" } })
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                @Html.DropDownListFor(model => model.beginHH, (SelectList)ViewBag.beginHHList, new { @class = "form-control", style = "width:70px;" })
+                            </div>
+                            <label class="control-label col-md-1">時</label>
+                            <div class="col-md-1">
+                                @Html.DropDownListFor(model => model.beginMM, (SelectList)ViewBag.beginMMList, new { @class = "form-control", style = "width:70px;" })
+                            </div>
+                            <label class="control-label col-md-1">分</label>
+
+                            @Html.ValidationMessageFor(model => model.dayOffForm.dtBegin, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.dayOffForm.dtEnd, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-3">
+                                <div class='input-group date' id='datetimepicker2'>
+                                    @Html.EditorFor(model => model.dayOffForm.dtEnd, new { htmlAttributes = new { @class = "form-control", type = "text" } })
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                @Html.DropDownListFor(model => model.endHH, (SelectList)ViewBag.endHHList, new { @class = "form-control", style = "width:70px;" })
+                            </div>
+                            <label class="control-label col-md-1">時</label>
+                            <div class="col-md-1">
+                                @Html.DropDownListFor(model => model.endMM, (SelectList)ViewBag.endMMList, new { @class = "form-control", style = "width:70px;" })
+                            </div>
+                            <label class="control-label col-md-1">分</label>
+                            @Html.ValidationMessageFor(model => model.dayOffForm.dtEnd, "", new { @class = "text-danger" })
+                            <label class="control-label col-md-1" style="width:90px;">請假時數</label>
+                            <div class="col-md-1">
+                                @Html.TextBoxFor(model => model.dayOffForm.hours, htmlAttributes: new { @class = "form-control", type = "number", step = "0.5", style = "width:80px;" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.dayOffForm.dType, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                @Html.DropDownListFor(model => model.dType, (IEnumerable<SelectListItem>)ViewBag.dTypeList, new { @class = "form-control", style = "max-width:800px;width:100%;" })
+                                @Html.ValidationMessageFor(model => model.dType, "", new { @class = "text-danger" })
+                            </div>
+                            @Html.LabelFor(model => model.dayOffForm.jobAgent, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                @Html.DropDownListFor(model => model.dayOffForm.jobAgent, new List<SelectListItem>(), new { htmlAttributes = new { @class = "form-control select2-input select2" }, style = "max-width:800px;width:100%;" })
+                                @Html.ValidationMessageFor(model => model.dayOffForm.jobAgent, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.dayOffForm.sMemo, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10" style="margin-bottom:10px;">
+                                @Html.TextAreaFor(model => model.dayOffForm.sMemo, htmlAttributes: new { @class = "form-control", rows = "2", style = "width:630px;" })
+                                @Html.ValidationMessageFor(model => model.dayOffForm.sMemo, "", new { @class = "text-danger" })
+                            </div>
+                            <br />
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-2">申請程序說明</label>
+                            <div class="col-md-12 col-md-offset-1" style="margin-top:-40px;margin-left:125px;color:#3664bc;font-family:微軟正黑體;font-size:15px;font-weight:700;white-space: pre-line;">
+                                @ViewBag.wording
+                                @*<ol>
+                                        <li>
+                                            申請人填寫→部門主管簽核完成→職務代理人簽章完成→行政總務部歸檔。
+                                        </li>
+                                        <li>
+                                            如為不可抗拒之因素需臨時請假, 請第一時間電話通知代理人or部門主管, 並於事後補辦請假。
+                                        </li>
+                                        <li>
+                                            凡屬公假/婚假/產假/喪假/陪產假/病假..等皆需附證明文件, (事假/特休除外)。
+                                        </li>
+                                        <li>
+                                            申請人務必善盡職責告知職務代理人需協助之工作事項。
+                                        </li>
+                                        <li>
+                                            如因加班而補休, 請加註與何者&加班日期及由何者指派, 若無詳盡視為特休or事假。
+                                        </li>
+                                        <li>
+                                            補休請於年度結束前請畢。(於10月至12月發生的補休可遞延至下一年度請畢)
+                                        </li>
+                                    </ol>*@
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-10 text-center">
+                                <input type="submit" value="送出" class="btn-lg btn-primary" onclick="return doSubmit();" />
+                            </div>
+                        </div>
+                    </div>
+                }
+
+            </div>
+            <div class="box-footer">
+
+            </div>
+        </div>
+
+        <div class="box box-info">
+            <div class="box-title text-center">
+                <h3><span class="label label-info">本年度可休特補休資料</span></h3>
+            </div>
+            <div class="box-body no-padding">
+                <div id="tbdivContainer">
+                    <div id="tbdiv" style="width:100%;">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="box box-success">
+            <div class="box-title text-center">
+                <h3><span class="label label-success">請假累計清單</span></h3>
+            </div>
+            <div class="box-body">
+                <table class="table table-bordered table-hover table-striped">
+                    <tr>
+                        <th>
+                            申請日期
+                        </th>
+                        <th>
+                            開始時間
+                        </th>
+                        <th>
+                            結束時間
+                        </th>
+                        <th>
+                            假別
+                        </th>
+                        <th>
+                            時數
+                        </th>
+                    </tr>
+                    @foreach (var flow in dayOffFlowMainList)
+                    {
+                        var dayoff = dayOffList.Where(x => x.flowId == flow.id).FirstOrDefault();
+                        <tr>
+                            <td>
+                                @Convert.ToDateTime(flow.billDate).ToString("yyyy-MM-dd")
+                            </td>
+                            <td>
+                                @Convert.ToDateTime(dayoff.dtBegin).ToString("yyyy-MM-dd HH:mm")
+                            </td>
+                            <td>
+                                @Convert.ToDateTime(dayoff.dtEnd).ToString("yyyy-MM-dd HH:mm")
+                            </td>
+                            <td>
+                                @dayoff.dType
+                            </td>
+                            <td>
+                                @Math.Round(dayoff.hours, 1)
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript" src="~/Scripts/moment-with-locales.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap-datetimepicker.min.js"></script>
+    <link href="~/Scripts/tabulator-master/dist/css/tabulator.min.css" rel="stylesheet" />
+    <script src="~/Scripts/tabulator-master/dist/js/tabulator.min.js"></script>
+    <script type="text/javascript">
+        function doSubmit() {
+            $.blockUI({ message: '<h2>表單儲存中...</h2>' });
+            return true;
+        }
+        function formatRepoSelection(repo) {
+            return repo.id + "-" + repo.text;
+        }
+        $(function () {
+            var pickerOption = {
+                format: 'YYYY-MM-DD',
+                locale:'zh-tw',
+                defaultDate: getLocalDateStr()
+            };
+            $('#datetimepicker1').datetimepicker(pickerOption);
+            $('#datetimepicker2').datetimepicker(pickerOption);
+
+            $('#dayOffForm_dtBegin').val(getLocalDateStr());
+
+            $('textarea').css('max-width', '700px');
+            $('#prjId').css('max-width', '700px');
+
+            if ($($('.validation-summary-errors')[0]).text() == "")
+            {
+                $('#billDate').val(getLocalDateStr());
+            }
+
+
+            var data = @Html.Raw((ViewBag.userlist));
+
+            $("#dayOffForm_jobAgent").select2({
+                data: data,
+                placeholder: '選擇職務代理人'
+                ,templateSelection: formatRepoSelection
+            });
+
+            var depList = @Html.Raw(JsonConvert.SerializeObject(ViewBag.depList));
+            var poList = @Html.Raw(JsonConvert.SerializeObject(ViewBag.poList));
+            var cboDepList = $('#depNo');
+            var cboPoList = $('#poNo');
+
+            $(cboDepList).append(
+                $('<option></option>').val("").html("選擇部門")
+            );
+            $(cboPoList).append(
+                $('<option></option>').val("").html("選擇部門")
+            );
+            $.each(poList, function (val, obj) {
+                $(cboPoList).append(
+                    $('<option></option>').val(obj.poNo).html(obj.depNm)
+                );
+            });
+
+            if ($('#poNo option').length > 1)
+            {
+                $('#poNo').val($('#poNo option:nth-child(2)').val());
+            }
+
+            var data = [];
+
+            @if (ViewBag.tb != null)
+            {
+                DataTable tb = (DataTable)ViewBag.tb;
+
+                foreach(DataRow r in tb.Rows)
+                {
+                    @:obj = {};
+                    foreach(DataColumn col in tb.Columns)
+                    {
+                        @:obj["@col.ColumnName"] = "@r[col.ColumnName].ToString()";
+                    }
+                    @:data.push(obj);
+                }
+            }
+
+            $("#tbdiv").tabulator({
+                height: "auto",
+                pagination: "local",
+                paginationSize: 20,
+                columns: [
+                    { title: '類別', field: 'hType' },
+                    //{ title: '工號', field: 'workNo' },
+                    //{ title: '姓名', field: 'cName' },
+                    { title: '前期轉入', field: 'm0', editor: 'input', editor: false, validator: ["min:0", "numeric"] },
+                    { title: '1月', field: 'm1', editor: 'input', editor: false, validator: ["min:0", "numeric"] },
+                    { title: '2月', field: 'm2', editor: 'input', editor: false, validator: ["min:0", "numeric"] },
+                    { title: '3月', field: 'm3', editor: 'input', editor: false, validator: ["min:0", "numeric"] },
+                    { title: '4月', field: 'm4', editor: 'input', editor: false, validator: ["min:0", "numeric"] },
+                    { title: '5月', field: 'm5', editor: 'input', editor: false, validator: ["min:0", "numeric"] },
+                    { title: '6月', field: 'm6', editor: 'input', editor: false, validator: ["min:0", "numeric"] },
+                    { title: '7月', field: 'm7', editor: 'input', editor: false, validator: ["min:0", "numeric"] },
+                    { title: '8月', field: 'm8', editor: 'input', editor: false, validator: ["min:0", "numeric"] },
+                    { title: '9月', field: 'm9', editor: 'input', editor: false, validator: ["min:0", "numeric"] },
+                    { title: '10月', field: 'm10', editor: 'input', editor: false, validator: ["min:0", "numeric"] },
+                    { title: '11月', field: 'm11', editor: 'input', editor: false, validator: ["min:0", "numeric"] },
+                    { title: '12月', field: 'm12', editor: 'input', editor: false, validator: ["min:0", "numeric"] },
+                ],
+                data: data
+            });
+
+            $.unblockUI();
+
+        });
+    </script>
+}

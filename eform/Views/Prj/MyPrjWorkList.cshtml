@@ -1,0 +1,74 @@
+﻿@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq
+@model IEnumerable<eform.Models.vwPrjWork>
+@{
+    ViewBag.Title = "個人工時報表清單";
+    Layout = "~/Views/Shared/_PrjLayoutBase.cshtml";
+}
+
+<div class="row">
+    <div class="col-md-10">
+        <div class="box">
+            <div class="box-title text-center">
+                <h3><span class="" style="font-weight:bold;">群翌能源股份有限公司</span></h3>
+                <h3><span class="label label-success">個人工時報表清單</span></h3>
+            </div>
+
+            <div class="box-header">
+                <div class="box-title">
+                    <a href="@Url.Action("createPrjWork")" class="btn btn-primary">新增</a>
+                </div>
+            </div>
+            <div class="box-body">
+                <table class="table table-hover table-bordered table-striped col-md-8" style="font-size:13px;">
+                    <tr>
+                        <th style="width:100px;"></th>
+                        <th style="width:110px;">
+                            @Html.DisplayNameFor(model => model.y)
+                        </th>
+                        <th style="width:120px;">
+                            @Html.DisplayNameFor(model => model.w)
+                        </th>
+                    </tr>
+                    <tbody>
+                        @if (Model != null)
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <a href="@Url.Action("EditPrjWork", new { id = item.id })" class="btn btn-info">修改</a>
+                                        <a href="#" data-y="@item.y" date-w="@item.w" data-id="@item.id" class="btn btn-danger" style="display:none;" onclick="checkDelete();">刪除</a>
+                                    </td>
+                                    <td>
+                                    @Html.DisplayFor(modelItem => item.y)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.w)
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script type="text/javascript">
+        function checkDelete() {
+            event.preventDefault();
+            var id = $(event.target).attr('data-id');
+            var r = confirm("確定刪除?");
+            if (r == true)
+            {
+                var url = "@Url.Action("Delete", new {id="xxxx"})";
+                url = url.replace("xxxx", id);
+                document.location = url;
+            }
+        }
+    </script>
+}

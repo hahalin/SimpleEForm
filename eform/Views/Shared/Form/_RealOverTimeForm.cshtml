@@ -1,0 +1,67 @@
+﻿@using eform.Models;
+@{
+    vwRealOverTime subModel = (vwRealOverTime)ViewBag.SubModel;
+    FlowMain flowMain = (FlowMain)ViewBag.flowMain;
+}
+
+<div class="box-body">
+    <div class="form-horizontal col-md-10" style="margin-top:10px;">
+        <div class="form-group">
+            <label class="control-label col-md-2">單號</label>
+            <div class="col-md-4">
+                <div class="form-control">@Model.billNo</div>
+            </div>
+            <div class="col-md-6"></div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-2">申請人</label>
+            <div class="col-md-4">
+                <div class="form-control">@subModel.user.workNo-@subModel.user.UserCName</div>
+            </div>
+            @Html.LabelFor(model => subModel.billDate, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-4">
+                @{
+                    string billdate = ((DateTime)flowMain.billDate).ToString("yyyy-MM-dd");
+                }
+                <div class="form-control">
+                    @billdate
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => subModel.dtBegin, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-4">
+                <div class="form-control">@Convert.ToDateTime(subModel.dtBegin).ToString("yyyy-MM-dd HH:mm")</div>
+            </div>
+            @Html.LabelFor(model => subModel.dtEnd, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-4">
+                <div class="form-control">@Convert.ToDateTime(subModel.dtEnd).ToString("yyyy-MM-dd HH:mm")</div>
+            </div>
+        </div>
+        <div class="form-group">
+            @*@Html.LabelFor(model => subModel.prjId, htmlAttributes: new { @class = "control-label col-md-2" })*@
+            <div class="col-md-4" style="display:none;">
+                <div class="form-control">@subModel.prjId</div>
+            </div>
+            @Html.LabelFor(model => subModel.hours, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-4">
+                <div class="form-control">@subModel.hours.ToString("#0.0")</div>
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => subModel.sMemo, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <p style="white-space: pre-line">@subModel.sMemo</p>
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => subModel.sMemo2, htmlAttributes: new { @class = "control-label col-md-2 text-nowrap" })
+            <div class="col-md-9">
+                <p style="white-space: pre-line">@subModel.sMemo2</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+

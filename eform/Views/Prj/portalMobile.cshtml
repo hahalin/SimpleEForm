@@ -1,0 +1,118 @@
+﻿@using eform.Models
+@model eform.Models.PrjPortal
+@{
+    ViewBag.Title = "portal";
+    Layout = "~/Views/Shared/_PrjLayout.cshtml";
+    
+}
+<section class="content">
+    <div class="row" style="margin-bottom:10px;">
+        <div class="col-md-12">
+            <a href="@Url.Action("myPrjs","prj",new{mobile=ViewBag.mobile})" class="btn btn-primary"><i class="fa fa-list"></i>返回我的專案清單</a>
+        </div>
+    </div>
+    <div class="row" id="divA">
+                    <div class="box box-primary">
+                        <div class="box-header">
+                            <h3 class="box-title">專案編號：@Model.prjCodeObj.code @Model.prjCodeObj.nm</h3>
+                        </div>
+                    </div>
+            
+                    <div class="box box-primary">
+                        <div class="box-header">
+                            <a href="@Url.Action("CreateForumItem","Prj",new {prjId=Model.prjCodeObj.id,code=Model.prjCodeObj.code,mobile=ViewBag.mobile})" class="btn btn-primary">新增</a>
+
+                        </div>
+                        <div class="box-body" style="overflow:scroll;width:100%;margin:0;padding:0;">
+                            <table class="table table-bordered table-hover table-striped table-responsive">
+                                <thead>
+                                    <tr>
+                                        <th style="max-width_:160px;"></th>
+                                        <th style="width:60px;">序號</th>
+                                        <th style="width:130px;">作者</th>
+                                        <th style="width:135px;">日期時間</th>
+                                        <th>主題</th>
+                                        @*<th>內容</th>
+                                            <th style="width:220px;">附件</th>*@
+                                        <th>回覆</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (vwForumItem fitem in Model.forumList)
+                                    {
+                                    <tr>
+                                        <td>
+                                            
+                                            <a href="@Url.Action("ReplyForumItem", "Prj", new { fitem.id, fitem.prjId, code = Model.prjCodeObj.code,mobile=ViewBag.mobile })" class="btn btn-info">回覆</a>
+                                            <a href="@Url.Action("ReplyForumItem", "Prj", new { fitem.id, fitem.prjId, code = Model.prjCodeObj.code, isPrivate = true,mobile=ViewBag.mobile })" class="btn btn-default">私訊</a>
+                                            
+                                            @{ 
+                                                bool canModify = false;
+                                                canModify = Model.prjCodeObj.owner == User.Identity.Name
+                                                            || fitem.workNo == User.Identity.Name
+                                                            || Model.vPMList.Where(x => x.workNo == User.Identity.Name).Count() > 0;
+                                            }
+
+                                            @if (canModify)
+                                            {
+                                                <br />
+                                                <a href="@Url.Action("DeleteForumItem","Prj",new {fitem.id,code=Model.prjCodeObj.code,page="portal",mobile=ViewBag.mobile})" class="btn-sm btn-danger" onclick="return confirm('確定刪除?');">刪除</a>
+
+                                                <a href="@Url.Action("UpdateForumItem","Prj",new {fitem.id,prjId=fitem.prjId,code=Model.prjCodeObj.code,page="portal",mobile=ViewBag.mobile})" class="btn-sm btn-warning">修改</a>
+                                            }
+                                        </td>
+                                        <td>
+                                            @fitem.seq
+                                        </td>
+                                        <td>
+                                            @fitem.creator.UserCName
+                                        </td>
+                                        <td>
+                                            @fitem.billDate.ToString("yyyy-MM-dd HH:mm:ss")
+                                        </td>
+                                        <td>
+                                            <a href="@Url.Action("ForumDetail","Prj",new { id = fitem.id,code= Model.prjCodeObj.code,mobile=ViewBag.mobile })">@fitem.subject</a>
+                                        </td>
+                                        <td>
+                                            @fitem.replyCnt
+                                        </td>
+                                    </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+            
+    </div>
+</section>
+
+@Html.Partial("Prj/_PrjEvent")
+
+<style>
+    .table tbody tr.highlight td {
+        background-color: #ddd;
+        background-color: skyblue;
+        color: darkblue;
+    }
+</style>
+
+
+@section scripts
+   {
+    <script type="text/javascript">
+
+        function loadPrjEvent(id) {
+
+        }
+
+        $(function () {
+
+            //$('#btnAddEvent').on('click', function () {
+            //    $('#fmApplyEvent')[0].reset();
+            //    $('#winEventInput').modal('show');
+            //});
+
+        });
+    </script>
+}

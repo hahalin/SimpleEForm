@@ -1,0 +1,354 @@
+﻿@using eform.Models
+@model eform.Models.PrjPortal
+@{
+    ViewBag.Title = "portal";
+    Layout = "~/Views/Shared/_PrjLayout.cshtml";
+}
+<section class="content">
+    <div class="row" style="margin-bottom:10px;">
+        <div class="col-md-12">
+            <a href="@Url.Action("myPrjs","prj")" class="btn btn-primary"><i class="fa fa-list"></i>返回我的專案清單</a>
+        </div>
+    </div>
+    <div class="row" style="overflow:auto;width:1550px;" id="divA">
+        <div class="col-md-9">
+            <div class="row col-md-12">
+                <div class="col-md-5">
+                    <div class="box box-info col-md-4" style="width_:500px;overflow:auto;">
+                        <div class="box-header">
+                            <h3 class="box-title">專案資訊</h3>
+                        </div>
+                        <div class="box-body">
+                            <table class="table table-bordered table-hover">
+                                <tr>
+                                    <th>專案編號</th>
+                                    <td colspan="3">@Model.prjCodeObj.code</td>
+                                </tr>
+                                <tr>
+                                    <th>專案名稱</th>
+                                    <td class="text-left" colspan="3">@Model.prjCodeObj.nm</td>
+                                </tr>
+                                <tr>
+                                    <th>專案經理</th>
+                                    <td class="text-left" colspan="3">@Model.prjCodeObj.owner</td>
+                                </tr>
+                                <tr>
+                                    <th>建立人</th>
+                                    <td class="text-left">@Model.prjCodeObj.creator</td>
+                                    <th>建立時間</th>
+                                    <td class="text-left">@Convert.ToDateTime(Model.prjCodeObj.createDate).ToString("yyyy-MM-dd")</td>
+                                </tr>
+                                <tr>
+                                    <th>備註1</th>
+                                    <td class="text-left">@Model.prjCodeObj.mmo1</td>
+                                    <th>備註2</th>
+                                    <td class="text-left">@Model.prjCodeObj.mmo2</td>
+                                </tr>
+                                <tr>
+                                    <th>備註3</th>
+                                    <td class="text-left">@Model.prjCodeObj.mmo3</td>
+                                    <th>備註4</th>
+                                    <td class="text-left">@Model.prjCodeObj.mmo4</td>
+                                </tr>
+                                <tr>
+                                    <th>備註5</th>
+                                    <td class="text-left">@Model.prjCodeObj.mmo5</td>
+                                    <th>備註6</th>
+                                    <td class="text-left">@Model.prjCodeObj.mmo5</td>
+                                </tr>
+                                <tr>
+                                    <th>備註7</th>
+                                    <td class="text-left">@Model.prjCodeObj.mmo7</td>
+                                    <th>備註8</th>
+                                    <td class="text-left">@Model.prjCodeObj.mmo8</td>
+                                </tr>
+                                <tr>
+                                    <th>備註9</th>
+                                    <td class="text-left">@Model.prjCodeObj.mmo9</td>
+                                    <th>備註10</th>
+                                    <td class="text-left">@Model.prjCodeObj.mmo10</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="box box-danger">
+                        <div class="box-header">
+                            <h3 class="box-title">專案月曆</h3>
+                        </div>
+                        <div class="box-header">
+                            <a class="btn btn-primary" id="btnAddEvent" href="@Url.Action("createEvent","Prj",new {prjid=Model.prjCodeObj.id})">
+                                新增
+                            </a>
+                        </div>
+                        <div class="box-body">
+                            <table class="table table-bordered" style="max-height:450px;overflow:auto;display:block;">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>專案編號</th>
+                                        <th>單號</th>
+                                        <th>起訖時間</th>
+                                        <th>標題</th>
+                                        <th>內容</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (vwPrjEvent evt in Model.vwEventList)
+                                    {
+                                    <tr>
+                                        <td>
+                                            <a class="btn-sm btn-danger" href="@Url.Action("deleteEvent","Prj",new {id=evt.id,code=Model.prjCodeObj.code})" onclick="return confirm('確定刪除?');">
+                                                刪除
+                                            </a>
+                                        </td>
+                                        <td>
+                                            @evt.prjStr
+                                        </td>
+                                        <td>
+                                            @evt.billNo
+                                        </td>
+                                        <td>
+                                            @evt.sBeginDate ~ @evt.sEndDate
+                                        </td>
+                                        <td>
+                                            @evt.subject
+                                        </td>
+                                        <td>
+                                            @evt.sMemo
+                                        </td>
+                                    </tr>
+                                    }
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row col-md-12">
+                <div class="col-md-12" style="width:1100px;">
+                    <div class="box box-primary">
+                        <div class="box-header">
+                            <h3 class="box-title">專案討論區</h3>
+                        </div>
+                        <div class="box-header">
+                            <a href="@Url.Action("CreateForumItem","Prj",new {prjId=Model.prjCodeObj.id,code=Model.prjCodeObj.code})" class="btn btn-primary">新增</a>
+
+                            @if (@Model.forumList.Count() == 0)
+                            {
+                            }
+                            else
+                            {
+
+                            }
+                        </div>
+                        <div class="box-body">
+                            <table class="table table-bordered table-hover table-striped">
+                                <thead>
+                                    <tr>
+                                        <th style="width:135px;"></th>
+                                        <th style="width:60px;">序號</th>
+                                        <th style="width:130px;">正本/副本</th>
+                                        <th style="width:130px;">作者</th>
+                                        <th style="width:135px;">日期時間</th>
+                                        <th>主題</th>
+                                        @*<th>內容</th>
+                                            <th style="width:220px;">附件</th>*@
+                                        <th>回覆</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (vwForumItem fitem in Model.forumList)
+                                    {
+                                    <tr>
+                                        <td>
+                                            
+                                            <a href="@Url.Action("ReplyForumItem", "Prj", new { fitem.id, fitem.prjId, code = Model.prjCodeObj.code })" class="btn btn-info">回覆</a>
+                                            <a href="@Url.Action("ReplyForumItem", "Prj", new { fitem.id, fitem.prjId, code = Model.prjCodeObj.code, isPrivate = true })" class="btn btn-default">私訊</a>
+                                            
+                                            @{ 
+                                                bool canModify = false;
+                                                canModify = Model.prjCodeObj.owner == User.Identity.Name
+                                                            || fitem.workNo == User.Identity.Name
+                                                            || Model.vPMList.Where(x => x.workNo == User.Identity.Name).Count() > 0;
+                                            }
+
+                                            @if (canModify)
+                                            {
+                                                <br />
+                                                <a href="@Url.Action("DeleteForumItem","Prj",new {fitem.id,code=Model.prjCodeObj.code,page="portal"})" class="btn-sm btn-danger" onclick="return confirm('確定刪除?');">刪除</a>
+
+                                                <a href="@Url.Action("UpdateForumItem","Prj",new {fitem.id,prjId=fitem.prjId,code=Model.prjCodeObj.code,page="portal"})" class="btn-sm btn-warning">修改</a>
+                                            }
+                                        </td>
+                                        <td>
+                                            @fitem.seq
+                                        </td>
+                                        <td>
+                                            正:@fitem.othersA <br />
+                                            副:@fitem.othersB
+                                        </td>
+                                        <td>
+                                            @fitem.creator.UserCName
+                                        </td>
+                                        <td>
+                                            @fitem.billDate.ToString("yyyy-MM-dd HH:mm:ss")
+                                        </td>
+                                        <td>
+                                            <a href="@Url.Action("ForumDetail","Prj",new { id = fitem.id,code= Model.prjCodeObj.code })">@fitem.subject</a>
+                                        </td>
+                                        @*<td>
+                                                <p style="white-space: pre-line;background-color:white;border-bottom:rgb(210, 214, 222) 1px solid;padding:0px;vertical-align:top;margin-top:-20px;overflow-auto;">
+                                                    @fitem.smemo
+                                                </p>
+                                            </td>*@
+                                        @*<td>
+                                                <ul>
+                                                    @if (!String.IsNullOrEmpty(fitem.sfile))
+                                                    {
+                                                        <li>
+                                                            <a href="@Url.Content("/upload/"+HttpUtility.UrlDecode(@fitem.sfile))" target="_blank">
+                                                                @fitem.sfile.Split('\\')[2]
+                                                            </a>
+                                                        </li>
+                                                    }
+                                                    @if (!String.IsNullOrEmpty(fitem.sfile2))
+                                                    {
+                                                        <li>
+                                                            <a href="@Url.Content("/upload/"+HttpUtility.UrlDecode(@fitem.sfile2))" target="_blank">
+                                                                @fitem.sfile2.Split('\\')[2]
+                                                            </a>
+                                                        </li>
+                                                    }
+                                                    @if (!String.IsNullOrEmpty(fitem.sfile3))
+                                                    {
+                                                        <li>
+                                                            <a href="@Url.Content("/upload/"+HttpUtility.UrlDecode(@fitem.sfile3))" target="_blank">
+                                                                @fitem.sfile3.Split('\\')[2]
+                                                            </a>
+                                                        </li>
+                                                    }
+                                                    @if (!String.IsNullOrEmpty(fitem.sfile4))
+                                                    {
+                                                        <li>
+                                                            <a href="@Url.Content("/upload/"+HttpUtility.UrlDecode(@fitem.sfile4))" target="_blank">
+                                                                @fitem.sfile4.Split('\\')[2]
+                                                            </a>
+                                                        </li>
+                                                    }
+                                                </ul>
+
+                                            </td>*@
+                                        <td>
+                                            @fitem.replyCnt
+                                        </td>
+                                    </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3" style="margin-left:-40px;">
+            <div class="box box-primary" style="">
+                <div class="box-header">
+                    <h3 class="box-title">專案成員</h3>
+                </div>
+                <div class="box-header">
+                    <a href="@Url.Action("CreatePrjPM","Prj",new {pid=Model.prjCodeObj.id,code=Model.prjCodeObj.code})" class="btn btn-primary">新增</a>
+                </div>
+                <div class="box-body">
+                    <table class="table table-bordered">
+                        <thead>
+                        <th></th>
+                        <th>
+                            人員
+                        </th>
+                        <th>
+                            職稱
+                        </th>
+                        </thead>
+                        <tbody>
+                            @foreach (vwEmployee emp in Model.vPMList)
+                            {
+                                <tr>
+                                    <td>
+                                        @{ 
+                                            prjPM pmUser = Model.PMList.Where(x => x.WorkNo == emp.workNo).FirstOrDefault();
+                                            string pmTitle = pmUser.Title;
+                                            string pmUserId = pmUser.id;
+                                        }
+                                        @if (Model.prjCodeObj.owner == User.Identity.Name)
+                                        {
+                                            using (Html.BeginForm("DelPrjPM", "Prj", FormMethod.Post))
+                                            {
+                                                string pmId = "";
+                                                try
+                                                {
+                                                    pmId = Model.PMList.Where(x => x.WorkNo == emp.workNo && x.pid == Model.prjCodeObj.id).FirstOrDefault().id;
+
+                                                }
+                                                catch (Exception ex)
+                                                {
+                                                }
+
+                                                <input type="hidden" name="hid" value="@pmId" />
+                                                <input type="hidden" name="code" value="@Model.prjCodeObj.code" />
+                                                <input type="submit" value="刪除" onclick="return confirm('確定刪除?');" class="btn-sm btn-danger" />
+                                            }
+
+                                            <a href="@Url.Action("UpdatePrjPM", "Prj", new { id = pmUserId, code = Model.prjCodeObj.code })" class="btn-sm btn-info">編輯</a>
+                                        }
+                                    </td>
+                                    <td>
+                                        @emp.workNo @emp.UserCName
+                                    </td>
+                                    <td>
+                                        @pmTitle
+                                    </td>
+                                </tr>
+                                                }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+@Html.Partial("Prj/_PrjEvent")
+
+<style>
+    .table tbody tr.highlight td {
+        background-color: #ddd;
+        background-color: skyblue;
+        color: darkblue;
+    }
+</style>
+
+
+@section scripts
+   {
+    <script type="text/javascript">
+
+        function loadPrjEvent(id) {
+
+        }
+
+        $(function () {
+
+            //$('#btnAddEvent').on('click', function () {
+            //    $('#fmApplyEvent')[0].reset();
+            //    $('#winEventInput').modal('show');
+            //});
+
+        });
+    </script>
+}

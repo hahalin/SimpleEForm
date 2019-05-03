@@ -80,7 +80,7 @@ namespace eform.Models
         public string workNo { get; set; }
 
         [Required]
-        [StringLength(100, ErrorMessage = "{0} 的長度至少必須為 {2} 個字元。", MinimumLength = 4)]
+        [StringLength(100, ErrorMessage = "{0} 的長度至少必須為 {2} 個字元。", MinimumLength = 6)]
         [DataType(DataType.Password)]
         [Display(Name = "密碼")]
         public string Password { get; set; }
@@ -91,6 +91,17 @@ namespace eform.Models
         public string ConfirmPassword { get; set; }
     }
 
+    public class vwRole
+    {
+        public string Id { get; set; }
+        [Display(Name = "Role")]
+        [Required]
+        public string Name { get; set; }
+        [Display(Name = "描述")]
+        public string Description { get; set; }
+        public bool selected { get; set; } = false;
+    }
+
     public class ResetPasswordViewModel
     {
         [Required]
@@ -99,7 +110,7 @@ namespace eform.Models
         public string Email { get; set; }
 
         [Required]
-        [StringLength(100, ErrorMessage = "{0} 的長度至少必須為 {2} 個字元。", MinimumLength = 4)]
+        [StringLength(100, ErrorMessage = "{0} 的長度至少必須為 {2} 個字元。", MinimumLength = 6)]
         [DataType(DataType.Password)]
         [Display(Name = "密碼")]
         public string Password { get; set; }

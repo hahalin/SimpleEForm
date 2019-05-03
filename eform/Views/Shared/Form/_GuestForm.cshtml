@@ -1,0 +1,132 @@
+﻿@using eform.Models;
+@{
+    vwGuestForm subModel = (vwGuestForm)ViewBag.SubModel;
+    FlowMain flowMain = (FlowMain)ViewBag.flowMain;
+}
+
+<div class="box-body">
+    <div class="form-horizontal col-md-10">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger", style = "font-size:15px;font-weight:bold;" })
+
+        <div class="form-group">
+            <label class="control-label col-md-2">申請人</label>
+            <div class="col-md-4">
+                <div class="form-control">@Model.user.workNo-@Model.user.UserCName</div>
+                <input type="hidden" name="worker" value="@Model.user.workNo" />
+            </div>
+            @Html.LabelFor(model => subModel.requestDate, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-4">
+                <div class="form-control">@Convert.ToDateTime(Model.requestDate).ToString("yyyy-MM-dd")</div>
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => subModel.toDep, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="form-control">
+                    @subModel.toDep
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => subModel.to, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="form-control">
+                    @subModel.to
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => subModel.subject, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="form-control">
+                    @subModel.subject
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => subModel.guestCmp, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="form-control">
+                    @subModel.guestCmp
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => subModel.guestName, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="form-control">
+                    @subModel.guestName
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => subModel.guestCnt, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-4">
+                <div class="form-control">
+                    @subModel.guestCnt
+                </div>
+            </div>
+            @Html.LabelFor(model => subModel.cellPhone, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-4">
+                <div class="form-control">
+                    @subModel.cellPhone
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => subModel.dtBegin, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-3">
+                <div class="form-control">
+                    @Convert.ToDateTime(subModel.dtBegin).ToString("yyyy/MM/dd HH:mm")
+                </div>
+            </div>
+            @Html.LabelFor(model => subModel.dtEnd, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-3">
+                <div class="form-control">
+                    @Convert.ToDateTime(subModel.dtEnd).ToString("yyyy/MM/dd HH:mm")
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => subModel.area1, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-8">
+                <div class="col-md-10 row">
+                    <div class="col-md-5">
+                        @Html.CheckBox("area1", subModel.area1, new { @disabled = "disabled" })會議室
+                    </div>
+                </div>
+                <div class="col-md-10 row">
+                    <div class="col-md-4" style="">
+                        @Html.CheckBox("area2", subModel.area2, new { @disabled = "disabled" })生產區域:
+                    </div>
+                    <div class="col-md-6" style="text-align:left;">
+                        @subModel.area21
+                    </div>
+                </div>
+                <div class="col-md-10 row">
+                    <div class="col-md-5">
+                        @Html.CheckBox("area3", subModel.area3,new { @disabled = "disabled" })實驗室
+                    </div>
+                </div>
+                <div class="col-md-10 row">
+                    <div class="col-md-4" style="">
+                        @Html.CheckBox("area4", subModel.area4, new { @disabled = "disabled" })其他:
+                    </div>
+                    <div class="col-md-6" style="text-align:left;">
+                        @subModel.area41
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => subModel.sMemo, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <p style="white-space: pre-line">@subModel.sMemo</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+

@@ -1,0 +1,420 @@
+﻿@model eform.Models.vwEmployee
+@using Newtonsoft.Json;
+@using eform.Models;
+@{
+}
+<h4 style="margin-top:0;padding-top:0;">@ViewBag.Title</h4>
+<div class="row">
+    <div class="col-md-10">
+        <div class="box">
+            <div class="box-header">
+                <a class="btn btn-info" href="@Url.Action("Index")"><i class="fa fa-list"></i>員工清單</a>
+            </div>
+            @using (Html.BeginForm("Edit", "Employee", FormMethod.Post, new { name = "fmEmployee", id = "fmEmployee" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-horizontal" style="margin-left:0;padding-left:10px;">
+                    <hr />
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    @Html.HiddenFor(model => model.Id)
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.workNo, htmlAttributes: new { @class = "control-label col-md-1" })
+                        <div class="col-md-3">
+                            @Html.EditorFor(model => model.workNo, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.workNo, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.UserCName, htmlAttributes: new { @class = "control-label col-md-1" })
+                        <div class="col-md-3">
+                            @Html.EditorFor(model => model.UserCName, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.UserCName, "", new { @class = "text-danger" })
+                        </div>
+                        @Html.LabelFor(model => model.UserEName, htmlAttributes: new { @class = "control-label col-md-1" })
+                        <div class="col-md-3">
+                            @Html.EditorFor(model => model.UserEName, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.UserEName, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "control-label col-md-1" })
+                        <div class="col-md-3">
+                            @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+                        </div>
+                        @Html.LabelFor(model => model.beginWorkDate, htmlAttributes: new { @class = "control-label col-md-1" })
+                        <div class="col-md-3">
+                            @Html.EditorFor(model => model.sBeginWorkDate, new { htmlAttributes = new { @class = "form-control", type = "date" } })
+                            @Html.ValidationMessageFor(model => model.beginWorkDate, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    @if (ViewBag.EditMode == "Create")
+                    {
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Password, htmlAttributes: new { @class = "control-label col-md-1" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.rePassword, htmlAttributes: new { @class = "control-label col-md-1" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.rePassword, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.rePassword, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    }
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label col-md-1" })
+                        <input type="hidden" name="hPoList" id="hPoList" />
+                        <div class="col-md-10" id="divPoList">
+                            <button id="btnSelPo" type="button" data-toggle="modal" data-target="#WinSelPo">
+                                <i class="fa fa-search-plus"></i>加入職稱
+                            </button>
+                            <br />
+                            <ul class="list-group col-md-12" id="ulPoList"></ul>
+                        </div>
+                    </div>
+                    <!--polist-->
+                    <div class="form-group">
+                        <label class="control-label col-md-1 text-nowrap">系統權限</label>
+                        <div class="col-md-10">
+                            @foreach (vwRole role in ViewBag.Roles)
+                            {
+                                if (role.selected)
+                                {
+                                    <input type="checkbox" checked value="@role.Name" name="roles" />
+                                }
+                                else
+                                {
+                                    <input type="checkbox" value="@role.Name" name="roles" />
+                                }
+                                @role.Description
+                                <br />
+                            }
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            @if (ViewBag.EditMode == "Edit")
+                            {
+                                <a class="btn btn-warning" href="@Url.Action("ChangePassword",new { id = Model.Id })">
+                                    <i class="fa fa-pencil"></i>
+                                    修改密碼
+                                </a>
+                            }
+                            <input type="submit" value="儲存" class="btn btn-primary" onclick="return doSubmit();">
+                            <a class="btn btn-default" href="@Url.Action("Index")"><i class="fa fa-ban"></i>取消</a>
+                        </div>
+                    </div>
+                    <br />
+                </div>
+            }
+
+
+            <div class="modal fade col-md-12" id="WinSelPo" tabindex="-1" role="dialog" aria-labelledby="WinSelPoLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            職稱選擇
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-horizontal">
+                                <div class="form-group">
+                                    <label class="control-label col-md-2">處級</label>
+                                    <div class="col-md-8">
+                                        <select id="cboDepList1"></select>
+                                        <select id="cboPoList1"></select>                                        
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2">部門</label>
+                                    <div class="col-md-8">
+                                        <select id="cboDepList2"></select>
+                                        <select id="cboPoList2"></select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2">課別</label>
+                                    <div class="col-md-8">
+                                        <select id="cboDepList3"></select>
+                                        <select id="cboPoList3"></select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="text-center">
+                                <button type="button" class="btn btn-primary" id="btnAddPo"><i class="fa fa-plus"></i>加入</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-undo"></i>取消</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @section Scripts {
+                @Scripts.Render("~/bundles/jqueryval")
+
+                <script type="text/javascript">
+                    var depList = @Html.Raw(JsonConvert.SerializeObject(ViewBag.allDep));
+                    var poList = @Html.Raw(JsonConvert.SerializeObject(ViewBag.allPo));
+                    var currentPoList =@Html.Raw(JsonConvert.SerializeObject(ViewBag.currentPoList));
+                    if (currentPoList == null)
+                    {
+                        currentPoList = [];
+                    }
+                    function updatePoListUI()
+                    {
+                        $("#ulPoList li").remove();
+                        $.each(currentPoList, function (idx, obj) {
+                            var depfilter = depList.filter(x => x.k == obj.depNo);
+                            var depName = obj.depNm;
+                            var dep = null;
+                            var dep1 = null;
+                            var dep2 = null;
+                            if (depfilter.length > 0)
+                            {
+                                dep = depfilter[0];
+                            };
+                            if ((dep != null) && (dep.parentDepNo != "") && (dep.parentDepNo != "001"))
+                            {
+                                depfilter = depList.filter(x => x.k == dep.parentDepNo);
+                                if (depfilter.length > 0)
+                                {
+                                    dep1 = depfilter[0];
+                                    depName = dep1.v + " " + depName;
+                                }
+                            }
+                            if ((dep1 != null) && (dep1.parentDepNo != "") && (dep1.parentDepNo != "001"))
+                            {
+                                depfilter = depList.filter(x => x.k == dep1.parentDepNo);
+                                if (depfilter.length > 0) {
+                                    dep2 = depfilter[0];
+                                    depName = dep2.v + " " + depName;
+                                }
+                            }
+
+                            $("#ulPoList").append(
+                                '<li class="list-group-item" id="' + obj.poNo + '">'
+                                + '<button type="button" class="text-danger"><i class="fa fa-minus"></i></button>'
+                                + depName + "-" + obj.poNm
+                                + '</li>'
+                            );
+                        });
+
+                        $('#ulPoList li button').on('click', function () {
+                            var id = $(this).parent('li').attr('id');
+                            $(this).parent('li').remove();
+                            currentPoList = currentPoList.filter(item => item.poNo !== id);
+                            var poListValue = "";
+                            if (currentPoList != null) {
+                                poListValue = currentPoList.map(function (item) {
+                                    return item['poNo'];
+                                });
+                            }
+                            $('#hPoList').val(poListValue.toString()); 
+                        });
+                        var poListValue = "";
+                        if (currentPoList != null) {
+                            poListValue=currentPoList.map(function (item) {
+                                return item['poNo'];
+                            });
+                        }
+                        $('#hPoList').val(poListValue.toString()); 
+                        
+                    }
+
+                    function doSubmit()
+                    {
+                        if ($('input[name="roles"]:checked').length == 0)
+                        {
+                            toastr["error"]("請設定系統權限", "Error");
+                            return false;
+                        }
+                        //$('#fmEmployee').submit();
+                        return true;
+                    }
+
+                    $(function ()
+                    {
+
+                        $('.container').css('padding', 0);
+
+                        var showmsg = "0";
+
+                        @if (TempData["changepwdsucess"]!=null && TempData["changepwdsucess"].ToString()=="Y")
+                        {
+                            @:showmsg ="1";
+                        }
+
+                        if (showmsg == "1")
+                        {
+                            toastr["info"]("密碼修改完成!");
+                        }
+                        $('form,input,select,textarea').attr("autocomplete", "off");
+                        $('#workNo').css('ime-mode','normal');
+                        updatePoListUI();
+
+
+                        var cboDepList1 = $('#cboDepList1');
+                        var cboDepList2 = $('#cboDepList2');
+                        var cboDepList3 = $('#cboDepList3');
+                        var cboPoList1 = $('#cboPoList1');
+                        var cboPoList2 = $('#cboPoList2');
+                        var cboPoList3 = $('#cboPoList3');
+
+                        var depGmFilter = depList.filter(x => x.k == "001");
+                        var depGm = null;
+                        if (depGmFilter.length > 0) {
+                            depGm = depGmFilter[0];
+                        }
+
+                        //$(cboDepList1).empty(); $(cboDepList2).empty(); $(cboDepList3).empty();
+                        //$(cboPoList1).empty(); $(cboPoList2).empty(); $(cboPoList3).empty();
+
+                        $(cboDepList1).append($('<option></option>').val(0).html("選擇處級"));
+                        $(cboDepList2).append($('<option></option>').val(0).html("選擇部門"));
+                        $(cboDepList3).append($('<option></option>').val(0).html("選擇課別"));
+                        $(cboPoList1).append($('<option></option>').val(0).html("選擇職稱"));
+                        $(cboPoList2).append($('<option></option>').val(0).html("選擇職稱"));
+                        $(cboPoList3).append($('<option></option>').val(0).html("選擇職稱"));
+
+                        function loadDep(cbo, level, parentDepNo) {
+                            $('#' + cbo + ' option').remove();
+                            if (level == 1) {
+                                $(cboDepList1).append($('<option></option>').val(0).html("選擇處級"));
+
+                                if (depGm != null)
+                                {
+                                    $('#' + cbo).append(
+                                        $('<option></option>').val(depGm.k).html(depGm.v)
+                                    );
+                                }
+                                
+                                $.each(depList, function (val, obj) {
+                                    if (obj.depLevel == 1) {
+                                        $('#' + cbo).append(
+                                            $('<option></option>').val(obj.k).html(obj.v)
+                                        );
+                                    }
+                                });
+                            }
+                            if (level == 2) {
+                                $(cboDepList2).append($('<option></option>').val(0).html("選擇部門"));
+                                $.each(depList, function (val, obj) {
+                                    if (obj.depLevel == 2 && obj.parentDepNo == parentDepNo) {
+                                        $('#' + cbo).append(
+                                            $('<option></option>').val(obj.k).html(obj.v)
+                                        );
+                                    }
+                                });
+                            }
+                            if (level == 3) {
+                                $(cboDepList3).append($('<option></option>').val(0).html("選擇課別"));
+                                $.each(depList, function (val, obj) {
+                                    if (obj.depLevel == 3 && obj.parentDepNo == parentDepNo) {
+                                        $('#' + cbo).append(
+                                            $('<option></option>').val(obj.k).html(obj.v)
+                                        );
+                                    }
+                                });
+                            }
+                        }
+
+                        function loadPo(cbo, dep) {
+                            $('#' + cbo + ' option').remove();
+                            $('#' + cbo).append(
+                                $('<option></option>').val(0).html("選擇職稱")
+                            );
+                            var depV = $('#' + dep).val();
+                            if (depV != "0") {
+                                $.each(poList, function (val, obj) {
+                                    if (obj.depNo == depV) {
+                                        $('#'+cbo).append(
+                                            $('<option></option>').val(obj.poNo).html(obj.poNm)
+                                        );
+                                    }
+                                });
+                            }
+                            //$($('#' + cbo)).selectpicker('destroy');
+                            //$($('#' + cbo)).selectpicker('show');
+                        }
+
+                        loadDep('cboDepList1', 1, '');
+                        //$('#cboDepList1').selectpicker();
+
+                        $(cboDepList1).on("change", function (e) {
+                            var depV = this.value;
+                            loadPo("cboPoList1", "cboDepList1");
+                            loadDep('cboDepList2', 2, depV);
+                            //$('#cboDepList2').selectpicker();
+                        });
+                        $(cboDepList2).on("change", function (e) {
+                            var depV = this.value;
+                            loadPo("cboPoList2", "cboDepList2");
+                            loadDep('cboDepList3', 3, depV);
+                            //$('#cboDepList3').selectpicker();
+                        });
+                        $(cboDepList3).on("change", function (e) {
+                            var depV = this.value;
+                            loadPo("cboPoList3", "cboDepList3");
+                        });    
+
+                        $('#btnSelPo').on('click', function () {
+                            $("#cboDepList1").val(0);
+                            $("#cboDepList1").change();
+                            $("#cboDepList2").val(0);
+                            $("#cboDepList2").change();
+                            $("#cboDepList3").val(0);
+                            $("#cboDepList3").change();
+                        });
+                        $('#btnAddPo').on('click', function () {
+                            var poExist = false;
+
+                            var po1 = $('#cboPoList1').val().toString();
+                            var po2 = $('#cboPoList2').val().toString();
+                            var po3 = $('#cboPoList3').val().toString();
+
+                            if (po1 == "0" && po2 == "0" && po3 == "0")
+                            {
+                                alert('請選擇職稱');
+                                return;
+                            }
+
+                            var poSelect = "0";
+
+                            if (po1 != "0") { poSelect = po1; };
+                            if (po2 != "0") { poSelect = po2; };
+                            if (po3 != "0") { poSelect = po3; };
+                              
+                            
+                            $.each(currentPoList, function (val, obj) {
+                                if (obj.poNo.toString() == poSelect) {
+                                    poExist = true;
+                                    return false;
+                                }
+                            });
+
+                            if (!poExist) {
+                                $.each(poList, function (val, obj) {
+                                    if (obj.poNo.toString() == poSelect) {
+                                        currentPoList.push(obj);
+                                        return false;
+                                    }
+                                });
+                            };
+                            $('#WinSelPo').modal('hide');
+                            updatePoListUI();
+                        });
+                            
+                    })
+                </script>
+
+            }

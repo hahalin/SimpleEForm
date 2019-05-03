@@ -1,0 +1,359 @@
+﻿@model eform.Models.vwPrjWork
+@using Newtonsoft.Json;
+@using eform.Models;
+@using System.Data;
+
+@{
+    ViewBag.Title = "";
+    Layout = "~/Views/Shared/_PrjLayout.cshtml";
+}
+
+<style>
+    #tbPrjWork th {
+        text-align: center;
+    }
+
+    #tbPrjWork input[type=text]
+    {
+        text-align:center;
+    }
+    #tbPrjWork input[type=number] {
+        text-align: right;
+    }
+
+    
+</style>
+
+<div class="section col-md-12" style="width:2300px;">
+    <div class="row col-md-12">
+        <div class="box col-md-12" style="">
+            <div class="box-title text-center col-md-10">
+                <h3><span class="" style="font-weight:bold;">群翌能源股份有限公司</span></h3>
+                <h3><span class="label label-primary">工時報表(P021A1)-審核</span></h3>
+            </div>
+            <div class="box-header width-border col-md-10">
+                <a href="@Url.Action("MgrPrjWorkList")" id="btnSave" class="btn btn-default">
+                    <i class="fa fa-undo"></i>
+                    返回清單
+                </a>
+                <a href="#" id="btnSave" class="btn btn-primary" onclick="saveRow(); $('#fmInput').submit();">
+                    <i class="fa fa-save"></i>
+                    儲存
+                </a>
+            </div>
+            <div class="box-body  col-md-6" style="">
+                @using (Html.BeginForm("SignPrjWork", "Prj", FormMethod.Post, new { id = "fmInput" }))
+                {
+                    <div class="form-horizontal">
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger", style = "font-size:15px;font-weight:bold;" })
+                        <div class="form-group">
+                            <label class="control-label col-md-2">申請人</label>
+                            <div class="col-md-4">
+                                @Html.HiddenFor(x => x.workNo)
+                                @Html.HiddenFor(x => x.id)
+                                <label class="form-control-static">@Model.user.workNo-@Model.user.UserCName</label>
+                            </div>
+                            <div class="col-md-6"></div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="control-label col-md-2">年度</label>
+                            <div class="col-md-4 ">
+                                <label class="form-control-static">@Model.y</label>
+                            </div>
+                            <label class="control-label col-md-2">周別</label>
+                            <div class="col-md-4">
+                                <label class="form-control-static">@Model.w</label>
+                                <div>@Model.DateRange</div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="hList" name="hList" value="@Model.hList" />
+                        @*@Html.HiddenFor(x => x.hList)*@
+                        @Html.HiddenFor(x => x.y)
+                        @Html.HiddenFor(x => x.w)
+                    </div>
+                }
+            </div>
+            @*<div class="box-header width-border col-md-10">
+                <input type="button" id="btnAdd" class="btn btn-success" value="新增" />
+                <input type="button" id="btnDelete" class="btn btn-danger" value="刪除" />
+            </div>*@
+            <div class="box-body  col-md-12" style="overflow-y:visible;">
+                <table id="tbPrjWork" class="table table-bordered table-hover table-responsive table-info" style="">
+                    <thead>
+                        <tr>
+                            <th style="width:130px;">日期</th>
+                            <th style="width:280px;">工時代碼</th>
+                            <th style="width:75px;">小時</th>
+                            <th style="width:170px;">工作內容摘要</th>
+                            <th style="width:200px;">備註</th>
+                            <th style="width:80px;">專案經理</th>
+                            <th style="width:75px;">處</th>
+                            <th style="width:75px;">部</th>
+                            <th style="width:75px;">課</th>
+                            <th style="width:75px;">總經理室</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+<table id="tmp1" style="display:none;">
+    <tr>
+        <td style="text-align:center;">
+            <div class='input-group date' id="dt{0}" style="z-index:99999;">
+                <input type="hidden" class="itemId" />
+                <input type="text" class="form-control dt form-control" style="background-color:white;" readonly />
+                @*<span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>*@
+            </div>
+        </td>
+        <td style="text-align:center;padding-left:0;padding-right:0;">
+            <input type="text" class="form-control prj" style="background-color:white;"  readonly />
+        </td>
+        <td style="text-align:center;">
+            <input class="form-control hours" style="background-color:white;" type="number" step="0.5" readonly />
+        </td>
+        <td style="text-align:center;">
+            <input class="form-control subject" style="background-color:white;" readonly />
+        </td>
+        <td style="text-align:center;">
+            <p style="white-space: pre-line" class="memo"></p>
+        </td>
+        <td style="text-align:center;">
+            <input type="checkbox" class="chkpm" />
+            <input class="form-control-static owner text-center" style="border-width:0;background-color:white;" readonly />
+            <input type="hidden" class="pm" />
+        </td>
+        <td style="text-align:center;">
+            <input type="checkbox" class="chkmgr1" />
+            <input class="form-control-static mgr1 text-center" style="border-width:0;background-color:white;" readonly />
+            <input type="hidden" class="hmgr1" />
+        </td>
+        <td style="text-align:center;">
+            <input type="checkbox" class="chkmgr2" />
+            <input class="form-control-static mgr2 text-center" style="border-width:0;background-color:white;" readonly />
+        </td>
+        <td style="text-align:center;">
+            <input type="checkbox" class="chkmgr3" />
+            <input class="form-control-static mgr3 text-center" style="border-width:0;background-color:white;" readonly />
+        </td>
+        <td style="text-align:center;">
+            <input type="checkbox" class="chkgm" />
+            <input class="form-control-static gm text-center" style="border-width:0;background-color:white;" readonly />
+        </td>
+    </tr>
+
+</table>
+
+
+@section Scripts
+{
+    <script type="text/javascript" src="~/Scripts/moment-with-locales.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap-datetimepicker.min.js"></script>
+
+    <script type="text/javascript">
+        var data = @Html.Raw((ViewBag.userlist));
+        var prjList=@Html.Raw((ViewBag.prjCodelist));
+        var iCnt = 1;
+        var removeList = [];
+        var pickerOption = {
+            format: 'YYYY-MM-DD',
+            locale: 'zh-tw',
+            defaultDate: getLocalDateStr()
+        };
+        function formatRepoSelection(repo) {
+            return repo.id + "-" + repo.text;
+        }
+        function formatRepoSelectionPrj(repo) {
+            if (repo.id == '') {
+                return '';
+            }
+            return repo.id + "-" + repo.nm;
+        }
+        function addRow() {
+            var template = jQuery.validator.format($.trim($("#tmp1 tbody").html()));
+            $(template(iCnt)).appendTo("#tbPrjWork tbody");
+            $('#dt' + iCnt.toString()).datetimepicker(pickerOption);
+            //$("#tbPrjWork tr:last .prj").select2({ data: prjList, templateSelection: formatRepoSelectionPrj});
+            iCnt++;
+        }
+
+        function saveRow() {
+            var list = [];
+            $('#tbPrjWork tr').each(function (i, item) {
+                if ($(item).find('div.date').length > 0) {
+                    var obj = {};
+                    obj.itemId = $($(item).find('.itemId')[0]).val();
+                    obj.dt = $($(item).find('.dt')[0]).val();
+                    obj.prjCode = $($(item).find('.prj')[0]).val();
+                    obj.hours = $($(item).find('.hours')[0]).val();
+                    obj.subject = $($(item).find('.subject')[0]).val();
+                    obj.smemo = $($(item).find('.memo')[0]).val();
+
+                    var pm = $($(item).find('.chkpm')[0]);
+                    var mgr1 = $($(item).find('.chkmgr1')[0]);
+                    var mgr2 = $($(item).find('.chkmgr2')[0]);
+                    var mgr3 = $($(item).find('.chkmgr3')[0]);
+                    var gm = $($(item).find('.chkgm')[0]);
+
+                    obj.chkpm = false; obj.chkgm = false;
+                    obj.chkmgr1 = false; obj.chkmgr2 = false; obj.chkmgr3 = false;
+
+                    if ($(pm).css('display') != 'none' && ($(pm).prop('checked'))) {
+                        obj.chkpm = true;
+                        obj.pm = $($(item).find('.pm')[0]).val();
+                    }
+                    else
+                    {
+                        obj.pm = "";
+                    }
+                    if ($(mgr1).css('display') != 'none' && ($(mgr1).prop('checked'))) {
+                        obj.chkmgr1 = true;
+                        obj.mgr1 = $($(item).find('.mgr1')[0]).val();
+                    }
+                    else
+                    {
+                        obj.mgr1 = "";
+                    }
+                    if ($(mgr2).css('display') != 'none' && ($(mgr2).prop('checked'))) {
+                        obj.chkmgr2 = true;
+                        obj.mgr2 = $($(item).find('.mgr2')[0]).val();
+                    }
+                    else
+                    {
+                        obj.mgr2 = "";
+                    }
+                    if ($(mgr3).css('display') != 'none' && ($(mgr3).prop('checked'))) {
+                        obj.chkmgr3 = true;
+                        obj.mgr3 = $($(item).find('.mgr3')[0]).val();
+                    }
+                    else
+                    {
+                        obj.mgr3 = "";
+                    }
+                    if ($(gm).css('display') != 'none' && ($(gm).prop('checked'))) {
+                        obj.chkgm = true;
+                        obj.gm = $($(item).find('.gm')[0]).val();
+                    }
+                    else
+                    {
+                        obj.gm = "";
+                    }
+
+                    list.push(obj);
+                }
+            });
+            try {
+                $('#hList').val(JSON.stringify(list));
+            }
+            catch (ex) {
+                $('#hList').val(JSON.stringify(""));
+            }
+        }
+
+        function loadRow() {
+            var list = [];
+            try {
+                list = JSON.parse($("#hList").val());
+            }
+            catch (ex) {
+                list = [];
+            }
+            var idx = 1;
+            list.forEach(function (item) {
+                addRow();
+                var tr = $("#tbPrjWork tbody tr:nth-child(" + idx + ")");
+                $($(tr).find('.itemId')[0]).val(item.itemId);
+                $($(tr).find('.dt')[0]).val(item.dt);
+                var plist = prjList.filter(x => x.id == item.prjCode);
+                if (plist.length > 0)
+                {
+                    var prj = plist[0];
+                    $($(tr).find('.prj')[0]).val(prj.text);
+                    //$($(tr).find('.owner')[0]).val(prj.ownerStr);
+
+                    $($(tr).find('.chkpm')[0]).on('change', function (e) {
+                        return;
+                        if ($(e.target).prop('checked')) {
+                            if (prj.owner != '@ViewBag.mgrCode') {
+                                alert('非此專案經理');
+                                $(e.target).prop('checked', false);
+                                return false;
+                            }
+                            $($(tr).find('.pm')[0]).val('@ViewBag.mgrCode');
+                            $($(tr).find('.owner')[0]).val('@ViewBag.mgrCode');
+                        }
+                        else {
+                            $($(tr).find('.pm')[0]).val('');
+                            $($(tr).find('.owner')[0]).val('');
+                        }
+                    });
+                }
+
+                $($("#tbPrjWork tr:last").find('.hours')[0]).val(item.hours);
+                $($("#tbPrjWork tr:last").find('.subject')[0]).val(item.subject);
+                $($("#tbPrjWork tr:last").find('.memo')[0]).val(item.smemo);
+                if (item.pm != '')
+                {
+                    var usr = data.filter(x => x.id == item.pm);
+                    if (usr.length > 0) {
+                        $($("#tbPrjWork tr:last").find('.pm')[0]).val(usr[0].id + "-" + usr[0].text);
+                        $($("#tbPrjWork tr:last").find('.owner')[0]).val(usr[0].id + "-" + usr[0].text);
+                        //$($("#tbPrjWork tr:last").find('.pm')[0]).parent().append("<i class='fa fa-check text-success'></i>");
+                        $($("#tbPrjWork tr:last").find('.chkpm')[0]).attr('checked', true);
+                    }
+                }
+                if (item.gm != '') {
+                    var usr = data.filter(x => x.id == item.gm);
+                    if (usr.length > 0) {
+                        $($("#tbPrjWork tr:last").find('.gm')[0]).val(usr[0].id + "-" + usr[0].text);
+                        $($("#tbPrjWork tr:last").find('.chkgm')[0]).attr('checked', true);
+                    }
+                }
+                if (item.mgr1 != '') {
+                    var usr = data.filter(x => x.id == item.mgr1);
+                    if (usr.length > 0) {
+                        $($("#tbPrjWork tr:last").find('.mgr1')[0]).val(usr[0].id + "-" + usr[0].text);
+                        $($("#tbPrjWork tr:last").find('.chkmgr1')[0]).attr('checked', true);
+                    }
+                }
+                if (item.mgr2 != '') {
+                    var usr = data.filter(x => x.id == item.mgr2);
+                    if (usr.length > 0) {
+                        $($("#tbPrjWork tr:last").find('.mgr2')[0]).val(usr[0].id + "-" + usr[0].text);
+                        $($("#tbPrjWork tr:last").find('.chkmgr2')[0]).attr('checked', true);
+                    }
+                }
+                if (item.mgr3 != '') {
+                    var usr = data.filter(x => x.id == item.mgr3);
+                    if (usr.length > 0) {
+                        $($("#tbPrjWork tr:last").find('.mgr3')[0]).val(usr[0].id + "-" + usr[0].text);
+                        $($("#tbPrjWork tr:last").find('.chkmgr3')[0]).attr('checked', true);
+                    }
+                }
+                idx++;
+            });
+        }
+
+        $(function () {
+
+            $('#btnAdd').on('click', function () {
+                addRow();
+            })
+            loadRow();
+
+            var msg = '@ViewBag.msg';
+            if (msg != '') {
+                toastr["info"](msg);
+                //document.location = document.location;
+            }
+        })
+
+    </script>
+}

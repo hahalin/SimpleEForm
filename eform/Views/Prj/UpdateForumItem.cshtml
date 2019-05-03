@@ -1,0 +1,114 @@
+﻿@model eform.Models.vwUpateForumItem
+
+@{
+    ViewBag.Title = "CreateForumItem";
+    Layout = "~/Views/Shared/_PrjLayout.cshtml";
+}
+<style>
+    .select2-container--default .select2-selection--multiple .select2-selection__rendered li {
+        color: black;
+    }
+</style>
+<div class="box box-primary">
+    <div class="box-header">
+        <div class="box-title text-left">
+            @if (Model.page == "portal")
+            {
+                <a href="@Url.Action("portal","Prj",new {code=ViewBag.code})" class="btn btn-default"><i class="fa fa-undo"></i>返回專案討論區</a>
+            }
+            else
+            {
+                <a href="@Url.Action("ForumDetail","Prj",new {id=Model.pid,code=ViewBag.code})" class="btn btn-default"><i class="fa fa-undo"></i>返回專案討論區</a>
+            }
+        </div>
+    </div>
+    <div class="box-header">
+        <div class="text-center">
+            <h3 class="control-label label-warning">修改</h3>
+        </div>
+    </div>
+    <div class="box-body">
+
+        @using (Html.BeginForm("UpdateForumItem", "Prj", FormMethod.Post, new { enctype = "multipart/form-data", autocomplete = "off" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                @Html.HiddenFor(model => model.id)
+                @Html.HiddenFor(model => model.pid)
+                @Html.HiddenFor(model => model.prjId)
+                @Html.HiddenFor(model => model.workNo)
+                @Html.HiddenFor(model => model.pTitle)
+                @Html.HiddenFor(model => model.mobile)
+                @*@Html.HiddenFor(model => model.subject)*@
+                @Html.HiddenFor(model => model.page)
+                <div class="form-group">
+                    @Html.LabelFor(model => model.workNo, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-3">
+                        @Model.vWorkNo.workNo @Model.vWorkNo.UserCName
+                    </div>
+                    @Html.LabelFor(model => model.billDate, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-3">
+                        @Model.billDate.ToString("yyyy-MM-dd")
+                    </div>
+                </div>
+                @if (Model.page == "portal")
+                {
+                    <div class="form-group">
+                        @Html.Label("序    號", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.seq, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.seq, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                }
+                <div class="form-group">
+                    @Html.Label("標    題", htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @if (Model.page == "portal")
+                        {
+                            @Html.EditorFor(model => model.subject, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.subject, "", new { @class = "text-danger" })
+                        }
+                        else
+                        {
+                            @Html.EditorFor(model => model.subTitle, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.subTitle, "", new { @class = "text-danger" })
+                        }
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.smemo, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.TextAreaFor(model => model.smemo, new { htmlAttributes = new { @class = "form-control" }, style = "max-width:850px;width:95%;", rows = 5 })
+                        @Html.ValidationMessageFor(model => model.smemo, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" id="btnSave" value="儲存" class="btn btn-primary" />
+                    </div>
+                </div>
+            </div>
+        }
+
+    </div>
+</div>
+
+<script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+<script src="~/Scripts/jquery.blockUI.js"></script>
+
+@section scripts
+{
+    <script type="text/javascript">
+
+        $(function () {
+            $('#btnSave').on('click', function () {
+                $.blockUI({ message: '<h2>資料儲存中...</h2>' });
+            });
+        });
+    </script>
+}

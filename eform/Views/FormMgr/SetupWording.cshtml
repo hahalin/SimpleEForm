@@ -1,0 +1,55 @@
+﻿@using System.Collections;
+@using eform.Models;
+@model List<eform.Models.FlowDefMain>
+@{
+
+}
+<style>
+    input,
+    select,
+    textarea {
+        max-width: 700px;
+    }
+</style>
+<h3>單據說明設定</h3>
+<div class="row col-md-10">
+    <div class="box box-info col-md-10">
+        @using (Html.BeginForm("SetupWording", "FormMgr", FormMethod.Post, new { id = "fmMain" }))
+        {
+            for(int i=0;i< Model.Count();i++)
+            {
+                <div class="box-header">
+                    <label class="text-primary">@Model[i].code - @Model[i].nm</label>
+                    @Html.HiddenFor(Model=> Model[i].code)
+                    @Html.HiddenFor(Model => Model[i].id)
+                </div>
+                <div class="box-body">
+                    <div class="form-group col-md-10">
+                        @Html.TextAreaFor(Model => Model[i].wording, new { style = "width:95%;", @class = "form-control", rows = 5})
+                    </div>
+                </div>
+            }
+            <div class="box-body">
+                <div class="form-group">
+                    <div class="col-md-10 text-center">
+                        <input type="submit" value="儲存" class="btn-lg btn-primary" />
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(function () {
+
+            var msg = '@TempData["msg"]';
+            if (msg != '')
+            {
+                alert(msg);
+                document.location = document.location;
+            }
+        })
+    </script>
+}

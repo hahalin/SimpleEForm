@@ -781,7 +781,6 @@ throw new Error('AdminLTE requires jQuery')
 
   PushMenu.prototype.open = function () {
     var windowWidth = $(window).width()
-
     if (windowWidth > this.options.collapseScreenSize) {
       $('body').removeClass(ClassName.collapsed)
         .trigger($.Event(Event.expanded))
@@ -794,12 +793,21 @@ throw new Error('AdminLTE requires jQuery')
 
   PushMenu.prototype.close = function () {
     var windowWidth = $(window).width()
+      
     if (windowWidth > this.options.collapseScreenSize) {
       $('body').addClass(ClassName.collapsed)
         .trigger($.Event(Event.collapsed))
     } else {
       $('body').removeClass(ClassName.open + ' ' + ClassName.collapsed)
         .trigger($.Event(Event.collapsed))
+    }
+
+    console.log($(event.target))
+    //frank 手機treeview不會消失left sidebar
+    if ($(event.target).parent('a').attr('href') == '#' || $(event.target).attr('href') == '#' && !$(event.target).hasClass('sidebar-toggle'))
+    {
+        console.log('is #')
+          this.open();
     }
   }
 
@@ -1086,7 +1094,7 @@ throw new Error('AdminLTE requires jQuery')
     var that = this
 
     $(this.element).on('click', this.options.trigger, function (event) {
-      that.toggle($(this), event)
+        that.toggle($(this), event)
     })
   }
 

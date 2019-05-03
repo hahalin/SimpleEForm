@@ -1,0 +1,244 @@
+﻿@model eform.Models.vwEventSchedule
+@using Newtonsoft.Json;
+@using eform.Models;
+@{
+    ViewBag.Title = "公司行程規劃表(B001A1)";
+}
+<style>
+    span, label, button, th {
+        font-family: 微軟正黑體;
+    }
+
+    th {
+        text-align: center;
+    }
+
+    #colorTag:active {
+        outline: none;
+    }
+
+    #colorTag option:hover {
+        outline: none;
+        cursor: pointer;
+        background-color: transparent;
+    }
+
+
+    #colorTag option[value="1"], #colorTag1 {
+        background-color: gray;
+        color: white;
+    }
+    #colorTag option[value="2"], #colorTag2 {
+        background-color: lightgray;
+        color: red;
+    }
+    #colorTag option[value="3"], #colorTag3 {
+        background-color: lightgray;
+        color: black;
+    }
+    #colorTag option[value="4"], #colorTag4 {
+        background-color: forestgreen;
+        color: white;
+    }
+    #colorTag option[value="5"],#colorTag5 {
+        background-color: yellow;
+        color: black;
+    }
+    #colorTag option[value="6"], #colorTag6 {
+        background-color: red;
+        color: white;
+    }
+
+    .colorTagLabel {
+        width: 30px;
+        height: 30px;
+        text-align:center;
+    }
+
+</style>
+<div class="row">
+    <div class="col-md-10">
+        <div class="box">
+            <div class="box-header text-center">
+                <div class="box-title ">
+                    <h3><span class="label label-danger">@ViewBag.Title</span></h3>
+                    <h3><span class="" style="font-weight:bold;">@Model.user.Company</span></h3>
+                </div>
+            </div>
+            <div class="box-body>">
+                @using (Html.BeginForm("eventSchedule", "Form", FormMethod.Post, new { id = "fmMain" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(x => x.id)
+                    @Html.HiddenFor(x => x.flowId)
+                    @Html.HiddenFor(Model => Model.billDate)
+                    <div class="form-horizontal col-md-11">
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger", style = "font-size:15px;font-weight:bold;" })
+                        @if (!string.IsNullOrEmpty(Model.id))
+                        {
+                            <div class="form-group">
+                                <label class="control-label col-md-2">單號</label>
+                                <div class="col-md-4">
+                                    <div class="form-control-static"> @Model.billNo</div>
+                                </div>
+                                <div class="col-md-6">
+                                </div>
+                            </div>
+                        }
+                        <div class="form-group">
+                            <label class="control-label col-md-2">申請人</label>
+                            <div class="col-md-4">
+                                <div class="form-control-static">@Model.user.workNo-@Model.user.UserCName</div>
+                                <input type="hidden" name="worker" value="@Model.user.workNo" />
+                            </div>
+                            @Html.LabelFor(model => model.billDate, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                <div class="form-control-static">@Convert.ToDateTime(Model.billDate).ToString("yyyy-MM-dd")</div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.eventType, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                @Html.DropDownListFor(model => model.eventType, Model.eventTypeList, new { @class = "form-control", style = "" })
+                            </div>
+                            @Html.LabelFor(model => model.colorTag, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                @foreach (var item in Model.colorTagList)
+                                {
+                                    if (item.Value==Model.colorTag)
+                                    {
+                                        @Html.RadioButtonFor(model => model.colorTag, item.Value, new { id = "rdoColorTag" + item.Value,@checked="checked"})
+                                    }
+                                    else
+                                    {
+                                        @Html.RadioButtonFor(model => model.colorTag, item.Value, new { id = "rdoColorTag" + item.Value })
+                                    }
+
+                                    @Html.Label(item.Text, new {@class= "control-label colorTagLabel", id = "colorTag" + item.Value,style="text-align:center;"})
+                                }
+                                @*@Html.DropDownListFor(model => model.colorTag, Model.colorTagList, new { @class = "form-control colorTag", style = "" })*@
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-2">開始日期</label>
+                            <div class="col-md-4">
+                                <div class='input-group date' id='datetimepicker2'>
+                                    @Html.EditorFor(model => model.beginDate, new { htmlAttributes = new { @class = "form-control", type = "text" } })
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                                @Html.ValidationMessageFor(model => model.beginDate, "", new { @class = "text-danger" })
+                            </div>
+                            @Html.LabelFor(model => model.beginHH, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-1">
+                                @Html.DropDownListFor(model => model.beginHH, (SelectList)ViewBag.beginHHList, new { @class = "form-control", style = "width:70px;" })
+                            </div>
+                            <label class="control-label col-md-1">時</label>
+                            <div class="col-md-1">
+                                @Html.DropDownListFor(model => model.beginMM, (SelectList)ViewBag.beginMMList, new { @class = "form-control", style = "width:70px;" })
+                            </div>
+                            <label class="control-label col-md-1">分</label>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-2">結束日期</label>
+                            <div class="col-md-4">
+                                <div class='input-group date' id='datetimepicker3'>
+                                    @Html.EditorFor(model => model.endDate, new { htmlAttributes = new { @class = "form-control", type = "text" } })
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                                @Html.ValidationMessageFor(model => model.endDate, "", new { @class = "text-danger" })
+                            </div>
+                            @Html.LabelFor(model => model.endHH, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-1">
+                                @Html.DropDownListFor(model => model.endHH, (SelectList)ViewBag.beginHHList, new { @class = "form-control", style = "width:70px;" })
+                            </div>
+                            <label class="control-label col-md-1">時</label>
+                            <div class="col-md-1">
+                                @Html.DropDownListFor(model => model.endMM, (SelectList)ViewBag.beginMMList, new { @class = "form-control", style = "width:70px;" })
+                            </div>
+                            <label class="control-label col-md-1">分</label>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.subject, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.TextBoxFor(model => model.subject, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.subject, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.location, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.TextBoxFor(model => model.location, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.location, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.sMemo, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.TextAreaFor(model => model.sMemo, htmlAttributes: new { @class = "form-control", rows = "3", style = "width:630px;" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-2">填表說明</label>
+                            <div class="col-md-12 col-md-offset-1" style="margin-top:-45px;margin-left:135px;padding:2px;color:#3664bc;font-family:微軟正黑體;font-size:15px;font-weight:700;line-height:25px;white-space: pre-line;">
+                                @ViewBag.wording
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-10 text-center">
+                                @if (string.IsNullOrEmpty(Model.flowId))
+                                {
+                                    <input type="submit" value="送出" class="btn-lg btn-primary" onclick="return doSubmit();" />
+                                }
+                                else
+                                {
+                                    <input type="submit" value="更新" class="btn-lg btn-primary" onclick="return doSubmit();" />
+
+                                    <a href="@Url.Action("Details","Form",new {id=Model.flowId})" class="btn-lg btn-default" style="margin-left:20px;">取消</a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="box-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    <script src="~/Scripts/jquery.blockUI.js"></script>
+    <script type="text/javascript">
+        function doSubmit() {
+            $.blockUI({ message: '<h2>表單儲存中...</h2>' });
+            return true;
+        }
+        $(function () {
+            var pickerOption = {
+                format: 'YYYY-MM-DD',
+                locale: 'zh-tw',
+                defaultDate: getLocalDateStr()
+            };
+            //$('#datetimepicker1').datetimepicker(pickerOption);
+            $('#datetimepicker2').datetimepicker(pickerOption);
+            $('#datetimepicker3').datetimepicker(pickerOption);
+
+            $('textarea').css('max-width', '700px');
+            $('input[type=text]').css('max-width', '700px');
+
+            if ($($('.validation-summary-errors')[0]).text() == "") {
+                $('#billDate').val(getLocalDateStr());
+            }
+
+            return;
+
+        });
+    </script>
+}

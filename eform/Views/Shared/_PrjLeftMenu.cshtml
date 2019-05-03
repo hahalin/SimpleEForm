@@ -1,0 +1,98 @@
+﻿@using eform.Models
+@using Microsoft.AspNet.Identity.EntityFramework
+@using Microsoft.AspNet.Identity
+@{
+    string UserName = "guest";
+    bool isAdmin = false;
+    List<permission> permList = new List<permission>();
+    if (Request.IsAuthenticated)
+    {
+        isAdmin = User.IsInRole("Admin");
+        var context = new ApplicationDbContext();
+        var store = new UserStore<ApplicationUser>(context);
+        ApplicationUserManager mgr = new ApplicationUserManager(store);
+        string id = User.Identity.GetUserId();
+        var user = mgr.FindById(id);
+        if (user != null)
+        {
+            UserName = User.Identity.Name + " " + user.cName;
+            permList = context.permList.Where(x => x.workNo == user.workNo).ToList<permission>();
+        }
+    }
+
+}
+
+<!-- Left side column. contains the logo and sidebar -->
+<aside class="main-sidebar">
+    <!-- sidebar: style can be found in sidebar.less -->
+    <section class="sidebar">
+        <!-- Sidebar user panel (optional) -->
+        <div class="user-panel" style="padding-bottom:30px;">
+            <div class="pull-left image" style="display:none;width:0;">
+            </div>
+            <div class="pull-left info" style="left:20px;">
+                <p>@UserName</p>
+            </div>
+        </div>
+        <ul class="sidebar-menu" data-widget="tree">
+            @if (Request.IsAuthenticated)
+            {
+
+                <li class="header">專案管理選單</li>
+                <li class="active">
+                    <a href="@Url.Action("Index", "Home", null)"><i class="fa fa-undo"></i><span>返回上層</span></a>
+                </li>
+                <li>
+                    <a href="@Url.Action("Home","Prj")">
+                        <i class="fa fa-calendar"></i><span>專案月曆</span>
+                    </a>
+                </li>
+                <li class="treeview">
+                    <a href="#">
+                        <i class="fa fa-gears"></i><span>專案設定</span>
+                        <span class="pull-right-container">
+                            <i class="fa fa-angle-left pull-right"></i>
+                        </span>
+                    </a>
+                    <ul class="treeview-menu">
+                        @if (permList.Where(x => x.mod == "PrjCreateCode").Count() > 0 || User.Identity.Name.ToUpper().Contains("ADMIN"))
+                        {
+                            <li class="">
+                                <a href="@Url.Action("CodeList","Prj")">
+                                    <i class="fa fa-gear"></i><span>專案代碼管理</span>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </li>
+                <li>
+                    <a href="@Url.Action("MyPrjWorkList","Prj")">
+                        <i class="fa fa-th-list"></i><span>個人工時報表清單</span>
+                    </a>
+                </li>
+                <li>
+                    @*<a href="@Url.Action("#","Prj")">*@
+                    <a href="@Url.Action("MgrPrjWorkList","Prj")">
+                        <i class="fa fa-check-square"></i><span>主管工時報表審核</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="@Url.Action("myPrjs","Prj")">
+                        <i class="fa fa-forumbee"></i><span>專案討論區</span>
+                    </a>
+                    <a href="@Url.Action("myPrjs","Prj",new { mobile = true })">
+                        <i class="fa fa-forumbee"></i><span>專案討論區Mobile</span>
+                    </a>
+                </li>
+            }
+            else
+            {
+                //https://stackoverflow.com/questions/21413596/razor-if-else-inside-a-for-loop-the-for-block-is-missing-a-closing-charac
+                @:
+                <li><a href='@Url.Action("Login", "Account")'><i class="fa fa-sign-in"></i> <span>登入</span></a></li>
+            }
+        </ul>
+        <!-- /.sidebar-menu -->
+    </section>
+    <!-- /.sidebar -->
+</aside>

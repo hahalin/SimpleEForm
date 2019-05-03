@@ -1,0 +1,88 @@
+﻿
+@{
+
+}
+
+<div class="row">
+    <div class="col-md-10">
+        <div class="box">
+            <div class="box-header text-center">
+                <div class="box-title ">
+                    <h3><span class="label label-success">請假/加班單總表下載</span></h3>
+                </div>
+            </div>
+            <div class="box-body">
+                @using (Html.BeginForm("QueryReportA", "HrMgr", FormMethod.Post, new { id = "fmMain" }))
+                {
+                    <div class="form-horizontal col-md-10">
+                        <div class="form-group">
+                            @Html.Label("起", htmlAttributes: new { @class = "control-label col-md-1" })
+                            <div class="col-md-3">
+                                <div class='input-group date' id='dt1'>
+                                    <input type="text" class="form-control" name="dt1" />
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+                            @Html.Label("迄", htmlAttributes: new { @class = "control-label col-md-1" })
+                            <div class="col-md-3">
+                                <div class='input-group date' id='dt2'>
+                                    <input type="text" class="form-control" name="dt2" />
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.Label("類別", htmlAttributes: new { @class = "control-label col-md-1" })
+                            <div class="col-md-8">
+                                <input type="radio" name="rdRpt" value="1" id="chk1" />請假單
+                                <input type="radio" name="rdRpt" value="2" id="chk2"/>加班單
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-10 text-center">
+                                <input type="submit" value="執行" class="btn-lg btn-primary" onclick="return doSubmit();" />
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    @section Scripts {
+        <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+        <script src="~/Scripts/jquery.blockUI.js"></script>
+        <script type="text/javascript">
+            function doSubmit() {
+                //$.blockUI({ message: '<h2>查詢執行中...</h2>' });
+                return true;
+            }
+            $(function () {
+                var pickerOption1 = {
+                    format: 'YYYY-MM-DD',
+                    locale: 'zh-tw',
+                    defaultDate: '@ViewBag.dt1'
+                };
+                var pickerOption2 = {
+                    format: 'YYYY-MM-DD',
+                    locale: 'zh-tw',
+                    defaultDate: '@ViewBag.dt2'
+                };
+                $('#dt1').datetimepicker(pickerOption1);
+                $('#dt2').datetimepicker(pickerOption2);
+
+                var rdRpt = '@ViewBag.rdRpt';
+                if (rdRpt == '1')
+                {
+                    $("#chk1").attr("checked", true);
+                }
+                else {
+                    $("#chk2").attr("checked", true);
+                }
+            });
+        </script>
+    }

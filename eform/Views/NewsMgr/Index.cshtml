@@ -1,0 +1,115 @@
+﻿@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq
+@model IEnumerable<eform.Models.news>
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>公告管理</h2>
+
+<div class="row">
+    <div class="col-md-10">
+        <div class="box">
+            <div class="box-header">
+                <div class="box-title">
+                    @*<h3><span class="label label-success">公告管理</span></h3>*@
+                    <a href="@Url.Action("Create")" class="btn btn-primary">新增公告</a>
+                </div>
+            </div>
+            <div class="box-body>">
+
+                <table class="table table-hover table-bordered table-striped" style="font-size:13px;">
+                    <tr>
+                        <th style="width:110px;">
+                            @Html.DisplayNameFor(model => model.ndate)
+                        </th>
+                        <th style="width:120px;">
+                            @Html.DisplayNameFor(model => model.newsType)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.title)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.fileUrl)
+                        </th>
+                        <th></th>
+                    </tr>
+                    <tbody>
+                        @if (Model != null)
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        @{
+                                            string ndate = Convert.ToDateTime(item.ndate).ToString("yyyy-MM-dd");
+                                        }
+
+                                        @ndate
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.newsType)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.title)
+                                    </td>
+                                    <td>
+                                        @{
+                                            JArray list = new JArray();
+                                            if (!string.IsNullOrEmpty(item.fileUrl))
+                                            {
+                                                try
+                                                {
+                                                    list = JArray.Parse(item.fileUrl);
+                                                }
+                                                catch (Exception ex)
+                                                {
+                                                }
+                                            }
+                                        }
+                                        <ul>
+                                            @foreach (JObject jobj in list)
+                                            {
+                                                string fileName = jobj["fileName"].ToString();
+                                                string fileUrl = jobj["fileUrl"].ToString();
+
+                                                <li>
+                                                    <a href="@Url.Content("/upload/"+HttpUtility.UrlDecode(fileUrl))" target="_blank">
+                                                        @*<i class="fa fa-paperclip"></i>*@
+                                                        @fileName
+                                                    </a>
+                                                </li>
+                                            }
+                                        </ul>
+
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("Edit", new { id = item.id })" class="btn btn-info">修改</a>
+                                        <a href="#" data-id="@item.id" class="btn btn-danger" onclick="checkDelete();">刪除</a>
+                                    </td>
+                                </tr>
+                                                }
+                                            }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script type="text/javascript">
+        function checkDelete() {
+            event.preventDefault();
+            var id = $(event.target).attr('data-id');
+            var r = confirm("確定刪除?");
+            if (r == true)
+            {
+                var url = "@Url.Action("Delete", new {id="xxxx"})";
+                url = url.replace("xxxx", id);
+                document.location = url;
+            }
+        }
+    </script>
+}

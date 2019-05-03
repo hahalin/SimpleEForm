@@ -1,0 +1,115 @@
+﻿@using eform.Models;
+@model IEnumerable<eform.Models.vwFlowDefSub>
+@{
+    ViewBag.Title = "SetupFlow";
+}
+
+<h3><span class="label label-info">@ViewBag.FlowDefName</span>簽核流程設定</h3>
+<p>
+    <a href="@Url.Action("Index")" class="btn btn-default">返回表單清單</a>
+    <a href="@Url.Action("AddDefSub",new { pid = @ViewBag.FlowDefId})" class="btn btn-primary">加入簽核人員</a>
+    @*<button type="button" class="btn btn-primary" id="btnSelEmployee">加入簽核人員</button>*@
+    <span style="font-size:13px;color:blue;" class="panel-default">系統依照序號依序加入簽核清單</span>
+</p>
+<input type="hidden" name="h_FlowDefId" id="h_FlowDefId" value="@ViewBag.FlowDefId" />
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.seq)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.workNo)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.signType)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.seq)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.workNo)-@Html.DisplayFor(modelItem => item.UserCName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.singTypeName)
+        </td>
+        <td>
+            @*@Html.ActionLink("Details", "Details", new { id=item.id }) |*@
+            @*@Html.ActionLink("Delete", "Delete", new { id=item.id })*@
+            @Html.ActionLink("編輯", "Edit", new { id = item.id }, new { @class = "btn btn-info" })
+            <button class="btn btn-danger btn-delete" data-workNo="@item.workNo" data-id="@item.id" >刪除</button>
+        </td>
+    </tr>
+}
+
+</table>
+
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" id="confirm-modal">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">確認是否刪除?</h4>
+            </div>
+            <div class="modal-footer">
+                @using (Html.BeginForm("DeleteSub", "FlowDef", FormMethod.Post,new { id = "fmdelete" }))
+                {
+                    <input type="hidden" id="hid" name="hid" />
+                    <input type="hidden" id="hpid" name="hpid" />
+                }
+                <button type="button" class="btn btn-primary" id="modal-btn-yes">確定</button>
+                <button type="button" class="btn btn-default" id="modal-btn-no">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*@Html.Partial("_WinSelEmployee",(FlowDefSub)ViewBag.FlowDefSub)*@
+
+@section Scripts {
+    <script type="text/javascript">
+        $(function () {
+
+            $('.btn-delete').click(function () {
+                var workNo = $(this).attr('data-workNo');
+                $('#hid').val($(this).attr('data-id'));
+                $('#hpid').val($('#h_FlowDefId').val());
+                $('#myModalLabel').val('確定刪除' + workNo + "?");
+                $('#confirm-modal').modal('show');
+                $('#modal-btn-yes').prop('onclick', null).off('click');
+                $('#modal-btn-yes').on('click', function () {
+                    $('#fmdelete').submit();
+                })
+            })
+
+            $('#modal-btn-no').click(function () {
+                $('#confirm-modal').modal('hide');
+            })
+
+            $('#btnSelEmployee').on('click', function () {
+                //$('.select2').val(''); $('.select2').trigger('change');
+                $('#WinSelEmployee').modal('show');
+                //debugger;
+                //$('#edWorkNo').select2('open');
+                //$('.select2-search__field').val('w002').trigger('change');
+                //$('#edWorkNo').val('w002').trigger('change');
+                //return;
+                //$('#edWorkNo').on('select2:select', function (e) {
+                //    var v = $('.select2-search__field').val();
+                //});
+                //$('#edWorkNo').on('select2:open', function (e) {
+                //});
+                //$('#edWorkNo').val(null).trigger('change');
+                //$('#edWorkNo').select2('close');
+                //$('#edWorkNo').select2('open');
+                //$('.select2-search__field').val('w002').trigger('input');
+                //$('#edWorkNo').trigger('select2:select');
+            });
+        })
+    </script>
+    
+}
