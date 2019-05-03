@@ -629,7 +629,7 @@ namespace eform.Controllers
         [HttpGet]
         public ActionResult ListAll(string status = "0",int page=1)
         {
-            int PageSize = 20;
+            int PageSize = 10;
             int NowPageCount = (page - 1) * PageSize;
 
 
@@ -656,7 +656,7 @@ namespace eform.Controllers
 
             List<FlowMain> SignMainList = null;
 
-            var subListCount = 0;
+            var totalListCount = 0;
 
             if (iStatus == 0)
             {
@@ -665,7 +665,7 @@ namespace eform.Controllers
                                 orderby item.billDate descending
                                 select item).Skip(NowPageCount).Take(PageSize).ToList<FlowMain>();
 
-                subListCount = (from item in context.FlowMainList
+                totalListCount = (from item in context.FlowMainList
                                 where item.flowStatus != 99
                                 select item.id
                                 ).Count();
@@ -678,16 +678,16 @@ namespace eform.Controllers
                                 where item.flowStatus == iStatus
                                 select item).Skip(NowPageCount).Take(PageSize).ToList<FlowMain>();
 
-                subListCount = (from item in context.FlowMainList
+                totalListCount = (from item in context.FlowMainList
                                 where item.flowStatus != 99
                                 orderby item.billDate descending
                                 where item.flowStatus == iStatus
                                 select item.id).Count();
             }
 
-            ViewData["totalCounts"] = subListCount;
-            ViewData["pageSize"] = PageSize;
-            ViewData["currentPage"] = page;
+            ViewBag.Count = totalListCount;
+            ViewBag.PageSize = PageSize;
+            ViewBag.CurrentPage = page;
 
             List<vwFlowMain> list = new List<vwFlowMain>();
 
