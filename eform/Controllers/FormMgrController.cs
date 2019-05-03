@@ -685,9 +685,9 @@ namespace eform.Controllers
                                 select item.id).Count();
             }
 
-            ViewData["totalCounts"] = subListCount;
-            ViewData["pageSize"] = PageSize;
-            ViewData["currentPage"] = page;
+            ViewBag.Count = subListCount;
+            ViewBag.PageSize = PageSize;
+            ViewBag.CurrentPage = page;
 
             List<vwFlowMain> list = new List<vwFlowMain>();
 
