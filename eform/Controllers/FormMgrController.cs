@@ -21,8 +21,11 @@ namespace eform.Controllers
         }
         // GET: FlowMgr
         [AdminAuthorize(Roles = "Admin,Employee")]
-        public ActionResult Index()
+        public ActionResult Index(int id = 1)
         {
+            int PageSize = 20;
+            int NowPageCount = (id - 1) * PageSize;
+
             var context = new ApplicationDbContext();
 
             var user = context.Users.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
@@ -35,7 +38,9 @@ namespace eform.Controllers
             var mySignSubList = (from item in context.FlowSubList
                                  where item.workNo == user.workNo && item.signResult == 0
                                  && unSignMainList.Contains(item.pid)
+                                 orderby item.signDate
                                  select item.pid).ToList<string>();
+
 
             var mySignMainList = context.FlowMainList.Where(x => mySignSubList.Contains(x.id)).ToList<FlowMain>();
 
@@ -624,6 +629,10 @@ namespace eform.Controllers
         [HttpGet]
         public ActionResult ListAll(string status = "0",int page=1)
         {
+            int PageSize = 20;
+            int NowPageCount = (page - 1) * PageSize;
+
+
             var context = new ApplicationDbContext();
             List<SelectListItem> StatusItems = new List<SelectListItem>();
 
@@ -647,21 +656,38 @@ namespace eform.Controllers
 
             List<FlowMain> SignMainList = null;
 
+            var subListCount = 0;
+
             if (iStatus == 0)
             {
                 SignMainList = (from item in context.FlowMainList
                                 where item.flowStatus != 99
                                 orderby item.billDate descending
-                                select item).ToList<FlowMain>();
+                                select item).Skip(NowPageCount).Take(PageSize).ToList<FlowMain>();
+
+                subListCount = (from item in context.FlowMainList
+                                where item.flowStatus != 99
+                                select item.id
+                                ).Count();
             }
             else
             {
                 SignMainList = (from item in context.FlowMainList
+                                where item.flowStatus != 99 
+                                orderby item.billDate descending
+                                where item.flowStatus == iStatus
+                                select item).Skip(NowPageCount).Take(PageSize).ToList<FlowMain>();
+
+                subListCount = (from item in context.FlowMainList
                                 where item.flowStatus != 99
                                 orderby item.billDate descending
                                 where item.flowStatus == iStatus
-                                select item).ToList<FlowMain>();
+                                select item.id).Count();
             }
+
+            ViewData["totalCounts"] = subListCount;
+            ViewData["pageSize"] = PageSize;
+            ViewData["currentPage"] = page;
 
             List<vwFlowMain> list = new List<vwFlowMain>();
 
