@@ -70,13 +70,12 @@
                                     <div class="form-group">
                                         @Html.Label("專案經理", htmlAttributes: new { @class = "control-label col-md-2" })
                                         <div class="col-md-4">
-                                            @*<input type="text" id="owner" name="owner" class="form-control" />*@
                                             <input type="hidden" value="@User.Identity.Name" id="hUserId" name="hUserId" />
                                             @Html.DropDownList("owner", new List<SelectListItem>(), new { htmlAttributes = new { @class = "form-control select2-input select2" }, style = "max-width:800px;width:100%;" })
                                         </div>
-                                        @Html.Label("專案狀態", htmlAttributes: new { @class = "control-label col-md-2" })
+                                        <label class="control-label col-md-2">專案狀態</label>
                                         <div class="col-md-4">
-                                            @Html.DropDownList("status", (IEnumerable<SelectListItem>)ViewBag.statusList,new {@class="form-control"})
+                                            @Html.DropDownList("status", (IEnumerable<SelectListItem>)ViewBag.statusList, new { @class = "form-control" })
                                         </div>
                                     </div>
                                     <div class="form-group">
@@ -141,7 +140,7 @@
                                     </div>
                                 </form>
                             </div>
-                            <div id="tab2" class="tab-pane" >
+                            <div id="tab2" class="tab-pane">
                                 <button id="btnAddSub" class="btn btn-default"><span class="fa fa-plus"></span>新增</button>
                                 <button id="btnRemoveSub" class="btn btn-danger"><span class="fa fa-minus"></span>刪除</button>
                                 <div id="diva">
@@ -279,7 +278,9 @@
 
                     $('#winTitle').text('編輯專案代碼/工時代碼');
 
-                    $('#myTabs a[href="#tab1"]').tab('show')
+                    loadRow();
+                    $('#myTabs a[href="#tab1"]').tab('show');
+
                     $('#winInput').modal('show');
 
                     $.unblockUI();
@@ -348,11 +349,8 @@
         }
 
         function loadRow() {
-
-            var lista = $('#tbPMList').find('.pm');
-            for (var i = 0; i < lista.length; i++) {
-                $($(list[i]).closest('tr')).remove();
-            }
+            var lista = $('#tbPMList tbody').find('.pm');
+            $('#tbPMList tbody').empty();
 
             var list = [];
             try {
@@ -370,7 +368,7 @@
 
         $(function () {
 
-          
+
             $("#btn-add").click(function () {
                 document.getElementById("fmInput").reset();
 

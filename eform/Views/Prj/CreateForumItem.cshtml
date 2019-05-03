@@ -1,0 +1,209 @@
+﻿@model eform.Models.vwForumItem
+
+@{
+    ViewBag.Title = "CreateForumItem";
+    Layout = "~/Views/Shared/_PrjLayout.cshtml";
+}
+<style>
+    .select2-container--default .select2-selection--multiple .select2-selection__rendered li
+    {
+        color: black;
+    }
+</style>
+<div class="box box-primary">
+    <div class="box-header">
+        <div class="box-title text-left">
+            <a href="@Url.Action("portal","Prj",new {code=ViewBag.code,Model.mobile})" class="btn btn-primary"><i class="fa fa-undo"></i>返回專案討論區</a>
+        </div>
+    </div>
+    @*<div class="box-header">
+        <div class="box-title">
+            新增討論串
+        </div>
+    </div>*@
+    <div class="box-body">
+        @using (Html.BeginForm("CreateForumItem","Prj",FormMethod.Post, new { enctype = "multipart/form-data",autocomplete="off"}))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                @Html.HiddenFor(model => model.prjId)
+                @Html.HiddenFor(model => model.workNo)
+                @Html.HiddenFor(model => model.mobile)
+                <div class="form-group">
+                    @Html.LabelFor(model => model.workNo, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-3">
+                        @Model.vWorkNo.workNo @Model.vWorkNo.UserCName
+                    </div>
+                    @Html.LabelFor(model => model.billDate, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-3">
+                        @Model.billDate.ToString("yyyy-MM-dd")
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.seq, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.seq, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.seq, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.subject, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.subject, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.subject, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.smemo, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.TextAreaFor(model => model.smemo, new { htmlAttributes = new { @class = "form-control"}, style = "max-width:850px;width:95%;",rows=5 })
+                        @Html.ValidationMessageFor(model => model.smemo, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.othersA, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.DropDownList("othersA1", new List<SelectListItem>(), new { id = "othersA1",  @class = "form-control select2-input select2"} )
+                        @Html.DropDownList("othersA2", new List<SelectListItem>(), new { id = "othersA2", @class = "form-control select2-input select2" })
+                        @Html.DropDownList("othersA3", new List<SelectListItem>(), new { id = "othersA3", @class = "form-control select2-input select2" })
+                        @Html.DropDownList("othersA4", new List<SelectListItem>(), new { id = "othersA4", @class = "othersA form-control select2-input select2" })
+                        @Html.DropDownList("othersA5", new List<SelectListItem>(), new { id = "othersA5", @class = "othersA form-control select2-input select2" })
+                        @Html.DropDownList("othersA6", new List<SelectListItem>(), new { id = "othersA6", @class = "othersA form-control select2-input select2" })
+                        @Html.DropDownList("othersA7", new List<SelectListItem>(), new { id = "othersA7", @class = "othersA form-control select2-input select2" })
+                        @Html.DropDownList("othersA8", new List<SelectListItem>(), new { id = "othersA8", @class = "othersA form-control select2-input select2" })
+                        @Html.DropDownList("othersA9", new List<SelectListItem>(), new { id = "othersA9", @class = "othersA form-control select2-input select2" })
+                        @Html.DropDownList("othersA10", new List<SelectListItem>(), new { id = "othersA10", @class = "othersA form-control select2-input select2" })
+                    </div>
+                </div>
+                <br/>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.othersB, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.DropDownList("othersB1", new List<SelectListItem>(), new { id = "othersB1", @class = "form-control select2-input select2" })
+                        @Html.DropDownList("othersB2", new List<SelectListItem>(), new { id = "othersB2", @class = "form-control select2-input select2" })
+                        @Html.DropDownList("othersB3", new List<SelectListItem>(), new { id = "othersB3", @class = "form-control select2-input select2" })
+                        @Html.DropDownList("othersB4", new List<SelectListItem>(), new { id = "othersB4", @class = "othersB form-control select2-input select2" })
+                        @Html.DropDownList("othersB5", new List<SelectListItem>(), new { id = "othersB5", @class = "othersB form-control select2-input select2" })
+                        @Html.DropDownList("othersB6", new List<SelectListItem>(), new { id = "othersB6", @class = "othersB form-control select2-input select2" })
+                        @Html.DropDownList("othersB7", new List<SelectListItem>(), new { id = "othersB7", @class = "othersB form-control select2-input select2" })
+                        @Html.DropDownList("othersB8", new List<SelectListItem>(), new { id = "othersB8", @class = "othersB form-control select2-input select2" })
+                        @Html.DropDownList("othersB9", new List<SelectListItem>(), new { id = "othersB9", @class = "othersB form-control select2-input select2" })
+                        @Html.DropDownList("othersB10", new List<SelectListItem>(), new { id = "othersB10", @class = "othersB form-control select2-input select2" })
+                    </div>
+                </div>
+                <br/>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.sfile, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.sfile, new { htmlAttributes = new { @class = "form-control",type="file" } })
+                        @Html.EditorFor(model => model.sfile2, new { htmlAttributes = new { @class = "form-control", type = "file" } })
+                        @Html.EditorFor(model => model.sfile3, new { htmlAttributes = new { @class = "form-control", type = "file" } })
+                        @Html.EditorFor(model => model.sfile4, new { htmlAttributes = new { @class = "form-control", type = "file" } })
+                        @Html.ValidationMessageFor(model => model.sfile, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" id="btnSave" value="儲存" class="btn btn-primary" />
+                    </div>
+                </div>
+            </div>
+        }
+
+    </div>
+</div>
+
+<script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+<script src="~/Scripts/jquery.blockUI.js"></script>
+
+@section scripts
+{
+    <script type="text/javascript">
+
+        $(function () {
+            $('#btnSave').on('click', function () {
+                $.blockUI({ message: '<h2>資料儲存中...</h2>' });     
+            });
+            var data = @Html.Raw((ViewBag.userlist));
+
+            function formatRepoSelection(repo) {
+                return repo.id + "-" + repo.text ;
+            }
+
+            $("#othersA1").select2({
+                data: data,
+                maximumSelectionLength: 10,
+                placeholder: '',
+                templateSelection: formatRepoSelection
+            });
+            $("#othersA2").select2({
+                data: data,
+                maximumSelectionLength: 10,
+                placeholder: '',
+                templateSelection: formatRepoSelection
+            });
+            $("#othersA3").select2({
+                data: data,
+                maximumSelectionLength: 10,
+                placeholder: '',
+                templateSelection: formatRepoSelection
+            });
+            $("#othersA4").select2({
+                data: data,
+                maximumSelectionLength: 10,
+                placeholder: '',
+                templateSelection: formatRepoSelection
+            });
+            $("#othersA5").select2({
+                data: data,
+                maximumSelectionLength: 10,
+                placeholder: '',
+                templateSelection: formatRepoSelection
+            });
+            $("#othersA6").select2({
+                data: data,
+                maximumSelectionLength: 10,
+                placeholder: '',
+                templateSelection: formatRepoSelection
+            });
+
+            $(".othersA").select2({
+                data: data,
+                maximumSelectionLength: 10,
+                placeholder: '',
+                templateSelection: formatRepoSelection
+            });
+           
+            $("#othersB1").select2({
+                data: data,
+                maximumSelectionLength: 10,
+                placeholder: '',
+                templateSelection: formatRepoSelection
+            });
+            $("#othersB2").select2({
+                data: data,
+                maximumSelectionLength: 10,
+                placeholder: '',
+                templateSelection: formatRepoSelection
+            });
+            $("#othersB3").select2({
+                data: data,
+                maximumSelectionLength: 10,
+                placeholder: '',
+                templateSelection: formatRepoSelection
+            });
+            $(".othersB").select2({
+                data: data,
+                maximumSelectionLength: 10,
+                placeholder: '',
+                templateSelection: formatRepoSelection
+            });
+        });
+    </script>
+}

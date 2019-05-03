@@ -58,6 +58,8 @@ namespace eform.Models
         public DbSet<prjWorkItem> prjWorkItemList { get; set; }
         public DbSet<prjPM> prjPMList { get; set; }
         public DbSet<prjForumUser> prjForumUserList { get; set; }
+        public DbSet<PrjEvent> prjEventList { get; set; }
+        public DbSet<ForumItem> prjForumItems { get; set; }
 
         public List<vwSignType> signTypeList()
         {
@@ -195,7 +197,7 @@ namespace eform.Models
             {
                 dynamic obj = new ExpandoObject();
                 obj.id = user.workNo;
-                obj.text = user.cName;
+                obj.text = user.eName;
                 userlist.Add(obj);
             }
             dynamic userSelTitle = new ExpandoObject();

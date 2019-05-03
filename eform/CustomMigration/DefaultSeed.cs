@@ -31,7 +31,7 @@ namespace eform.CustomMigration
 
             try
             {
-                var r = manager.Create(user, "1234");
+                var r = manager.Create(user, "a@123456");
             }
             catch (Exception ex)
 
@@ -48,7 +48,7 @@ namespace eform.CustomMigration
                 UserName = "sadmin",
                 workNo = "sadmin"
             };
-            manager.Create(user, "38946011");
+            manager.Create(user, "a@123456");
             newUser = manager.FindByName(user.UserName);
             manager.AddToRole(newUser.Id, "Admin");
             return true;

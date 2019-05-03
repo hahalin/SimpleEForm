@@ -43,7 +43,12 @@ namespace eform.Models
                 Value = "2",
                 Text = "公司活動"
             });
-            
+            eventTypeList.Add(new SelectListItem
+            {
+                Value = "3",
+                Text = "會議室預約"
+            });
+
         }
         public string id { get; set; }
         public string flowId { get; set; }
@@ -78,9 +83,13 @@ namespace eform.Models
                 {
                     return "業務行程";
                 }
-                else
+                else if (eventType == 2)
                 {
                     return "公司活動";
+                }
+                else 
+                {
+                    return "會議室預約";
                 }
             }
         }

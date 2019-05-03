@@ -35,7 +35,7 @@
 @if (User.Identity.IsAuthenticated)
 {
     <div class="row">
-        <div class="col-md-10">
+        <div class="col-md-12">
             <div class="box col-xs-10 col-md-10" style="padding_:2px;padding-top:10px;display:none_;">
                 <div class="nav-tabs-custom">
                     <ul class="nav nav-tabs">
@@ -131,7 +131,23 @@
                         </div>
 
                         <div id="tab2" class="tab-pane active">
-                            <div id='calendar'></div>
+
+                            <div class="box-header col-xs-12 col-md-12" style="margin-top:10px;">
+                                @using (Html.BeginForm("Index", "Home", FormMethod.Get))
+                                {
+                                    <div class="form-group">
+                                        @*<label class="control-label col-md-2">選擇專案:</label>*@
+                                        <div class="col-md-3">
+                                            @Html.DropDownList("selForm", (IEnumerable<SelectListItem>)ViewBag.myForms, new { @class = "form-control" })
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">查詢</button>
+                                    </div>
+                                }
+                            </div>
+                            <div class="box col-xs-12 col-md-12" style="padding-top:10px;">
+                                <div id='calendar'></div>
+                            </div>
+
                         </div>
                     </div>
                 </div>

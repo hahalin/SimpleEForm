@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -33,7 +33,11 @@ namespace eform.Models
         [Key]
         public string id { get; set; }
         public string pid { get; set; }
+        [Required]
+        [Display(Name ="工號")]
         public string WorkNo { get; set; }
+        [Display(Name = "職稱")]
+        public string Title { get; set; }
     }
     public class prjForumUser
     {

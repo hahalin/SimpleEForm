@@ -18,6 +18,9 @@ namespace eform.Models
         [DisplayName("申請日期")]
         [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd}", ApplyFormatInEditMode = true)]
         public DateTime? billDate { get; set; }
+        [DisplayName("簽核日期")]
+        [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd}", ApplyFormatInEditMode = true)]
+        public DateTime? signDate { get; set; }
         public string defId { get; set; }
         public string flowName { get; set; }
         [DisplayName("簽核狀態")]

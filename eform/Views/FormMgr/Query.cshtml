@@ -22,6 +22,9 @@
                             @Html.DisplayNameFor(model => model.billDate)
                         </th>
                         <th>
+                            @Html.DisplayNameFor(model => model.signDate)
+                        </th>
+                        <th>
                             @Html.DisplayNameFor(model => model.flowName)
                         </th>
                         <th>
@@ -45,6 +48,12 @@
                                 }
                                 @billdate.ToString("yyyy-MM-dd HH:mm:ss")
                                 @*@Html.DisplayFor(modelItem => item.billDate)*@
+                            </td>
+                            <td>
+                                @{
+                                    string signDateStr = item.signDate == null ? "" : Convert.ToDateTime(item.signDate.ToString()).ToString("yyyy-MM-dd");
+                                }
+                                @signDateStr
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.flowName)

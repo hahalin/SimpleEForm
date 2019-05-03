@@ -16,6 +16,9 @@ namespace eform.Models
         [DisplayName("申請日期")]
         [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd}", ApplyFormatInEditMode = true)]
         public DateTime? billDate { get; set; }
+        [DisplayName("簽核日期")]
+        [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd}", ApplyFormatInEditMode = true)]
+        public DateTime? signDate { get; set; }
         [DisplayName("單號")]
         public string billNo { get; set; }
         [DisplayName("表單名稱")]

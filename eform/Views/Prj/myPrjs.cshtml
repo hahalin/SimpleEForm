@@ -1,0 +1,54 @@
+﻿@using eform.Models;
+@model IEnumerable<eform.Models.prjCode>
+
+@{
+    ViewBag.Title = "myPrjs";
+    Layout = "~/Views/Shared/_PrjLayout.cshtml";
+}
+
+<div class="row col-md-5">
+    <div class="box box-warning">
+        <div class="box-header">
+            <h3 class="box-title">我的專案 
+                @if (ViewBag.mobile)
+                {
+                    @:-Mobile
+                }
+            </h3>
+        </div>
+        <div class="box-body">
+            <table id="gdprj" class="table table-bordered" style="height_:300px;overflow:auto;display:block;">
+                <thead>
+                    <tr>
+                        <th>專案名稱</th>
+                        <th>專案代碼</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (prjCode prj in Model)
+                    {
+                        if (prj != null)
+                        {
+                            string sclass = "";
+                            //if (prj.code == Model.prjCode)
+                            //{
+                            //    sclass = "highlight";
+                            //}
+
+                            <tr class="@sclass">
+                                <td>
+                                    <input type="hidden" class="hid" value='@prj.id' />
+                                    <a href="@Url.Action("portal","prj",new {code=prj.code,mobile=ViewBag.mobile})">@prj.nm</a>
+                                </td>
+                                <td>@prj.code</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+
+</div>

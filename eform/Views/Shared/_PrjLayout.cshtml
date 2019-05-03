@@ -1,8 +1,9 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    @*<meta charset="utf-8">*@
+    @*<meta http-equiv="X-UA-Compatible" content="IE=edge">*@
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Hephas Energy EForm System</title>
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     @Styles.Render("~/Content/css")
@@ -38,8 +39,8 @@
             </nav>
         </header>
         <!-- Content Wrapper. Contains page content -->
-        @Html.Partial("_PrjLeftMenu")
         <div class="content-wrapper">
+            @Html.Partial("_PrjLeftMenu")
             <!-- Main content -->
             @RenderBody()
             @*<div class="body-content" style="padding-left:0px;padding-top:5px;overflow:auto;margin-bottom:80px;">

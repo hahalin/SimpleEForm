@@ -24,7 +24,7 @@ namespace eform.Controllers
             DateTime today = DateTime.Today;
 
             List<FlowMain> fMainList = ctx.FlowMainList.Where(
-                x => x.billDate != null && x.billDate.Value.Year <= today.Year
+                x => x.billDate != null && x.billDate.Value.Year <= today.Year 
                 //&& x.billDate.Value.Month == today.Month
                 && x.flowStatus == 2
                 && x.defId == "DayOff").ToList<FlowMain>();
@@ -72,7 +72,7 @@ namespace eform.Controllers
             DateTime today = DateTime.Today;
 
             List<FlowMain> fMainList = ctx.FlowMainList.Where(
-                x => x.billDate != null && x.billDate.Value.Year <= today.Year
+                x => x.billDate != null && x.billDate.Value.Year <= today.Year 
                 && x.flowStatus == 2
                 && x.defId == "PublicOut").ToList<FlowMain>();
             List<string> billNoList = (from f in fMainList select f.id).ToList<string>();
@@ -113,7 +113,7 @@ namespace eform.Controllers
             DateTime today = DateTime.Today;
 
             List<FlowMain> fMainList = ctx.FlowMainList.Where(
-                x => x.billDate != null && x.billDate.Value.Year <= today.Year
+                x => x.billDate != null && x.billDate.Value.Year <= today.Year 
                 && x.flowStatus == 2
                 && x.defId == "GuestForm").ToList<FlowMain>();
             List<string> billNoList = (from f in fMainList select f.id).ToList<string>();
@@ -158,7 +158,7 @@ namespace eform.Controllers
             return JsonConvert.SerializeObject(dataList);
         }
 
-        string getEventScheduleList()
+        string getEventScheduleList(string eventType = "")
         {
             DateTime today = DateTime.Today;
 
@@ -167,7 +167,23 @@ namespace eform.Controllers
                 && x.flowStatus != 99
                 && x.defId == "EventSchedule").ToList<FlowMain>();
             List<string> billNoList = (from f in fMainList select f.id).ToList<string>();
-            List<EventSchedule> eventScheduleList = ctx.eventScheduleList.Where(x => billNoList.Contains(x.flowId)).ToList<EventSchedule>();
+            List<EventSchedule> eventScheduleList_ = ctx.eventScheduleList.Where(x => billNoList.Contains(x.flowId)).ToList<EventSchedule>();
+            List<EventSchedule> eventScheduleList = new List<EventSchedule>();
+
+            if (eventType != "")
+            {
+                foreach (var evt in eventScheduleList_)
+                {
+                    if (evt.eventType.ToString() == eventType)
+                    {
+                        eventScheduleList.Add(evt);
+                    }
+                }
+            }
+            else
+            {
+                eventScheduleList = eventScheduleList_;
+            }
 
             List<dynamic> dataList = new List<dynamic>();
             int idx = 1;
@@ -178,110 +194,185 @@ namespace eform.Controllers
 
                 vwEmployee user = ctx.getUserByWorkNo(f.senderNo);
                 EventSchedule d = eventScheduleList.Where(x => x.flowId == f.id).FirstOrDefault();
-                dynamic obj = new ExpandoObject();
 
-                string strTime1 = "";
-                string strTime2 = "";
-                strTime1 = String.Format("{0:00}", d.beginHH) + ":" + String.Format("{0:00}", d.beginMM);
-                strTime2 = String.Format("{0:00}", d.endHH) + ":" + String.Format("{0:00}", d.endMM);
-
-
-                obj.billNo = f.billNo;
-                obj.date = d.beginDate;
-                obj.user = user.UserCName;
-                obj.start = Convert.ToDateTime(d.beginDate).ToString("yyyy-MM-dd") + " " + strTime1;
-                obj.end = Convert.ToDateTime(d.endDate).ToString("yyyy-MM-dd") + " " + strTime2;
-
-
-                string prefix = "業";
-
-                if (d.eventType == 1)
+                if (d != null)
                 {
+                    dynamic obj = new ExpandoObject();
 
-                }
-                else
-                {
-                    prefix = "會";
-                }
+                    string strTime1 = "";
+                    string strTime2 = "";
+                    strTime1 = String.Format("{0:00}", d.beginHH) + ":" + String.Format("{0:00}", d.beginMM);
+                    strTime2 = String.Format("{0:00}", d.endHH) + ":" + String.Format("{0:00}", d.endMM);
 
-                if (d.beginDate.Value.ToString("yyyyMMdd") == d.endDate.Value.ToString("yyyyMMdd"))
-                {
-                    obj.title = d.subject + "-" + user.UserCName + " " + strTime1 + "~" + strTime2 ;
-                }
-                else
-                {
-                    obj.title = d.subject + "-" + user.UserCName + " " + d.beginDate.Value.ToString("MM/dd") + " " + strTime1 + "~" + d.endDate.Value.ToString("MM/dd") + " " + strTime2 ;
-                }
 
-                if (string.IsNullOrEmpty(d.colorTag))
-                {
+                    obj.billNo = f.billNo;
+                    obj.date = d.beginDate;
+                    obj.user = user.UserCName;
+                    obj.start = Convert.ToDateTime(d.beginDate).ToString("yyyy-MM-dd") + " " + strTime1;
+                    obj.end = Convert.ToDateTime(d.endDate).ToString("yyyy-MM-dd") + " " + strTime2;
+
+
+                    string prefix = "業";
+
                     if (d.eventType == 1)
                     {
-                        obj.color = "red";
-                        obj.textColor = "white";
+
                     }
                     else
                     {
-
-                        obj.color = "#00cc00";
-                        obj.textColor = "white";
-                    }
-                }
-                else
-                {
-                    if (d.colorTag=="1")
-                    {
-                        obj.color = "gray";
-                        obj.textColor = "white";
-                    }
-                    if (d.colorTag == "2")
-                    {
-                        obj.color = "lightgray";
-                        obj.textColor = "red";
-                    }
-                    if (d.colorTag == "3")
-                    {
-                        obj.color = "lightgray";
-                        obj.textColor = "black";
-                    }
-                    if (d.colorTag == "4")
-                    {
-                        obj.color = "forestgreen";
-                        obj.textColor = "white";
-                    }
-                    if (d.colorTag == "5")
-                    {
-                        obj.color = "yellow";
-                        obj.textColor = "black";
-                    }
-                    if (d.colorTag == "6")
-                    {
-                        obj.color = "red";
-                        obj.textColor = "white";
+                        prefix = "會";
                     }
 
+                    if (d.beginDate.Value.ToString("yyyyMMdd") == d.endDate.Value.ToString("yyyyMMdd"))
+                    {
+                        obj.title = d.subject + "-" + user.UserCName + " " + strTime1 + "~" + strTime2;
+                    }
+                    else
+                    {
+                        obj.title = d.subject + "-" + user.UserCName + " " + d.beginDate.Value.ToString("MM/dd") + " " + strTime1 + "~" + d.endDate.Value.ToString("MM/dd") + " " + strTime2;
+                    }
+
+                    if (string.IsNullOrEmpty(d.colorTag))
+                    {
+                        if (d.eventType == 1)
+                        {
+                            obj.color = "red";
+                            obj.textColor = "white";
+                        }
+                        else if (d.eventType == 2)
+                        {
+                            obj.color = "#00cc00";
+                            obj.textColor = "white";
+                        }
+                    }
+                    else
+                    {
+                        if (d.colorTag == "1")
+                        {
+                            obj.color = "gray";
+                            obj.textColor = "white";
+                        }
+                        if (d.colorTag == "2")
+                        {
+                            obj.color = "lightgray";
+                            obj.textColor = "red";
+                        }
+                        if (d.colorTag == "3")
+                        {
+                            obj.color = "lightgray";
+                            obj.textColor = "black";
+                        }
+                        if (d.colorTag == "4")
+                        {
+                            obj.color = "forestgreen";
+                            obj.textColor = "white";
+                        }
+                        if (d.colorTag == "5")
+                        {
+                            obj.color = "yellow";
+                            obj.textColor = "black";
+                        }
+                        if (d.colorTag == "6")
+                        {
+                            obj.color = "red";
+                            obj.textColor = "white";
+                        }
+
+                    }
+                    if (d.eventType == 3)
+                    {
+                        obj.color = "#BA55D3";
+                        obj.textColor = "white";
+                    }
+                    obj.formId = d.id;
+                    obj.url = f.senderNo == User.Identity.Name ? urla : urlb;
+                    obj.id = idx;
+                    obj.order = 3;
+                    dataList.Add(obj);
+                    idx++;
                 }
-                obj.formId = d.id;
-                obj.url = f.senderNo == User.Identity.Name ? urla : urlb;
-                obj.id = idx;
-                obj.order = 3;
-                dataList.Add(obj);
-                idx++;
             }
 
             return JsonConvert.SerializeObject(dataList);
         }
 
 
-        public ActionResult Index()
+        public ActionResult Index(string selForm = "ALL")
         {
             var context = new ApplicationDbContext();
             List<news> newslist = (from item in context.newsList.ToList<news>() orderby item.createTime2 descending select item).ToList<news>();
+
+            List<SelectListItem> myFormList = new List<SelectListItem>();
+
+            myFormList.Add(new SelectListItem
+            {
+                Text = "業務行程",
+                Value = "1"
+            });
+            myFormList.Add(new SelectListItem
+            {
+                Text = "公司活動",
+                Value = "2"
+            });
+            myFormList.Add(new SelectListItem
+            {
+                Text = "會議室預約",
+                Value = "3"
+            });
+            myFormList.Add(new SelectListItem
+            {
+                Text = "訪客",
+                Value = "4"
+            });
+            myFormList.Add(new SelectListItem
+            {
+                Text = "外出",
+                Value = "5"
+            });
+            myFormList.Add(new SelectListItem
+            {
+                Text = "休假",
+                Value = "6"
+            });
+
+            myFormList.Insert(0, new SelectListItem
+            {
+                Text = "全部",
+                Value = "ALL",
+                Selected = true
+            });
+            ViewBag.myForms = myFormList;
+
             ViewBag.newslist = newslist;
-            ViewBag.dayOffList = getDayOffData();
-            ViewBag.publicOutList = getPublicOutList();
-            ViewBag.guestFormList = getGuestFormList();
-            ViewBag.eventScheduleList = getEventScheduleList();
+            ViewBag.dayOffList = JsonConvert.SerializeObject(new List<dynamic>());
+            ViewBag.publicOutList = JsonConvert.SerializeObject(new List<dynamic>());
+            ViewBag.guestFormList = JsonConvert.SerializeObject(new List<dynamic>());
+            ViewBag.eventScheduleList = JsonConvert.SerializeObject(new List<dynamic>());
+
+            if (selForm == "ALL")
+            {
+                ViewBag.dayOffList = getDayOffData();
+                ViewBag.publicOutList = getPublicOutList();
+                ViewBag.guestFormList = getGuestFormList();
+                ViewBag.eventScheduleList = getEventScheduleList();
+            }
+            if (selForm == "1" || selForm == "2" || selForm == "3")
+            {
+                ViewBag.eventScheduleList = getEventScheduleList(selForm);
+            }
+            if (selForm == "4")
+            {
+                ViewBag.guestFormList = getGuestFormList();
+            }
+            if (selForm == "5")
+            {
+                ViewBag.publicOutList = getPublicOutList();
+            }
+            if (selForm == "6")
+            {
+                ViewBag.dayOffList = getDayOffData();
+            }
+
             return View();
         }
 

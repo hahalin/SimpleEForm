@@ -126,7 +126,7 @@ namespace eform.Controllers
                 FlowPageType = "HRCheck";
             }
 
-            if (FlowPageType == "") 
+            if (FlowPageType == "")
             {
                 FlowPageType = fmain.defId == "EventSchedule" ? "EventSchedule" : "";
             }
@@ -310,7 +310,7 @@ namespace eform.Controllers
                 return View("Details", list);
             }
             #endregion
-            
+
             #region "廠務派工及總務需求申請單"
             if (fmain.defId == "ReqInHouse")
             {
@@ -342,11 +342,11 @@ namespace eform.Controllers
                     id = formObj.id,
                     user = ctx.getUserByWorkNo(fmain.senderNo),
                     billDate = fmain.billDate,
-                    beginHH= formObj.beginHH,
-                    beginMM= formObj.beginMM,
-                    subject= formObj.subject,
-                    location=formObj.location,
-                    eventType=formObj.eventType,
+                    beginHH = formObj.beginHH,
+                    beginMM = formObj.beginMM,
+                    subject = formObj.subject,
+                    location = formObj.location,
+                    eventType = formObj.eventType,
                     sMemo = formObj.sMemo
                 };
                 ViewBag.SubModel = subModel;
@@ -518,6 +518,20 @@ namespace eform.Controllers
                         dbh.execSql("update FlowMains set flowStatus=3 where id='" + id + "'");
                     }
                 }
+
+                if (fsub.signResult == 1)
+                {
+                    dbHelper dbh = new dbHelper();
+                    try
+                    {
+                        dbh.execSql("update FlowMains set signDate='" + ctx.getLocalTiime().ToString("yyyy-MM-dd HH:mm:ss") + "' where id='" + id + "'");
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
+                }
+
             }
 
             return RedirectToAction("Index", "FormMgr");
@@ -555,6 +569,7 @@ namespace eform.Controllers
                     id = item.id,
                     sender = sender.workNo + " " + sender.cName,
                     billDate = item.billDate,
+                    signDate = item.signDate,
                     billNo = item.billNo,
                     flowName = item.flowName,
                     flowStatus = Status == null ? "簽核中" : Status.nm
@@ -607,7 +622,7 @@ namespace eform.Controllers
 
         [AdminAuthorize(Roles = "Admin")]
         [HttpGet]
-        public ActionResult ListAll(string status = "0")
+        public ActionResult ListAll(string status = "0",int page=1)
         {
             var context = new ApplicationDbContext();
             List<SelectListItem> StatusItems = new List<SelectListItem>();
@@ -662,6 +677,7 @@ namespace eform.Controllers
                         sender = sender.workNo + " " + sender.cName,
                         billNo = item.billNo,
                         billDate = item.billDate,
+                        signDate = item.signDate,
                         flowName = item.flowName,
                         flowStatus = Status == null ? "簽核中" : Status.nm
                     };

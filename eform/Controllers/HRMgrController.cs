@@ -277,5 +277,148 @@ namespace eform.Controllers
                 return RedirectToAction("List");
             }
         }
+
+        [Authorize]
+        [HttpGet]
+        public ActionResult QueryReportA()
+        {
+            ViewBag.dt1 = ctx.getLocalTiime().ToString("yyyy-MM-dd");
+            ViewBag.dt2 = ctx.getLocalTiime().ToString("yyyy-MM-dd");
+            ViewBag.rdRpt = 1;
+            return View();
+        }
+        [Authorize]
+        [HttpPost]
+        public ActionResult QueryReportA(string dt1,string dt2,string rdRpt)
+        {
+            dbHelper dbh = new dbHelper();
+            if (rdRpt == "1")
+            {
+                ExcelPackage ep = new ExcelPackage();
+
+                //建立第一個Sheet，後方為定義Sheet的名稱
+                ExcelWorksheet sheet = ep.Workbook.Worksheets.Add("請假單總表");
+                int col = 1;
+                sheet.Cells[1, col++].Value = "申請日期";
+                sheet.Cells[1, col++].Value = "簽核日期";
+                sheet.Cells[1, col++].Value = "單號";
+                sheet.Cells[1, col++].Value = "工號";
+                sheet.Cells[1, col++].Value = "姓名";
+                sheet.Cells[1, col++].Value = "開始日期";
+                sheet.Cells[1, col++].Value = "結束日期";
+                sheet.Cells[1, col++].Value = "假別";
+                sheet.Cells[1, col++].Value = "時數";
+                sheet.Cells[1, col++].Value = "代理人工號";
+                sheet.Cells[1, col++].Value = "備註";
+
+                DataTable tb1 = new DataTable();
+                string sql = string.Format(
+                    @" select b.billdate,b.signDate, b.billno, b.senderNo, c.cname, a.dtBegin, a.dtEnd, a.dType, a.hours, a.jobAgent, a.sMemo from dayoffs a 
+                        inner join flowmains b on a.flowid=b.id
+                        left join AspNetUsers c on b.senderNo=c.workno
+                        where b.billdate >='{0}' and b.billdate <= '{1}' and b.flowStatus=2 
+                        order by b.billDate asc
+                    ",
+                    dt1,dt2
+                );
+                tb1 = dbh.sql2tb(sql);
+                int row = 2;
+                foreach (DataRow r in tb1.Rows)
+                {
+                    sheet.Cells[row, 1].Style.Numberformat.Format = "yyyy/mm/dd";
+                    sheet.Cells[row, 2].Style.Numberformat.Format = "yyyy/mm/dd";
+                    sheet.Cells[row, 6].Style.Numberformat.Format = "yyyy/mm/dd HH:MM:ss";
+                    sheet.Cells[row, 7].Style.Numberformat.Format = "yyyy/mm/dd HH:MM:ss";
+                    sheet.Cells[row, 1].Value = r[0];
+                    sheet.Cells[row, 2].Value = r[1];
+                    sheet.Cells[row, 3].Value = r[2];
+                    sheet.Cells[row, 4].Value = r[3];
+                    sheet.Cells[row, 5].Value = r[4];
+                    sheet.Cells[row, 6].Value = r[5];
+                    sheet.Cells[row, 7].Value = r[6];
+                    sheet.Cells[row, 8].Value = r[7];
+                    sheet.Cells[row, 9].Value = r[8];
+                    sheet.Cells[row, 10].Value = r[9];
+                    sheet.Cells[row, 11].Value = r[10];
+                    row++;
+                }
+                for (col=1;col<12;col++)
+                {
+                    sheet.Column(col).AutoFit();
+                }
+
+                MemoryStream fileStream = new MemoryStream();
+                ep.SaveAs(fileStream);
+                ep.Dispose();//如果這邊不下Dispose，建議此ep要用using包起來，但是要記得先將資料寫進MemoryStream在Dispose。
+                fileStream.Position = 0;//不重新將位置設為0，excel開啟後會出現錯誤
+                return File(fileStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "請假單總表"+ctx.getLocalTiime().ToString("yyyyMMddHHmmss")+".xlsx");
+            }
+            else
+            {
+                ExcelPackage ep = new ExcelPackage();
+
+                //建立第一個Sheet，後方為定義Sheet的名稱
+                ExcelWorksheet sheet = ep.Workbook.Worksheets.Add("加班單總表");
+                int col = 1;
+                sheet.Cells[1, col++].Value = "申請日期";
+                sheet.Cells[1, col++].Value = "簽核日期";
+                sheet.Cells[1, col++].Value = "單號";
+                sheet.Cells[1, col++].Value = "工號";
+                sheet.Cells[1, col++].Value = "姓名";
+                sheet.Cells[1, col++].Value = "開始時間";
+                sheet.Cells[1, col++].Value = "結束時間";
+                sheet.Cells[1, col++].Value = "時數";
+                sheet.Cells[1, col++].Value = "加班事由";
+                
+
+                DataTable tb1 = new DataTable();
+                string sql = string.Format(
+                    @" SELECT b.billDate,b.signDate,b.billno,b.senderNo,c.cname,a.dtbegin,a.dtend,a.hours,a.smemo
+                          FROM [seform].[dbo].[ReqOverTimes] a inner join flowmains b on a.flowid=b.id
+                          left join AspNetUsers c on b.senderNo=c.workno
+                          where b.billdate >= '{0}' and billdate<='{1}' and b.flowStatus=2  
+                          and b.flowname=N'加班申請單'
+                          order by b.billdate 
+                    ",
+                    dt1, dt2
+                );
+                tb1 = dbh.sql2tb(sql);
+                int row = 2;
+                foreach (DataRow r in tb1.Rows)
+                {
+                    sheet.Cells[row, 1].Style.Numberformat.Format = "yyyy/mm/dd";
+                    sheet.Cells[row, 2].Style.Numberformat.Format = "yyyy/mm/dd";
+                    sheet.Cells[row, 6].Style.Numberformat.Format = "yyyy/mm/dd HH:MM:ss";
+                    sheet.Cells[row, 7].Style.Numberformat.Format = "yyyy/mm/dd HH:MM:ss";
+                    sheet.Cells[row, 1].Value = r[0];
+                    sheet.Cells[row, 2].Value = r[1];
+                    sheet.Cells[row, 3].Value = r[2];
+                    sheet.Cells[row, 4].Value = r[3];
+                    sheet.Cells[row, 5].Value = r[4];
+                    sheet.Cells[row, 6].Value = r[5];
+                    sheet.Cells[row, 7].Value = r[6];
+                    sheet.Cells[row, 8].Value = r[7];
+                    sheet.Cells[row, 9].Value = r[8];
+                    row++;
+                }
+                for (col = 1; col < 9; col++)
+                {
+                    sheet.Column(col).AutoFit();
+                }
+
+                MemoryStream fileStream = new MemoryStream();
+                ep.SaveAs(fileStream);
+                ep.Dispose();
+                fileStream.Position = 0;
+                return File(fileStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "加班單總表" + ctx.getLocalTiime().ToString("yyyyMMddHHmmss") + ".xlsx");
+            }
+
+
+
+            ViewBag.dt1 = dt1;
+            ViewBag.dt2 = dt2;
+            ViewBag.rdRpt = rdRpt;
+            return View();
+        }
     }
 }

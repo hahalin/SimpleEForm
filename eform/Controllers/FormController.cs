@@ -29,6 +29,11 @@ namespace eform.Controllers
             ctx = new ApplicationDbContext();
             con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString);
         }
+
+        public ActionResult UploadError()
+        {
+            return View();
+        }
         // GET: Form
         public ActionResult Index()
         {
@@ -48,6 +53,7 @@ namespace eform.Controllers
                     billNo=fitem.billNo,
                     sender = sender.workNo + " " + sender.cName,
                     billDate = fitem.billDate,
+                    signDate=fitem.signDate,
                     flowName = fitem.flowName,
                     flowStatus = Status == null ? "簽核中" : Status.nm
                 };

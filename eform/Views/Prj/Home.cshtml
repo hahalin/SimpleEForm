@@ -35,18 +35,30 @@
 {
     <div class="row">
         <div class="col-md-12">
+            <div class="box-header col-xs-10 col-md-12" style="padding-top_:10px;">
+                @using (Html.BeginForm("Home", "Prj", FormMethod.Get))
+                {
+                    <div class="form-group">
+                        <label class="control-label col-md-1">選擇專案:</label>
+                        <div class="col-md-3">
+                            @Html.DropDownList("selPrj", (IEnumerable<SelectListItem>)ViewBag.myPrjs, new { @class = "form-control" })
+                        </div>
+                        <button type="submit" class="btn btn-primary">查詢</button>
+                    </div>
+                }
+            </div>
             <div class="box col-xs-10 col-md-12" style="padding-top:10px;">
-                 <div id='calendar'></div>
+                <div id='calendar'></div>
             </div>
         </div>
     </div>
 
 
 
-@section scripts {
-    <script src="~/Scripts/fullcalendar.min.js"></script>
-    <script src="~/Scripts/locale-all.js"></script>
-    <script type="text/javascript">
+    @section scripts {
+        <script src="~/Scripts/fullcalendar.min.js"></script>
+        <script src="~/Scripts/locale-all.js"></script>
+        <script type="text/javascript">
          $(function () {
                 @if (TempData["changepwdsucess"] != null && TempData["changepwdsucess"].ToString() == "Y")
                 {
@@ -61,7 +73,7 @@
                 {
                     eventPrjWorks = { events: [] };
                 }
-                
+
                 $('#calendar').fullCalendar({
                      defaultView: 'month',
                      locale:'zh-tw',
@@ -94,12 +106,13 @@
                      ],
 
                      eventClick: function (event) {
-                         alert('功能開發中');
+                         //alert('功能開發中');
 
                          if (event.url) {
                              window.open(event.url, "_blank");
                              return false;
                          }
+                         return false;
                          //return true;
                      },
                      select: function (start, end, jsEvent, view, resource) {
@@ -111,7 +124,7 @@
                $.unblockUI();
 
          })
-    </script>
-}
+        </script>
+    }
 
 }

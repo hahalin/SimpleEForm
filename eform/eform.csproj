@@ -413,6 +413,42 @@
     <Compile Include="Migrations\201901061559051_addPrjForumUser.Designer.cs">
       <DependentUpon>201901061559051_addPrjForumUser.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201901260846373_addPrjEvent.cs" />
+    <Compile Include="Migrations\201901260846373_addPrjEvent.Designer.cs">
+      <DependentUpon>201901260846373_addPrjEvent.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201901272319493_addForumItem.cs" />
+    <Compile Include="Migrations\201901272319493_addForumItem.Designer.cs">
+      <DependentUpon>201901272319493_addForumItem.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201903010215351_addTitle2ForumItem.cs" />
+    <Compile Include="Migrations\201903010215351_addTitle2ForumItem.Designer.cs">
+      <DependentUpon>201903010215351_addTitle2ForumItem.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201903010225255_addPid2ForumItem.cs" />
+    <Compile Include="Migrations\201903010225255_addPid2ForumItem.Designer.cs">
+      <DependentUpon>201903010225255_addPid2ForumItem.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201903021323039_updateForumItem.cs" />
+    <Compile Include="Migrations\201903021323039_updateForumItem.Designer.cs">
+      <DependentUpon>201903021323039_updateForumItem.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201903031422509_updateForumItem1.cs" />
+    <Compile Include="Migrations\201903031422509_updateForumItem1.Designer.cs">
+      <DependentUpon>201903031422509_updateForumItem1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201903241229063_addPrjPM_Title.cs" />
+    <Compile Include="Migrations\201903241229063_addPrjPM_Title.Designer.cs">
+      <DependentUpon>201903241229063_addPrjPM_Title.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201903312136104_addOther10InForumItem.cs" />
+    <Compile Include="Migrations\201903312136104_addOther10InForumItem.Designer.cs">
+      <DependentUpon>201903312136104_addOther10InForumItem.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201904111316026_addSignDate2FlowMain.cs" />
+    <Compile Include="Migrations\201904111316026_addSignDate2FlowMain.Designer.cs">
+      <DependentUpon>201904111316026_addSignDate2FlowMain.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ApplicationDbContext.cs" />
@@ -422,6 +458,7 @@
     <Compile Include="Models\EventSchedule.cs" />
     <Compile Include="Models\FlowDefMain.cs" />
     <Compile Include="Models\FlowMain.cs" />
+    <Compile Include="Models\ForumItem.cs" />
     <Compile Include="Models\guestForm.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\jobPo.cs" />
@@ -1305,6 +1342,9 @@
     <Content Include="Scripts\tether.min.js" />
     <Content Include="Scripts\toastr.js" />
     <Content Include="Scripts\toastr.min.js" />
+    <Content Include="Views\Prj\CreatePrjPM.cshtml" />
+    <Content Include="Views\Prj\portal.cshtml" />
+    <Content Include="Views\Prj\ReplyForumItem.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -1414,7 +1454,6 @@
     <Content Include="Views\Shared\Form\_OverTimeForm.cshtml" />
     <Content Include="Views\Shared\Form\_DayOffForm.cshtml" />
     <Content Include="Views\Shared\_PrjLayout.cshtml" />
-    <Content Include="Views\Shared\_PrjLeftMenu.cshtml" />
     <Content Include="Views\Prj\Index.cshtml" />
     <Content Include="Views\Form\RealOverTimeForm.cshtml" />
     <Content Include="Views\Shared\Form\_RealOverTimeForm.cshtml" />
@@ -1432,7 +1471,6 @@
     <Content Include="Views\Form\eventSchedule.cshtml" />
     <Content Include="Views\Shared\Form\_EventSchedule.cshtml" />
     <Content Include="Views\Form\ListEventSchedule.cshtml" />
-    <Content Include="Views\Prj\CodeList.cshtml" />
     <Content Include="Views\Prj\Home.cshtml" />
     <Content Include="Views\Prj\createPrjWork.cshtml" />
     <Content Include="Views\Prj\_tmpPrjWork.cshtml" />
@@ -1443,8 +1481,19 @@
     <Content Include="Views\Prj\ForumUsers.cshtml" />
     <Content Include="Views\Prj\ForumUserList.cshtml" />
     <Content Include="Views\Prj\AddForumUser.cshtml" />
-    <Content Include="Views\Prj\portal.cshtml" />
     <Content Include="Views\Shared\Prj\_PrjEvent.cshtml" />
+    <Content Include="Views\Shared\_PrjLeftMenu.cshtml" />
+    <Content Include="Views\Prj\CodeList.cshtml" />
+    <Content Include="Views\Prj\createEvent.cshtml" />
+    <Content Include="Views\Prj\CreateForumItem.cshtml" />
+    <Content Include="Views\Prj\ForumDetail.cshtml" />
+    <Content Include="Views\Prj\myPrjs.cshtml" />
+    <Content Include="Views\Prj\AccessDenied.cshtml" />
+    <Content Include="Views\Prj\UpdatePrjPM.cshtml" />
+    <Content Include="Views\Prj\UpdateForumItem.cshtml" />
+    <Content Include="Views\HRMgr\QueryReportA.cshtml" />
+    <Content Include="Views\Form\UploadError.cshtml" />
+    <Content Include="Views\Prj\portalMobile.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1584,6 +1633,33 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201901061559051_addPrjForumUser.resx">
       <DependentUpon>201901061559051_addPrjForumUser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901260846373_addPrjEvent.resx">
+      <DependentUpon>201901260846373_addPrjEvent.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901272319493_addForumItem.resx">
+      <DependentUpon>201901272319493_addForumItem.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903010215351_addTitle2ForumItem.resx">
+      <DependentUpon>201903010215351_addTitle2ForumItem.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903010225255_addPid2ForumItem.resx">
+      <DependentUpon>201903010225255_addPid2ForumItem.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903021323039_updateForumItem.resx">
+      <DependentUpon>201903021323039_updateForumItem.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903031422509_updateForumItem1.resx">
+      <DependentUpon>201903031422509_updateForumItem1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903241229063_addPrjPM_Title.resx">
+      <DependentUpon>201903241229063_addPrjPM_Title.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903312136104_addOther10InForumItem.resx">
+      <DependentUpon>201903312136104_addOther10InForumItem.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201904111316026_addSignDate2FlowMain.resx">
+      <DependentUpon>201904111316026_addSignDate2FlowMain.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
