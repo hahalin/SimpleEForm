@@ -23,9 +23,6 @@ namespace eform.Controllers
         [AdminAuthorize(Roles = "Admin,Employee")]
         public ActionResult Index(int id = 1)
         {
-            int PageSize = 20;
-            int NowPageCount = (id - 1) * PageSize;
-
             var context = new ApplicationDbContext();
 
             var user = context.Users.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
@@ -543,22 +540,33 @@ namespace eform.Controllers
         }
 
         [AdminAuthorize(Roles = "Admin,Employee")]
-        public ActionResult Query()
+        public ActionResult Query(int page = 1)
         {
             var context = new ApplicationDbContext();
 
             var user = context.Users.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
 
+            int CountSize = 20;
+            int CurrentPage = (page - 1) * CountSize;
 
             var signOkSubList = from item in context.FlowSubList
                                 where item.signResult != 0 && item.signResult != 99
                                 select item.pid;
 
-
             var mySignSubList = (from item in context.FlowSubList
                                  where item.workNo == user.workNo
                                  && signOkSubList.Contains(item.pid)
-                                 select item.pid).ToList<string>();
+                                 orderby item.signDate descending
+                                 select item.pid).Skip(CurrentPage).Take(CountSize).ToList<string>();
+
+            var totalListCount = (from item in context.FlowSubList
+                                  where item.workNo == user.workNo
+                                  && signOkSubList.Contains(item.pid)
+                                  select item.pid).Count();
+
+            ViewBag.Count = totalListCount;
+            ViewBag.PageSize = CountSize;
+            ViewBag.CurrentPage = page;
 
             var mySignMainList = context.FlowMainList.Where(x => mySignSubList.Contains(x.id))
                 .OrderByDescending(x => x.billDate).ToList<FlowMain>();
@@ -629,8 +637,8 @@ namespace eform.Controllers
         [HttpGet]
         public ActionResult ListAll(string status = "0",int page=1)
         {
-            int PageSize = 10;
-            int NowPageCount = (page - 1) * PageSize;
+            int CountSize = 10;
+            int CurrentPage = (page - 1) * CountSize;
 
 
             var context = new ApplicationDbContext();
@@ -663,7 +671,7 @@ namespace eform.Controllers
                 SignMainList = (from item in context.FlowMainList
                                 where item.flowStatus != 99
                                 orderby item.billDate descending
-                                select item).Skip(NowPageCount).Take(PageSize).ToList<FlowMain>();
+                                select item).Skip(CurrentPage).Take(CountSize).ToList<FlowMain>();
 
                 totalListCount = (from item in context.FlowMainList
                                 where item.flowStatus != 99
@@ -676,7 +684,7 @@ namespace eform.Controllers
                                 where item.flowStatus != 99 
                                 orderby item.billDate descending
                                 where item.flowStatus == iStatus
-                                select item).Skip(NowPageCount).Take(PageSize).ToList<FlowMain>();
+                                select item).Skip(CurrentPage).Take(CountSize).ToList<FlowMain>();
 
                 totalListCount = (from item in context.FlowMainList
                                 where item.flowStatus != 99
@@ -686,7 +694,7 @@ namespace eform.Controllers
             }
 
             ViewBag.Count = totalListCount;
-            ViewBag.PageSize = PageSize;
+            ViewBag.PageSize = CountSize;
             ViewBag.CurrentPage = page;
 
             List<vwFlowMain> list = new List<vwFlowMain>();
