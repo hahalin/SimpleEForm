@@ -324,7 +324,6 @@ namespace eform.Models
             }
         }
 
-
         public List<string> mailList
         {
             get
@@ -591,15 +590,16 @@ namespace eform.Models
                     sfile3 = f.sfile3,
                     sfile4 = f.sfile4,
                     isPrivate = f.isPrivate
+                    
                 };
                 SubItemList.Add(fItem);
             }
-            int i = 2;
-            foreach (var item in SubItemList)
-            {
-                item.seq = i;
-                i++;
-            }
+            //int i = 2;
+            //foreach (var item in SubItemList)
+            //{
+            //    item.seq = i;
+            //    i++;
+            //}
 
             this.prjCodeObj= ctx.prjCodeList.Where(x => x.code == code).FirstOrDefault();
         }
