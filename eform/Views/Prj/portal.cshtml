@@ -30,11 +30,13 @@
                                 </tr>
                                 <tr>
                                     <th>專案經理</th>
-                                    <td class="text-left" colspan="3">@Model.prjCodeObj.owner</td>
+                                    <td class="text-left">@Model.vwPrjCodeObj.ownerENm</td>
+                                    <th>合同日期</th>
+                                    <td class="text-left">@Model.vwPrjCodeObj.contractDateStr</td>
                                 </tr>
                                 <tr>
                                     <th>建立人</th>
-                                    <td class="text-left">@Model.prjCodeObj.creator</td>
+                                    <td class="text-left">@Model.vwPrjCodeObj.creatorENm</td>
                                     <th>建立時間</th>
                                     <td class="text-left">@Convert.ToDateTime(Model.prjCodeObj.createDate).ToString("yyyy-MM-dd")</td>
                                 </tr>
@@ -158,6 +160,7 @@
                                         @*<th>內容</th>
                                             <th style="width:220px;">附件</th>*@
                                         <th>回覆</th>
+                                        <th>最新回覆</th>
 
                                     </tr>
                                 </thead>
@@ -167,8 +170,8 @@
                                     <tr>
                                         <td>
                                             
-                                            <a href="@Url.Action("ReplyForumItem", "Prj", new { fitem.id, fitem.prjId, code = Model.prjCodeObj.code })" class="btn btn-info">回覆</a>
-                                            <a href="@Url.Action("ReplyForumItem", "Prj", new { fitem.id, fitem.prjId, code = Model.prjCodeObj.code, isPrivate = true })" class="btn btn-default">私訊</a>
+                                            <a href="@Url.Action("ReplyForumItem", "Prj", new { fitem.id,pid=fitem.id, fitem.prjId, code = Model.prjCodeObj.code })" class="btn btn-info">回覆</a>
+                                            <a href="@Url.Action("ReplyForumItem", "Prj", new { fitem.id,pid=fitem.id, fitem.prjId, code = Model.prjCodeObj.code, isPrivate = true })" class="btn btn-default">私訊</a>
                                             
                                             @{ 
                                                 bool canModify = false;
@@ -201,50 +204,11 @@
                                         <td>
                                             <a href="@Url.Action("ForumDetail","Prj",new { id = fitem.id,code= Model.prjCodeObj.code })">@fitem.subject</a>
                                         </td>
-                                        @*<td>
-                                                <p style="white-space: pre-line;background-color:white;border-bottom:rgb(210, 214, 222) 1px solid;padding:0px;vertical-align:top;margin-top:-20px;overflow-auto;">
-                                                    @fitem.smemo
-                                                </p>
-                                            </td>*@
-                                        @*<td>
-                                                <ul>
-                                                    @if (!String.IsNullOrEmpty(fitem.sfile))
-                                                    {
-                                                        <li>
-                                                            <a href="@Url.Content("/upload/"+HttpUtility.UrlDecode(@fitem.sfile))" target="_blank">
-                                                                @fitem.sfile.Split('\\')[2]
-                                                            </a>
-                                                        </li>
-                                                    }
-                                                    @if (!String.IsNullOrEmpty(fitem.sfile2))
-                                                    {
-                                                        <li>
-                                                            <a href="@Url.Content("/upload/"+HttpUtility.UrlDecode(@fitem.sfile2))" target="_blank">
-                                                                @fitem.sfile2.Split('\\')[2]
-                                                            </a>
-                                                        </li>
-                                                    }
-                                                    @if (!String.IsNullOrEmpty(fitem.sfile3))
-                                                    {
-                                                        <li>
-                                                            <a href="@Url.Content("/upload/"+HttpUtility.UrlDecode(@fitem.sfile3))" target="_blank">
-                                                                @fitem.sfile3.Split('\\')[2]
-                                                            </a>
-                                                        </li>
-                                                    }
-                                                    @if (!String.IsNullOrEmpty(fitem.sfile4))
-                                                    {
-                                                        <li>
-                                                            <a href="@Url.Content("/upload/"+HttpUtility.UrlDecode(@fitem.sfile4))" target="_blank">
-                                                                @fitem.sfile4.Split('\\')[2]
-                                                            </a>
-                                                        </li>
-                                                    }
-                                                </ul>
-
-                                            </td>*@
                                         <td>
                                             @fitem.replyCnt
+                                        </td>
+                                        <td>
+                                            @fitem.lastReplyDate
                                         </td>
                                     </tr>
                                     }

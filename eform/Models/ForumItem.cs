@@ -73,9 +73,9 @@ namespace eform.Models
 
         [Display(Name = "建立日期")]
         public DateTime billDate { get; set; }
+        [Display(Name = "序號")]
         public int seq { get; set; } = 1;
         [Display(Name = "標題")]
-        [Required]
         public string subject { get; set; }
         [Display(Name = "回覆標題")]
         public string subTitle { get; set; }
@@ -438,13 +438,9 @@ namespace eform.Models
         {
             get
             {
-                if (seq == 1)
+                if (seq >= 1)
                 {
-                    return "樓主";
-                }
-                else if (seq > 1)
-                {
-                    return (seq - 1) + "F";
+                    return (seq)  + "F";
                 }
                 return "";
             }
@@ -457,6 +453,22 @@ namespace eform.Models
                 r = ctx.prjForumItems.Where(x => x.pid == id).Count();
                 return r;
             }
+        }
+        public string lastReplyDate
+        {
+            get
+            {
+                var item = ctx.prjForumItems.Where(x => x.pid == id).OrderByDescending(x => x.billDate).FirstOrDefault();
+                if(item==null)
+                {
+                    return "";
+                }
+                else
+                {
+                    return item.billDate.ToString("yyyy-MM-dd HH:mm:ss");
+                }
+            }
+
         }
         public Boolean isPrivate { get; set; } = false;
         public string page { get; set; }

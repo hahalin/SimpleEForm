@@ -449,6 +449,10 @@
     <Compile Include="Migrations\201904111316026_addSignDate2FlowMain.Designer.cs">
       <DependentUpon>201904111316026_addSignDate2FlowMain.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201905061433051_addContractDate2PrjCode.cs" />
+    <Compile Include="Migrations\201905061433051_addContractDate2PrjCode.Designer.cs">
+      <DependentUpon>201905061433051_addContractDate2PrjCode.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ApplicationDbContext.cs" />
@@ -1660,6 +1664,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201904111316026_addSignDate2FlowMain.resx">
       <DependentUpon>201904111316026_addSignDate2FlowMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201905061433051_addContractDate2PrjCode.resx">
+      <DependentUpon>201905061433051_addContractDate2PrjCode.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

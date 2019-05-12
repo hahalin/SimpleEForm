@@ -3,6 +3,16 @@
 @{
     ViewBag.Title = "CreateForumItem";
     Layout = "~/Views/Shared/_PrjLayout.cshtml";
+    bool isMobile = false;
+    try
+    {
+        isMobile = Convert.ToBoolean(ViewBag.mobile);
+    }
+    catch(Exception ex)
+    {
+        isMobile = false;
+    }
+
 }
 <style>
     .select2-container--default .select2-selection--multiple .select2-selection__rendered li {
@@ -12,9 +22,9 @@
 <div class="box box-primary">
     <div class="box-header">
         <div class="box-title text-left">
-            <a href="@Url.Action("portal","Prj",new {code=ViewBag.code,mobile=ViewBag.mobile})" class="btn btn-default"><i class="fa fa-undo"></i>
+            <a href="@Url.Action("ForumDetail","Prj",new {id=Model.pid,code=ViewBag.code, mobile=isMobile})" class="btn btn-default"><i class="fa fa-undo"></i>
                 返回專案討論區
-                @if (ViewBag.mobile)
+                @if (isMobile)
                 {
                     @:-Mobile
                 }

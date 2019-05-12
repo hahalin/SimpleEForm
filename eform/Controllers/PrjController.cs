@@ -235,24 +235,48 @@ namespace eform.Controllers
         }
 
         [HttpGet]
-        public ActionResult ReplyForumItem(string id, string prjId, string code, Boolean isPrivate = false,bool mobile=false)
+        public ActionResult ReplyForumItem(string id, string prjId, string code, string pid, Boolean isPrivate = false, bool mobile=false)
         {
             ViewBag.userlist = ctx.getUserList();
             ViewBag.code = code;
             ForumItem fItem = ctx.prjForumItems.Where(x => x.id == id).FirstOrDefault();
+            string memo = fItem.smemo;
+
+            string[] lines = new string[] {};
+
+            if (!string.IsNullOrEmpty(memo))
+            { 
+                lines=memo.Split(
+                    new[] { Environment.NewLine },
+                    StringSplitOptions.None
+                );
+            }
+            List<String> LineList = new List<String>();
+            foreach(string s in lines)
+            {
+                LineList.Add(":" + s);
+            }
+            if (LineList.Count>0)
+            {
+                LineList.Insert(0, string.Format("※ 引述《{0}》：", ctx.getUserByWorkNo(fItem.workNo).UserEName));
+            }
+            memo = string.Join(Environment.NewLine, LineList);
+
             vwForumItem model = new vwForumItem
             {
                 id = "",
                 workNo = User.Identity.Name,
                 prjId = prjId,
-                pid = id,
+                pid = pid,
                 pTitle = fItem.subject,
                 subject = fItem.subject,
                 billDate = ctx.getLocalTiime(),
                 isPrivate = isPrivate,
-                mobile=mobile
+                mobile=mobile,
+                smemo= memo
             };
             ViewBag.mobile = mobile;
+            ViewBag.pid = pid;
             return View(model);
         }
 
@@ -597,10 +621,11 @@ namespace eform.Controllers
         public ActionResult myPrjs(bool mobile=false)
         {
             List<prjCode> prjCodeList = new List<Models.prjCode>();
-            var orgList = ctx.prjCodeList.OrderBy(x => x.code).ToList<prjCode>();
+            var orgList = ctx.prjCodeList.Where(x=>x.status.Equals("使用中")).OrderBy(x => x.code).ToList<prjCode>();
+            List <string> workNoList = new List<string>();
             foreach (prjCode prj in orgList)
             {
-                if (User.Identity.Name == prj.owner || User.Identity.Name == prj.creator)
+                if (User.Identity.Name == prj.owner || User.Identity.Name == prj.creator || User.Identity.Name=="sadmin")
                 {
                     prjCodeList.Add(prj);
                 }
@@ -612,8 +637,29 @@ namespace eform.Controllers
                     }
                 }
             }
+
+            List<vwPrjCode> prjList = new List<vwPrjCode>();
+            foreach(prjCode prj in prjCodeList)
+            {
+                vwPrjCode p = new vwPrjCode
+                {
+                    id = prj.id,
+                    code = prj.code,
+                    nm = prj.nm,
+                    owner = prj.owner,
+                    createDate = prj.createDate,
+                    contractDate=prj.contractDate
+                };
+                prjList.Add(p);
+            }
+
+            prjList = prjList.OrderByDescending(x => Convert.ToDateTime(x.contractDate)).ToList<vwPrjCode>();
+
+            //var selUserList= ctx.Users.Where(x => workNoList.Contains(x.workNo)).ToList<ApplicationUser>();
+
+
             ViewBag.mobile = mobile;
-            return View(prjCodeList);
+            return View(prjList);
         }
 
         [HttpGet]
@@ -639,7 +685,7 @@ namespace eform.Controllers
                 prjUsers.Add(pm.WorkNo);
             }
 
-            if (prjUsers.Where(x => x == User.Identity.Name).Count() == 0)
+            if (prjUsers.Where(x => x == User.Identity.Name).Count() == 0 && (User.Identity.Name !="sadmin"))
             {
                 return View("AccessDenied");
             }
@@ -668,6 +714,7 @@ namespace eform.Controllers
             vwForumDetail Model = new vwForumDetail(id, code);
             Model.currentUser = ctx.getCurrentUser(User.Identity.Name).workNo;
             ViewBag.code = code;
+            ViewBag.id = id;
             ViewBag.mobile = mobile;
             return View(Model);
         }
@@ -1367,11 +1414,11 @@ namespace eform.Controllers
             rep = new prjRep(User.Identity.Name);
             return Content(JsonConvert.SerializeObject(rep.prjList()), "application/json");
         }
-        public ActionResult prjCodeList()
+        public ActionResult prjCodeList(int status)
         {
             rep = new prjRep(User.Identity.Name);
 
-            return Content(JsonConvert.SerializeObject(rep.prjCodeList()), "application/json");
+            return Content(JsonConvert.SerializeObject(rep.prjCodeList(status)), "application/json");
         }
         public ActionResult prjCodeDetail(string id)
         {
@@ -1484,6 +1531,10 @@ namespace eform.Controllers
             prjObj.mmo9 = fm["mmo9"].ToString();
             prjObj.mmo10 = fm["mmo10"].ToString();
             prjObj.id = fm["hid"].ToString();
+            if (fm["contractDate"].ToString() != "")
+            {
+                prjObj.contractDate = Convert.ToDateTime(fm["contractDate"].ToString());
+            }
 
             List<string> errList = new List<string>();
 

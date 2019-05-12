@@ -49,6 +49,33 @@ namespace eform.Models
                 }
             }
         }
+        public vwPrjCode vwPrjCodeObj
+        {
+            get
+            {
+                vwPrjCode prjObj = new vwPrjCode
+                {
+                    id= prjCodeObj.id,
+                    nm=prjCodeObj.nm,
+                    code= prjCodeObj.code,
+                    creator=prjCodeObj.creator,
+                    owner=prjCodeObj.owner,
+                    createDate= prjCodeObj.createDate,
+                    contractDate= prjCodeObj.contractDate,
+                    mmo1= prjCodeObj.mmo1,
+                    mmo2 = prjCodeObj.mmo2,
+                    mmo3 = prjCodeObj.mmo3,
+                    mmo4 = prjCodeObj.mmo4,
+                    mmo5 = prjCodeObj.mmo5,
+                    mmo6 = prjCodeObj.mmo6,
+                    mmo7 = prjCodeObj.mmo7,
+                    mmo8 = prjCodeObj.mmo8,
+                    mmo9 = prjCodeObj.mmo9,
+                    mmo10 = prjCodeObj.mmo10
+                };
+                return prjObj;
+            }
+        }
         public List<prjCode> prjCodeList
         {
             get;set;

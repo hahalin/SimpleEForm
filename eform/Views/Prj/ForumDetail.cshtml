@@ -3,6 +3,15 @@
 @{
     ViewBag.Title = "ForumDetail";
     Layout = "~/Views/Shared/_PrjLayout.cshtml";
+    bool isMobile = false;
+    try
+    {
+        isMobile = Convert.ToBoolean(ViewBag.mobile);
+    }
+    catch(Exception ex)
+    {
+        isMobile = false;
+    }
 }
 
 <div class="row">
@@ -10,15 +19,17 @@
     <div class="box box-primary">
         <div class="box-header">
             <div class="box-title text-left">
-                <a href="@Url.Action("portal","Prj",new {code=ViewBag.code,mobile=ViewBag.mobile})" class="btn btn-primary">
+                <a href="@Url.Action("portal","Prj",new {code=ViewBag.code,mobile=isMobile})" class="btn btn-primary">
                     <i class="fa fa-undo"></i>
                     返回專案討論區
-                    @if (ViewBag.mobile)
+                    
+
+                    @if (isMobile)
                     {
                         @:-Mobile
                         }
                 </a>
-                <a href="@Url.Action("ReplyForumItem","Prj",new {Model.Mitem.id,Model.Mitem.prjId,code=Model.code,mobile=ViewBag.mobile})" class="btn btn-info">回覆</a>
+                @*<a href="@Url.Action("ReplyForumItem","Prj",new {Model.Mitem.id,Model.Mitem.prjId,code=Model.code,mobile=isMobile})" class="btn btn-info">回覆</a>*@
             </div>
         </div>
         <div class="box-body" style="overflow:scroll;width:100%;margin:0;padding:0;">
@@ -27,38 +38,43 @@
                     <tr>
                         <th></th>
                         <th>原文主題</th>
-                        @if (!ViewBag.mobile)
+                        @if (!isMobile)
                         {
                             <th>正本/副本</th>
                         }
                         <th>作者</th>
-                        <th>日期時間</th>
-                        <th>回文標題</th>
-                        <th>內容</th>
+                        <th>回文內容</th>
                         <th>順序</th>
                         <th>附件</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td></td>
+                        <td>
+                            <a href="@Url.Action("ReplyForumItem","Prj",new { Model.Mitem.id, Model.Mitem.prjId, code = Model.code, mobile = isMobile, pid = Model.Mitem.id})" class="btn btn-info">回覆</a>
+                            <a href="@Url.Action("ReplyForumItem","Prj",new { Model.Mitem.id, Model.Mitem.prjId, code = Model.code, mobile = isMobile, pid = Model.Mitem.id,isPrivate=true})" class="btn btn-default">私訊</a>
+
+                        </td>
                         <td>
                             @Model.Mitem.subject
                         </td>
-                        @if (!ViewBag.mobile)
+                        @if (!isMobile)
                         {
-                            <td>
-                                正:@Model.Mitem.othersA <br />
-                                副:@Model.Mitem.othersB
+                            <td clss="col-md-1">
+                                正:<br/>
+                                
+                                @Model.Mitem.othersA <br />
+                                
+                                副:<br />
+                                
+                                @Model.Mitem.othersB
                             </td>
                         }
                         <td>
-                            @Model.Mitem.creator.UserCName
-                        </td>
-                        <td>
+                            @Model.Mitem.creator.UserEName
+                            <br/><br />
                             @Model.Mitem.billDate.ToString("yyyy-MM-dd HH:mm:ss")
                         </td>
-                        <td></td>
                         <td>
                             <p style="white-space: pre-line;background-color:white;border-bottom:rgb(210, 214, 222) 1px solid;padding:0px;vertical-align:top;margin-top:-20px;overflow-auto;">
                                 @Model.Mitem.smemo
@@ -128,52 +144,67 @@
                                 <td>
                                     @if (Model.prjCodeObj.owner == User.Identity.Name)
                                     {
-                                        <a href="@Url.Action("DeleteForumItem", "Prj", new { fitem.id, code = Model.code, page = "ForumDetail", pid = Model.Mitem.id,mobile=ViewBag.mobile })" class="btn btn-danger" onclick="return confirm('確定刪除?');">刪除</a>
+                                        <a href="@Url.Action("DeleteForumItem", "Prj", new { fitem.id, code = Model.code, page = "ForumDetail", pid = Model.Mitem.id,mobile=isMobile })" class="btn btn-danger" onclick="return confirm('確定刪除?');">刪除</a>
                                     }
-                                </td>
+</td>
                                 <td>
-                                    @Model.Mitem.subject
+                                    <h3>
+                                        @Model.Mitem.subject
+                                    </h3>
                                 </td>
                                 <td colspan="7">
+                                    <h3>
                                     ***其他人私訊***
+                                    </h3>
                                 </td>
                             </tr>
                         }
                         else
                         {
                             <tr>
-                                <td>
+                                <td class="col-md-2">
                                     @if (Model.prjCodeObj.owner == User.Identity.Name || fitem.workNo == User.Identity.Name)
                                     {
-                                        <a href="@Url.Action("DeleteForumItem", "Prj", new { fitem.id, code = Model.code, page = "ForumDetail", pid = Model.Mitem.id,mobile=ViewBag.mobile })" class="btn btn-danger" onclick="return confirm('確定刪除?');">刪除</a>
-                                            <a href="@Url.Action("UpdateForumItem", "Prj", new { fitem.id,prjId=Model.prjCodeObj.id,code = Model.code, page = "ForumDetail", pid = Model.Mitem.id,mobile=ViewBag.mobile })" class="btn btn-warning">編輯</a>
+                                        <a href="@Url.Action("DeleteForumItem", "Prj", new { fitem.id, code = Model.code, page = "ForumDetail", pid = Model.Mitem.id,mobile=isMobile })" class="btn btn-danger" onclick="return confirm('確定刪除?');">刪除</a>
+                                            <a href="@Url.Action("UpdateForumItem", "Prj", new { fitem.id,prjId=Model.prjCodeObj.id,code = Model.code, page = "ForumDetail", pid = Model.Mitem.id,mobile=isMobile })" class="btn btn-warning">編輯</a>
+                                    }
+                                    @if (!fitem.isPrivate)
+                                    {
+                                        <a href="@Url.Action("ReplyForumItem","Prj",new { fitem.id, Model.Mitem.prjId, code = Model.code, mobile = isMobile, pid = Model.Mitem.id})" class="btn btn-info">回覆</a>
+                                        <a href="@Url.Action("ReplyForumItem","Prj",new { fitem.id, Model.Mitem.prjId, code = Model.code, mobile = isMobile, pid = Model.Mitem.id,isPrivate=true})" class="btn btn-default">私訊</a>
+                                    }
+                                    else
+                                    {
+                                        <a href="@Url.Action("ReplyForumItem","Prj",new { fitem.id, Model.Mitem.prjId, code = Model.code, mobile = isMobile, pid = Model.Mitem.id,isPrivate=true})" class="btn btn-default">私訊</a>
                                     }
                                 </td>
 
                                 <td>
                                     @Model.Mitem.subject
                                 </td>
-                                <td>
+                                <td class="col-md-2">
                                     @if (fitem.isPrivate)
                                     {
                                         @:私訊:@fitem.othersA
                                         }
                                     else
                                     {
-                                        @:正:@fitem.othersA <br />
-                                            @:副:@fitem.othersB
+                                        @:正: <br/>
+                                            @fitem.othersA 
+                                        <br />
+                                        @:副: <br />
+                                            @fitem.othersB
                                         }
                                 </td>
                                 <td>
-                                    @fitem.creator.UserCName
-                                </td>
-                                <td>
+                                    @fitem.creator.UserEName
+                                    <br/><br />
                                     @fitem.billDate.ToString("yyyy-MM-dd HH:mm:ss")
                                 </td>
                                 <td>
-                                    @fitem.subTitle
-                                </td>
-                                <td>
+                                    <h3 style="border-bottom:1px solid black;">
+                                        @fitem.subTitle
+                                    </h3>
                                     <p style="white-space: pre-line;background-color:white;border-bottom:rgb(210, 214, 222) 1px solid;padding:0px;vertical-align:top;margin-top:-20px;overflow-auto;">
                                         @fitem.smemo
                                     </p>

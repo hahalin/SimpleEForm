@@ -35,7 +35,7 @@
                                         @*<th>內容</th>
                                             <th style="width:220px;">附件</th>*@
                                         <th>回覆</th>
-
+                                        <th>最新回覆</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -44,8 +44,8 @@
                                     <tr>
                                         <td>
                                             
-                                            <a href="@Url.Action("ReplyForumItem", "Prj", new { fitem.id, fitem.prjId, code = Model.prjCodeObj.code,mobile=ViewBag.mobile })" class="btn btn-info">回覆</a>
-                                            <a href="@Url.Action("ReplyForumItem", "Prj", new { fitem.id, fitem.prjId, code = Model.prjCodeObj.code, isPrivate = true,mobile=ViewBag.mobile })" class="btn btn-default">私訊</a>
+                                            <a href="@Url.Action("ReplyForumItem", "Prj", new { fitem.id,pid=fitem.id, fitem.prjId, code = Model.prjCodeObj.code,mobile=ViewBag.mobile })" class="btn btn-info">回覆</a>
+                                            <a href="@Url.Action("ReplyForumItem", "Prj", new { fitem.id, pid=fitem.id,fitem.prjId, code = Model.prjCodeObj.code, isPrivate = true,mobile=ViewBag.mobile })" class="btn btn-default">私訊</a>
                                             
                                             @{ 
                                                 bool canModify = false;
@@ -76,6 +76,9 @@
                                         </td>
                                         <td>
                                             @fitem.replyCnt
+                                        </td>
+                                        <td>
+                                            @fitem.lastReplyDate
                                         </td>
                                     </tr>
                                     }

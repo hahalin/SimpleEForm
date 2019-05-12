@@ -17,6 +17,7 @@ namespace eform.Models
         public string status { get; set; }
         public string creator { get; set; }
         public DateTime? createDate { get; set; }
+        public DateTime? contractDate { get; set; }
         public string mmo1 { get; set; }
         public string mmo2 { get; set; }
         public string mmo3 { get; set; }
@@ -99,6 +100,7 @@ namespace eform.Models
         public string mmo11 { get; set; }
         public string creator { get; set; }
         public DateTime? createDate { get; set; }
+        public DateTime? contractDate { get; set; }
         public string hPMList { get; set; }
         public string ownerNm {
             get
@@ -107,6 +109,19 @@ namespace eform.Models
                 {
                     ApplicationDbContext ctx = new ApplicationDbContext();
                     return ctx.getUserByWorkNo(owner).UserCName;
+                }
+                return "";
+            }
+        }
+
+        public string ownerENm
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(owner))
+                {
+                    ApplicationDbContext ctx = new ApplicationDbContext();
+                    return ctx.getUserByWorkNo(owner).UserEName;
                 }
                 return "";
             }
@@ -146,6 +161,26 @@ namespace eform.Models
                 }
             }
         }
+
+        public string contractDateStr
+        {
+            get
+            {
+                try
+                {
+                    string r = Convert.ToDateTime(contractDate).ToString("yyyy-MM-dd");
+                    if (r.Substring(0, 2) == "00")
+                    {
+                        return "";
+                    }
+                    return r;
+                }
+                catch (Exception ex)
+                {
+                    return "";
+                }
+            }
+        }
         public string creatorNm
         {
             get
@@ -154,6 +189,18 @@ namespace eform.Models
                 {
                     ApplicationDbContext ctx = new ApplicationDbContext();
                     return ctx.getUserByWorkNo(creator).UserCName;
+                }
+                return null;
+            }
+        }
+        public string creatorENm
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(creator))
+                {
+                    ApplicationDbContext ctx = new ApplicationDbContext();
+                    return ctx.getUserByWorkNo(creator).UserEName;
                 }
                 return null;
             }

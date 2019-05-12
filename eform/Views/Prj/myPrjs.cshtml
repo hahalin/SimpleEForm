@@ -1,12 +1,12 @@
 ﻿@using eform.Models;
-@model IEnumerable<eform.Models.prjCode>
+@model IEnumerable<eform.Models.vwPrjCode>
 
 @{
     ViewBag.Title = "myPrjs";
     Layout = "~/Views/Shared/_PrjLayout.cshtml";
 }
 
-<div class="row col-md-5">
+<div class="row col-md-10">
     <div class="box box-warning">
         <div class="box-header">
             <h3 class="box-title">我的專案 
@@ -22,10 +22,13 @@
                     <tr>
                         <th>專案名稱</th>
                         <th>專案代碼</th>
+                        <th>專案經理</th>
+                        <th>合同日期</th>
+                        <th>建立日期</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (prjCode prj in Model)
+                    @foreach (vwPrjCode prj in Model)
                     {
                         if (prj != null)
                         {
@@ -41,6 +44,9 @@
                                     <a href="@Url.Action("portal","prj",new {code=prj.code,mobile=ViewBag.mobile})">@prj.nm</a>
                                 </td>
                                 <td>@prj.code</td>
+                                <td>@prj.ownerENm</td>
+                                <td>@prj.contractDateStr</td>
+                                <td>@Convert.ToDateTime(prj.createDate).ToString("yyyy-MM-dd")</td>
                             </tr>
                         }
                     }

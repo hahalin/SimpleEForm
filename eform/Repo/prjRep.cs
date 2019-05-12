@@ -68,10 +68,19 @@ namespace eform.Repo
 
             return JsonConvert.SerializeObject(r);
         }
-        public string prjCodeList(prjStatus status = prjStatus.active)
+        public string prjCodeList(int status=1)
         {
             string sql = "select a.* from prjCodes a left join AspNetUsers b on a.owner=b.workNo ";
-            sql +=" where a.status=@status order by a.code asc";
+            //sql +=" where a.status=@status order by a.code asc";
+            if (status==1)
+            {
+                sql += " where a.status=N'使用中' ";
+            }
+            else if(status==0)
+            {
+                sql += " where a.status=N'關閉' ";
+            }
+            sql += " order by a.code asc";
             List<vwPrjCode> list = con.Query<vwPrjCode>(sql, new { status = "使用中" }).ToList<vwPrjCode>();
             dynamic r = new ExpandoObject();
             r.data = list;
@@ -212,9 +221,9 @@ namespace eform.Repo
             }
 
             sql = "insert into prjCodes ";
-            sql += "(id,code,nm,owner,status,mmo1,mmo2,mmo3,mmo4,mmo5,mmo6,mmo7,mmo8,mmo9,mmo10,creator,createDate) ";
+            sql += "(id,code,nm,owner,status,mmo1,mmo2,mmo3,mmo4,mmo5,mmo6,mmo7,mmo8,mmo9,mmo10,creator,createDate,contractDate) ";
             sql += " values ";
-            sql += " (@id,@code,@nm,@owner,@status,@mmo1,@mmo2,@mmo3,@mmo4,@mmo5,@mmo6,@mmo7,@mmo8,@mmo9,@mmo10,@creator,@createDate)";
+            sql += " (@id,@code,@nm,@owner,@status,@mmo1,@mmo2,@mmo3,@mmo4,@mmo5,@mmo6,@mmo7,@mmo8,@mmo9,@mmo10,@creator,@createDate,@contractDate)";
 
             List<DynamicParameters> paramList = new List<DynamicParameters>();
             DynamicParameters param = new DynamicParameters();
@@ -235,6 +244,7 @@ namespace eform.Repo
             param.Add("@mmo10", prjObj.mmo10);
             param.Add("@creator", creator);
             param.Add("@createDate", ctx.getLocalTiime());
+            param.Add("@contractDate", prjObj.contractDate);
             paramList.Add(param);
 
             try
@@ -360,7 +370,7 @@ namespace eform.Repo
 
             sql = "update prjCodes set code=@code,nm=@nm,owner=@owner,status=@status, ";
             sql += " mmo1=@mmo1,mmo2=@mmo2,mmo3=@mmo3,mmo4=@mmo4,mmo5=@mmo5,";
-            sql += " mmo6=@mmo6,mmo7=@mmo7,mmo8=@mmo8,mmo9=@mmo9,mmo10=@mmo10";
+            sql += " mmo6=@mmo6,mmo7=@mmo7,mmo8=@mmo8,mmo9=@mmo9,mmo10=@mmo10,contractDate=@contractDate";
             sql += " where id=@id";
 
             List<DynamicParameters> paramList = new List<DynamicParameters>();
@@ -380,6 +390,7 @@ namespace eform.Repo
             param.Add("@mmo8", prjCodeObj.mmo8);
             param.Add("@mmo9", prjCodeObj.mmo9);
             param.Add("@mmo10", prjCodeObj.mmo10);
+            param.Add("@contractDate", prjCodeObj.contractDate);
             paramList.Add(param);
 
             try
