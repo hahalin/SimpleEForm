@@ -33,7 +33,7 @@
             </div>
         </div>
         <div class="box-body" style="overflow:scroll;width:100%;margin:0;padding:0;">
-            <table class="table table-bordered table-responsive">
+            <table class="table table-bordered table-responsive table-hover table-striped">
                 <thead>
                     <tr>
                         <th></th>
@@ -166,7 +166,7 @@
                                     @if (Model.prjCodeObj.owner == User.Identity.Name || fitem.workNo == User.Identity.Name)
                                     {
                                         <a href="@Url.Action("DeleteForumItem", "Prj", new { fitem.id, code = Model.code, page = "ForumDetail", pid = Model.Mitem.id,mobile=isMobile })" class="btn btn-danger" onclick="return confirm('確定刪除?');">刪除</a>
-                                            <a href="@Url.Action("UpdateForumItem", "Prj", new { fitem.id,prjId=Model.prjCodeObj.id,code = Model.code, page = "ForumDetail", pid = Model.Mitem.id,mobile=isMobile })" class="btn btn-warning">編輯</a>
+                                        <a href="@Url.Action("UpdateForumItem", "Prj", new { fitem.id,prjId=Model.prjCodeObj.id,code = Model.code, page = "ForumDetail", pid = Model.Mitem.id,mobile=isMobile })" class="btn btn-warning">編輯</a>
                                     }
                                     @if (!fitem.isPrivate)
                                     {

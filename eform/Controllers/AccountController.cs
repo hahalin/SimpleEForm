@@ -67,11 +67,23 @@ namespace eform.Controllers
             return View();
         }
 
+        public ActionResult antiforgery()
+        {
+            return View();
+        }
+
         //
         // GET: /Account/Login
         [AllowAnonymous]
+        [OutputCache(NoStore = true, Duration = 0, VaryByParam = "None")]
         public ActionResult Login(string returnUrl)
         {
+            if (AuthenticationManager.User.Identity.IsAuthenticated)
+            {
+                AuthenticationManager.SignOut();
+                return RedirectToAction("Login");
+            }
+
             ViewBag.ReturnUrl = returnUrl;
             return View();
         }

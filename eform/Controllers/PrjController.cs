@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using SendGrid.Helpers.Mail;
 using System.Text;
 using eform.Service;
+using System.Web.Routing;
 
 namespace eform.Controllers
 {
@@ -90,6 +91,11 @@ namespace eform.Controllers
             ViewBag.userlist = ctx.getUserList();
             ViewBag.code = prjCodeObj.code;
 
+            if(string.IsNullOrEmpty(model.subject))
+            {
+                ModelState.AddModelError("subject", "請輸入標題");
+            }
+
             if (!ModelState.IsValid)
             {
                 model.workNo = User.Identity.Name;
@@ -112,7 +118,7 @@ namespace eform.Controllers
                     {
                         string originFileName = file.FileName;
                         string filename = file.FileName.Replace("%", "").Replace(" ", "_");
-                        filename = filename.Split('.')[0] + ctx.getLocalTiime().ToString("yyMMddhhmmss") + "." + filename.Split('.')[1];
+                        filename = filename.Split('.')[0] + ctx.getLocalTiime().ToString("yyMMddhhmmss") +"-"+ "." + filename.Split('.')[1];
                         string fileUrl = @"Forum/" + model.id + "/" + filename;
 
                         var path = @"C:\inetpub\upload\Forum\" + model.id + @"\";
@@ -203,10 +209,27 @@ namespace eform.Controllers
                 StringBuilder sb = new StringBuilder();
                 sb.Append("您好," + "<br/><br/>");
                 vwEmployee sender = ctx.getUserByWorkNo(model.workNo);
-                sb.Append(model.workNo + " " + sender.UserEName + " 發出討論文章：" + model.subject + "<br/>");
+                sb.Append(model.workNo + " " + sender.UserEName + " 發出討論文章："+"<br/>");
+                prjCode prjObj = ctx.prjCodeList.Where(x => x.id == model.prjId).FirstOrDefault();
+                sb.Append("討論區：" + prjObj.code + ":" + prjObj.nm + "<br/>");
                 sb.Append("標題：" + model.subject + "<br/>");
                 sb.Append("內容：" + model.smemo + "<br/>");
+                sb.AppendFormat("<a href='{0}'>{1}</a><br/>",
+                    Url.Action("ForumDetail", "Prj", new RouteValueDictionary(new { id = model.id }), HttpContext.Request.Url.Scheme, HttpContext.Request.Url.Authority),
+                    "文章網址"
+                );
                 sb.Append("<br/>此信件為系統發出，請勿直接回信<br/>");
+
+                if (model.isPrivate)
+                {
+                    sb.Append("私訊人員：" + string.Join(",", model.mailNmAList.ToArray<string>()) + "<br/>");
+                }
+                else
+                {
+                    sb.Append("正本人員：" + string.Join(",", model.mailNmAList.ToArray<string>()) + "<br/>");
+                    sb.Append("副本人員：" + string.Join(",", model.mailNmBList.ToArray<string>()));
+                }
+
                 foreach (string signer in model.mailList)
                 {
                     if (!string.IsNullOrEmpty(signer))
@@ -217,7 +240,7 @@ namespace eform.Controllers
                             Email = signer
                             //Name = emp.workNo + " " + emp.UserCName
                         });
-                        await SendGridSrv.sendEmail(mailList, sender.UserEName + "發出討論文章:" + model.pTitle, sb.ToString());
+                        await SendGridSrv.sendEmail(mailList, sender.UserEName + "發出討論文章:" + model.subject, sb.ToString());
                     }
                 }
 
@@ -262,14 +285,23 @@ namespace eform.Controllers
             }
             memo = string.Join(Environment.NewLine, LineList);
 
+            if(String.IsNullOrEmpty(fItem.subject))
+            {
+                var fMItem= ctx.prjForumItems.Where(x => x.id == fItem.pid).FirstOrDefault();
+                if(fMItem!=null)
+                {
+                    fItem.subject = fMItem.subject;
+                }
+            }
+
             vwForumItem model = new vwForumItem
             {
                 id = "",
                 workNo = User.Identity.Name,
                 prjId = prjId,
                 pid = pid,
-                pTitle = fItem.subject,
-                subject = fItem.subject,
+                pTitle = string.IsNullOrEmpty(fItem.subject)? fItem.subTitle:fItem.subject,
+                subject = string.IsNullOrEmpty(fItem.subject) ? fItem.subTitle : fItem.subject,
                 billDate = ctx.getLocalTiime(),
                 isPrivate = isPrivate,
                 mobile=mobile,
@@ -338,7 +370,7 @@ namespace eform.Controllers
                     {
                         string originFileName = file.FileName;
                         string filename = file.FileName.Replace("%", "").Replace(" ", "_");
-                        filename = filename.Split('.')[0] + ctx.getLocalTiime().ToString("yyMddhhmmss") + "." + filename.Split('.')[1];
+                        filename = filename.Split('.')[0] + "-" +ctx.getLocalTiime().ToString("yyMddhhmmss") + "." + filename.Split('.')[1];
                         string fileUrl = @"Forum/" + model.id + "/" + filename;
 
                         var path = @"C:\inetpub\upload\Forum\" + model.id + @"\";
@@ -442,7 +474,12 @@ namespace eform.Controllers
                 sb.Append("討論區：" + prjObj.code + ":" + prjObj.nm + "<br/>");
                 sb.Append("原文標題：" + model.pTitle + "<br/>");
                 sb.Append("回文標題：" + model.subTitle + "<br/>");
-                sb.Append("內容：" + model.smemo);
+                sb.Append("內容：" + model.smemo+"<br/>");
+                sb.AppendFormat("<a href='{0}'>{1}</a><br/>",
+                    Url.Action("ForumDetail", "Prj", new RouteValueDictionary(new { id = model.pid }), HttpContext.Request.Url.Scheme, HttpContext.Request.Url.Authority),
+                    "文章網址"
+                );
+
                 sb.Append("<br/>此信件為系統發出，請勿直接回信<br/>");
                 if (model.isPrivate)
                 {
@@ -1426,7 +1463,7 @@ namespace eform.Controllers
             dynamic r = new ExpandoObject();
             vwPrjCode prjCodeObj = rep.loadPrjCode(id);
 
-            var pmList = ctx.prjPMList.Where(x => x.pid == id);
+            var pmList = ctx.prjPMList.Where(x => x.pid == id && x.Title == "PM");
             JArray jList = new JArray();
             foreach (prjPM pm in pmList)
             {
@@ -1581,7 +1618,8 @@ namespace eform.Controllers
                         {
                             id = Guid.NewGuid().ToString(),
                             pid = prjObj.id,
-                            WorkNo = pm["pm"].ToString()
+                            WorkNo = pm["pm"].ToString(),
+                            Title ="PM"
                         };
                         ctx.prjPMList.Add(pmObj);
                         ctx.SaveChanges();

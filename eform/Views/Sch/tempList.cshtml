@@ -1,0 +1,63 @@
+﻿@model IEnumerable<eform.Models.schTemp>
+
+@{
+    ViewBag.Title = "tempList";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="row">
+
+    <div class="box box-primary">
+        <div class="box-header">
+            <h1>甘特圖工作項目模板</h1>
+        </div>
+        <div class="box-header">
+            <p>
+                <a href="@Url.Action("tempCreate","Sch")" class="btn btn-primary">新增分類</a>
+            </p>
+
+        </div>
+
+        <div class="box-body">
+            <table class="table table-responsive table-bordered table-condensed table-striped">
+                <tr>
+                    <th>
+                        分類編號
+                    </th>
+                    <th></th>
+                </tr>
+
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.code)
+                        </td>
+                        <td>
+                            <a href="@Url.Action("tempItemList","Sch",new { id = item.id })" class="btn btn-default">模板項目清單</a>
+                            <a href="@Url.Action("tempRemove","Sch",new { id = item.id })"  class="btn btn-danger"  onclick="return checkRemove(); return false;">移除分類</a>
+                        </td>
+                    </tr>
+                }
+
+            </table>
+        </div>
+
+    </div>
+
+</section>
+
+
+@section Scripts 
+{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+
+        function checkRemove()
+        {
+            var r = confirm("確定刪除?");
+            return r;
+        }
+    </script>
+
+}

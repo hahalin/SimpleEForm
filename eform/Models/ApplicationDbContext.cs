@@ -8,6 +8,7 @@ using System;
 using System.Linq;
 using System.Dynamic;
 using Newtonsoft.Json;
+using eform.Migrations;
 
 namespace eform.Models
 {
@@ -20,6 +21,9 @@ namespace eform.Models
             //Database.SetInitializer(new CustomMigration.eFormDBInitializer());
 
             Database.SetInitializer<ApplicationDbContext>(null);
+
+            //Database.SetInitializer(new MigrateDatabaseToLatestVersion<ApplicationDbContext, Configuration>());
+
         }
         public static ApplicationDbContext Create()
         {
@@ -60,6 +64,10 @@ namespace eform.Models
         public DbSet<prjForumUser> prjForumUserList { get; set; }
         public DbSet<PrjEvent> prjEventList { get; set; }
         public DbSet<ForumItem> prjForumItems { get; set; }
+
+        //Schedule
+        public DbSet<schTemp> schTempList { get; set; }
+        public DbSet<schTempItem> schTempItemList { get; set; }
 
         public List<vwSignType> signTypeList()
         {
@@ -191,7 +199,7 @@ namespace eform.Models
         }
         public string getUserList()
         {
-            var userlist0 = this.Users.Where(x => x.status == 1 && x.UserName.ToLower().Contains("admin") == false).OrderBy(x => x.workNo).ToList();
+            var userlist0 = this.Users.Where(x => x.status == 1 && x.UserName.ToLower().Contains("admin") == false).OrderBy(x => x.UserName).ToList();
             List<dynamic> userlist = new List<dynamic>();
             foreach (var user in userlist0)
             {
@@ -210,6 +218,24 @@ namespace eform.Models
         public string getDepList(int level=3)
         {
             var depList0 = this.deps.Where(x => x.depLevel == level).OrderBy(x => x.depNm).ToList();
+            List<dynamic> depList = new List<dynamic>();
+            foreach (var dep in depList0)
+            {
+                dynamic obj = new ExpandoObject();
+                obj.id = dep.depNo;
+                obj.text = dep.depNm;
+                depList.Add(obj);
+            }
+            dynamic depSelTitle = new ExpandoObject();
+            depSelTitle.id = ""; depSelTitle.text = "請選擇部門";
+            depList.Insert(0, depSelTitle);
+
+            return JsonConvert.SerializeObject(depList);
+        }
+
+        public string getDepListP020A1(int level = 3)
+        {
+            var depList0 = this.deps.Where(x => x.depLevel == level && (x.depNm.Contains("9200-2") || x.depNm.Contains("9200-4"))).OrderBy(x => x.depNm).ToList();
             List<dynamic> depList = new List<dynamic>();
             foreach (var dep in depList0)
             {

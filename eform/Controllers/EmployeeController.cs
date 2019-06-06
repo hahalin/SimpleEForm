@@ -31,7 +31,7 @@ namespace eform.Controllers
             ApplicationDbContext context = new ApplicationDbContext();
             var store = new UserStore<ApplicationUser>(context);
             var manager = new UserManager<ApplicationUser>(store);
-            List<ApplicationUser> users = store.Users.Where(x => x.status == 1 && x.UserName.ToLower().Contains("sadmin") == false).OrderBy(x=>x.workNo).ToList<ApplicationUser>();
+            List<ApplicationUser> users = store.Users.Where(x=>x.UserName.ToLower().Contains("admin") == false).OrderBy(x=>x.workNo).ToList<ApplicationUser>();
             List<vwEmployee> model = new List<vwEmployee>();
 
             foreach (var usr in users)
@@ -77,7 +77,8 @@ namespace eform.Controllers
                         workNo = usr.workNo,
                         UserCName = usr.cName,
                         UserEName = usr.eName,
-                        Title = string.Join(",", usrTitle.ToArray())
+                        Title = string.Join(",", usrTitle.ToArray()),
+                        status=usr.status
                     });
                 }
                 ViewBag.testList = usr.poList;
@@ -200,7 +201,8 @@ namespace eform.Controllers
                 UserEName = user.eName,
                 Email = user.Email,
                 beginWorkDate = user.beginWorkDate,
-                Title = string.Join(",", usrTitle.ToArray())
+                Title = string.Join(",", usrTitle.ToArray()),
+                status=user.status
             };
 
             setViewBagRoles(ctx, user);
@@ -350,6 +352,7 @@ namespace eform.Controllers
                     user.cName = model.UserCName;
                     user.eName = model.UserEName;
                     user.Email = model.Email;
+                    user.status = model.status;
                     try
                     {
                         user.beginWorkDate =Convert.ToDateTime(model.beginWorkDate);

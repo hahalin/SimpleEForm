@@ -1,12 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <configuration>
   <configSections>
     <section name="entityFramework" type="System.Data.Entity.Internal.ConfigFile.EntityFrameworkSection, EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" requirePermission="false" />
   </configSections>
   <connectionStrings>
-    <add name="DefaultConnection"  connectionString="Data Source=localhost\SQL2012;initial catalog=seform;user id=sa;password=1234;connect timeout=1000000;MultipleActiveResultSets=True;App=EntityFramework" providerName="System.Data.SqlClient" />
+    <add name="DefaultConnection" connectionString="Data Source=localhost\SQL2012;initial catalog=seform;user id=sa;password=1234;connect timeout=1000000;MultipleActiveResultSets=True;App=EntityFramework" providerName="System.Data.SqlClient" />
     <add name="DefaultConnectionG" connectionString="Data Source=35.229.210.63;Initial Catalog=seform;Integrated Security=false;User ID=sa;Password=en-3CvwDmPXbJ1;MultipleActiveResultSets=True" providerName="System.Data.SqlClient" />
-    <add name="DefaultConnectionG2" connectionString="Data Source=35.221.232.102;Initial Catalog=seform;Integrated Security=false;User ID=sa;Password=en-3CvwDmPXbJ1;MultipleActiveResultSets=True" providerName="System.Data.SqlClient" />
   </connectionStrings>
   <appSettings>
     <add key="webpages:Version" value="3.0.0.0" />
@@ -14,8 +13,8 @@
     <add key="ClientValidationEnabled" value="true" />
     <add key="UnobtrusiveJavaScriptEnabled" value="true" />
     <add key="aspnet:MaxJsonDeserializerMembers" value="150000" />
-    <add key="sendgrid_"  value="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" />
-    <add key="sendgrid"  value="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" />
+    <add key="sendgrid_" value="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" />
+    <add key="sendgrid" value="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" />
   </appSettings>
   <system.web>
     <customErrors mode="Off"></customErrors>
@@ -28,7 +27,6 @@
     </httpModules>
     <pages validateRequest="false" />
   </system.web>
-
   <system.webServer>
     <security>
       <requestFiltering>
@@ -50,12 +48,13 @@
       <remove fileExtension=".woff2" />
       <mimeMap fileExtension=".woff2" mimeType="application/font-woff2" />
     </staticContent>
-  <handlers>
+    <handlers>
       <remove name="ExtensionlessUrlHandler-Integrated-4.0" />
       <remove name="OPTIONSVerbHandler" />
       <remove name="TRACEVerbHandler" />
       <add name="ExtensionlessUrlHandler-Integrated-4.0" path="*." verb="*" type="System.Web.Handlers.TransferRequestHandler" preCondition="integratedMode,runtimeVersionv4.0" />
-    </handlers></system.webServer>
+    </handlers>
+  </system.webServer>
   <runtime>
     <assemblyBinding xmlns="urn:schemas-microsoft-com:asm.v1">
       <dependentAssembly>
@@ -109,6 +108,10 @@
       <dependentAssembly>
         <assemblyIdentity name="System.Net.Http" publicKeyToken="b03f5f7f11d50a3a" culture="neutral" />
         <bindingRedirect oldVersion="0.0.0.0-4.1.1.2" newVersion="4.1.1.2" />
+      </dependentAssembly>
+      <dependentAssembly>
+        <assemblyIdentity name="EntityFramework" culture="neutral" publicKeyToken="b77a5c561934e089" />
+        <codeBase version="6.0.0.0" href="file:///D:/SimpleEForm/packages/EntityFramework.6.2.0/lib/net45/EntityFramework.DLL" />
       </dependentAssembly>
     </assemblyBinding>
   </runtime>

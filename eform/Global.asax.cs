@@ -26,6 +26,18 @@ namespace eform
             BundleConfig.RegisterBundles(BundleTable.Bundles);
         }
 
+        private void Application_Error(object sender, EventArgs e)
+        {
+            Exception ex = Server.GetLastError();
+
+            if (ex is HttpAntiForgeryException)
+            {
+                Response.Clear();
+                Server.ClearError(); //make sure you log the exception first
+                Response.Redirect("/Account/antiforgery", true);
+            }
+        }
+
         //protected void Application_BeginRequest(object sender, EventArgs e)
         //{
         //    HttpRuntimeSection section = (HttpRuntimeSection)ConfigurationManager.GetSection("system.web/httpRuntime");

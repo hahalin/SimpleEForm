@@ -235,6 +235,7 @@
     <Compile Include="Attributes\Unique.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\api\ValuesController1.cs" />
+    <Compile Include="Controllers\BookingController.cs" />
     <Compile Include="Controllers\DepController.cs" />
     <Compile Include="Controllers\EmployeeController.cs" />
     <Compile Include="Controllers\FlowDefController.cs" />
@@ -249,6 +250,7 @@
     <Compile Include="Controllers\PrjController.cs" />
     <Compile Include="Controllers\RoleController.cs" />
     <Compile Include="Controllers\SalaryController.cs" />
+    <Compile Include="Controllers\SchController.cs" />
     <Compile Include="Controllers\StockMgrController.cs" />
     <Compile Include="CustomMigration\DefaultSeed.cs" />
     <Compile Include="CustomMigration\eFormDBInitializer.cs" />
@@ -453,6 +455,22 @@
     <Compile Include="Migrations\201905061433051_addContractDate2PrjCode.Designer.cs">
       <DependentUpon>201905061433051_addContractDate2PrjCode.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201905240438137_prjCode_createDate2.cs" />
+    <Compile Include="Migrations\201905240438137_prjCode_createDate2.Designer.cs">
+      <DependentUpon>201905240438137_prjCode_createDate2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201906050513478_addSchTemp.cs" />
+    <Compile Include="Migrations\201906050513478_addSchTemp.Designer.cs">
+      <DependentUpon>201906050513478_addSchTemp.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201906050517286_addSchTempItem.cs" />
+    <Compile Include="Migrations\201906050517286_addSchTempItem.Designer.cs">
+      <DependentUpon>201906050517286_addSchTempItem.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201906060833075_addSeq2SchTempItem.cs" />
+    <Compile Include="Migrations\201906060833075_addSeq2SchTempItem.Designer.cs">
+      <DependentUpon>201906060833075_addSeq2SchTempItem.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ApplicationDbContext.cs" />
@@ -479,6 +497,7 @@
     <Compile Include="Models\ReqInHouse.cs" />
     <Compile Include="Models\ReqOverTime.cs" />
     <Compile Include="Models\salary.cs" />
+    <Compile Include="Models\scheduleItem.cs" />
     <Compile Include="Models\stockItemInit.cs" />
     <Compile Include="Models\vwDayOffForm.cs" />
     <Compile Include="Models\vwDayOffSum.cs" />
@@ -1498,6 +1517,13 @@
     <Content Include="Views\HRMgr\QueryReportA.cshtml" />
     <Content Include="Views\Form\UploadError.cshtml" />
     <Content Include="Views\Prj\portalMobile.cshtml" />
+    <Content Include="Views\Account\antiforgery.cshtml" />
+    <Content Include="Views\Booking\Register.cshtml" />
+    <Content Include="Views\Booking\List.cshtml" />
+    <Content Include="Views\Sch\tempList.cshtml" />
+    <Content Include="Views\Sch\tempCreate.cshtml" />
+    <Content Include="Views\Sch\tempItemList.cshtml" />
+    <Content Include="Views\Sch\tempItemCreate.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1667,6 +1693,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201905061433051_addContractDate2PrjCode.resx">
       <DependentUpon>201905061433051_addContractDate2PrjCode.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201905240438137_prjCode_createDate2.resx">
+      <DependentUpon>201905240438137_prjCode_createDate2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201906050513478_addSchTemp.resx">
+      <DependentUpon>201906050513478_addSchTemp.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201906050517286_addSchTempItem.resx">
+      <DependentUpon>201906050517286_addSchTempItem.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201906060833075_addSeq2SchTempItem.resx">
+      <DependentUpon>201906060833075_addSeq2SchTempItem.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

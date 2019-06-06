@@ -1,0 +1,87 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_PrjLayout.cshtml";
+
+}
+
+<style>
+    input, select, textarea {
+         max-width: 90%; 
+    }
+</style>
+
+<div class="box box-primary">
+    <div class="box-header">
+        <h2>線上報名</h2>
+    </div>
+    <div class="box-body">
+        @using (Html.BeginForm("Register", "Booking", FormMethod.Post, new { enctype = "multipart/form-data", autocomplete = "off" }))
+            {
+            @Html.AntiForgeryToken()
+
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label class="control-label col-md-2">
+                        姓名
+                    </label>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" />
+                    </div>
+                    <div class="col-md-6"></div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-2">
+                        性別
+                    </label>
+                    <div class="col-md-4">
+                        <label class="radio-inline"><input type="radio" class="radio" checked="checked" />男眾</label>
+                        <label class="radio-inline"><input type="radio" class="radio" />女眾</label>
+                    </div>
+                    <div class="col-md-6"></div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-2">
+                        生日
+                    </label>
+                    <div class="col-md-4">
+                        <input type="date" class="form-control" />
+                    </div>
+                    <div class="col-md-6"></div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-2">
+                        地址
+                    </label>
+                    <div class="col-md-10">
+                        <input type="text" class="form-control" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-2">
+                        問事項目
+                    </label>
+                    <div class="col-md-10 form-inline">
+                        <label class="radio-inline"><input type="checkbox" class="radio" checked="checked" />健康</label>
+                        <label class="radio-inline"><input type="checkbox" class="radio" />學業</label>
+                        <label class="radio-inline"><input type="checkbox" class="radio" />事業</label>
+                        <label class="radio-inline"><input type="checkbox" class="radio" />感情</label>
+                        <label class="radio-inline"><input type="checkbox" class="radio" />家庭</label>
+                        <label class="radio-inline"><input type="checkbox" class="radio" />其他<input type="text" /></label>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    <div class="box-footer text-center">
+        <input type="submit" class="btn btn-lg btn-primary" value="送出" />
+    </div>
+</div>
+
+@*<div class="form-group">
+
+        <div class="col-md-10 form-inline">
+            <input type="text" class="form-control" /><label class="">年</label>
+            <input type="text" class="form-control" /><label class="">月</label>
+            <input type="text" class="form-control" /><label class="">日</label>
+        </div>
+    </div>*@

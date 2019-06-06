@@ -20,7 +20,7 @@
                 @*@Html.ActionLink("新增部門", "Create", new {}, new { @class = "btn btn-primary" })*@
             </div>
             <div class="box-body">
-                <table class="table table-bordered table-hover table-responsive">
+                <table class="table table-bordered table-hover table-responsive table-striped">
                     <tr>
                         <th width="130" class="text-center">
                             @Html.DisplayNameFor(model => model.workNo)
@@ -33,6 +33,9 @@
                         </th>
                         <th class="text-center">
                             @Html.DisplayNameFor(model => model.Title)
+                        </th>
+                        <th class="text-center">
+                            在職狀態
                         </th>
                         <th width="140"></th>
                     </tr>
@@ -67,15 +70,25 @@
                                     </ul>
                                 }
                             </td>
+                            <td>
+                                @if (item.status==1)
+                                {
+                                    @:在職
+                                }
+                                else //if(item.status==0)
+                                {
+                                    <label class="label-warning">離職</label>
+                                }
+                            </td>
                             <td >
                                 <a class="btn btn-info btn-sm" href="@Url.Action("Edit",new { id = item.Id })" style="font-size:11px;">
                                     <i class="fa fa-pencil"></i>
                                     編輯
                                 </a>
-                                <a class="btn btn-danger btn-sm" data-id="@item.Id" href="#" onclick="checkDelete();" style="font-size:11px;">
+                                @*<a class="btn btn-danger btn-sm" data-id="@item.Id" href="#" onclick="checkDelete();" style="font-size:11px;">
                                     <i class="fa fa-trash"></i>
                                     刪除
-                                </a>
+                                </a>*@
                                 @if (User.IsInRole("Admin") && (User.Identity.Name != item.workNo))
                                 { 
                                 }

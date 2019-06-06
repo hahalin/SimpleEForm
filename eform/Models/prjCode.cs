@@ -18,6 +18,7 @@ namespace eform.Models
         public string creator { get; set; }
         public DateTime? createDate { get; set; }
         public DateTime? contractDate { get; set; }
+        public DateTime? createDate2 { get; set; }
         public string mmo1 { get; set; }
         public string mmo2 { get; set; }
         public string mmo3 { get; set; }
@@ -39,6 +40,14 @@ namespace eform.Models
         public string WorkNo { get; set; }
         [Display(Name = "職稱")]
         public string Title { get; set; }
+    }
+    public class vPrjPM
+    {
+        public string id { get; set; }
+        public string WorkNo { get; set; }
+        public string Title { get; set; }
+        public string UserEName { get; set; }
+        public string UserCName { get; set; }
     }
     public class prjForumUser
     {
@@ -101,6 +110,7 @@ namespace eform.Models
         public string creator { get; set; }
         public DateTime? createDate { get; set; }
         public DateTime? contractDate { get; set; }
+        public DateTime? createDate2 { get; set; }
         public string hPMList { get; set; }
         public string ownerNm {
             get

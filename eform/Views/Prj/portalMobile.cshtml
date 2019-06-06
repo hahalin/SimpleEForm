@@ -51,7 +51,7 @@
                                                 bool canModify = false;
                                                 canModify = Model.prjCodeObj.owner == User.Identity.Name
                                                             || fitem.workNo == User.Identity.Name
-                                                            || Model.vPMList.Where(x => x.workNo == User.Identity.Name).Count() > 0;
+                                                            || Model.vPMList.Where(x => x.WorkNo == User.Identity.Name && x.Title=="PM").Count() > 0;
                                             }
 
                                             @if (canModify)

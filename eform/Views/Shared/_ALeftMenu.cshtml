@@ -166,7 +166,7 @@
                 </li>
 
                 <!--庫存管理查詢-->
-                if (
+                @*if (
                     (permList.Where(x => x.mod == "StockInit").Count() > 0)
                     || (permList.Where(x => x.mod == "StockQuery").Count() > 0)
                  )
@@ -196,7 +196,7 @@
                             </li>
                         </ul>
                     </li>
-                }
+                }*@
                  <!--主管管理區-->
                 <li class="treeview">
                     <a href="#">
@@ -299,6 +299,11 @@
                                     <li>
                                         <a href="@Url.Action("Index", "NewsMgr", null)">
                                             <i class="fa fa-newspaper-o"></i>公告管理
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="@Url.Action("tempList","Sch")">
+                                            <i class="fa fa-table"></i>甘特圖工作項目模板
                                         </a>
                                     </li>
                                 </ul>

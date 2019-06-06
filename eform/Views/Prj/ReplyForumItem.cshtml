@@ -156,7 +156,11 @@
                         @Html.ValidationMessageFor(model => model.sfile, "", new { @class = "text-danger" })
                     </div>
                 </div>
-
+                <div class="form-group">
+                    <div calss="col-md-10">
+                        <label class="text-danger col-md-offset-2">上傳檔案總和大小不得超過15MB</label>
+                    </div>
+                </div>
                 <div class="form-group">
                     <div class="col-md-offset-2 col-md-10">
                         <input type="submit" id="btnSave" value="儲存" class="btn btn-primary" />
@@ -174,9 +178,43 @@
 @section scripts
 {
     <script type="text/javascript">
+        var filemaxsize = 1024 * 15;//2M 
+
+        function checkFileSize() {
+            var filesize = 0;
+            if ($('#sfile')[0].files.length > 0) {
+                filesize += $('#sfile')[0].files[0].size;
+            }
+            if ($('#sfile2')[0].files.length > 0) {
+                filesize += $('#sfile2')[0].files[0].size;
+            }
+            if ($('#sfile3')[0].files.length > 0) {
+                filesize += $('#sfile3')[0].files[0].size;
+            }
+            if ($('#sfile4')[0].files.length > 0) {
+                filesize += $('#sfile4')[0].files[0].size;
+            }
+            if (filesize > 0) {
+                filesize = filesize / (1024);
+            }
+
+            if (filesize > filemaxsize) {
+                alert("上傳檔案總和大小不得超過15MB!");
+                return false;
+            }
+            return true;
+        }
+
 
         $(function () {
             $('#btnSave').on('click', function () {
+
+                var r = checkFileSize();
+
+                if (!r) {
+                    return false;
+                }
+
                 $.blockUI({ message: '<h2>資料儲存中...</h2>' });
             });
             var data = @Html.Raw((ViewBag.userlist));

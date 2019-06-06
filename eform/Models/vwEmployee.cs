@@ -95,6 +95,10 @@ namespace eform.Models
                 
             }
         }
+        public int status
+        {
+            get; set;
+        } = 1;
 
         public ICollection<vwPoNo> poList { get; set; }
     }

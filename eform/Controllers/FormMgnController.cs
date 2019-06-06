@@ -29,7 +29,7 @@ namespace eform.Controllers
             vwReqInHouse model = new vwReqInHouse();
             model.user = ctx.getCurrentUser(User.Identity.Name);
             ViewBag.userList = ctx.getUserList();
-            ViewBag.depList = ctx.getDepList();
+            ViewBag.depList = ctx.getDepListP020A1(2);
             return View(model);
         }
 
@@ -38,7 +38,7 @@ namespace eform.Controllers
         {
             Model.user = ctx.getCurrentUser(User.Identity.Name);
             ViewBag.userList = ctx.getUserList();
-            ViewBag.depList = ctx.getDepList();
+            ViewBag.depList = ctx.getDepListP020A1(2);
 
             #region "checkinput"
             List<string> errList = new List<string>();

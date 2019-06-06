@@ -106,6 +106,10 @@
         function formatRepoSelection(repo) {
             return repo.id + "-" + repo.text;
         }
+
+        function formatRepoDepSelection(repo) {
+            return repo.text;
+        }
         $(function () {
             $('textarea').css('max-width', '700px');
             if ($($('.validation-summary-errors')[0]).text() == "") {
@@ -120,7 +124,7 @@
             $("#depNo").select2({
                 data: @Html.Raw((ViewBag.depList)),
                 placeholder: '選擇處理單位',
-                templateSelection: formatRepoSelection
+                templateSelection: formatRepoDepSelection
             });
 
 

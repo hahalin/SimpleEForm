@@ -447,27 +447,26 @@ namespace eform.Models
         }
         public int replyCnt
         {
-            get
-            {
-                int r = 0;
-                r = ctx.prjForumItems.Where(x => x.pid == id).Count();
-                return r;
-            }
+            //get
+            //{
+            //    int r = 0;
+            //    r = ctx.prjForumItems.Where(x => x.pid == id).Select(x => x.id).Count();
+            //    return r;
+            //}
+            get;set;
         }
         public string lastReplyDate
         {
-            get
-            {
-                var item = ctx.prjForumItems.Where(x => x.pid == id).OrderByDescending(x => x.billDate).FirstOrDefault();
-                if(item==null)
-                {
-                    return "";
-                }
-                else
-                {
-                    return item.billDate.ToString("yyyy-MM-dd HH:mm:ss");
-                }
-            }
+            //get
+            //{
+            //    var item = ctx.prjForumItems.Where(x => x.pid == id).OrderByDescending(x => x.billDate).Select(x => x.billDate).FirstOrDefault();
+            //    if (item == DateTime.MinValue)
+            //    {
+            //        return "";
+            //    }
+            //    return item.ToString("yyyy-MM-dd HH:mm:ss");
+            //}
+            get;set;
 
         }
         public Boolean isPrivate { get; set; } = false;

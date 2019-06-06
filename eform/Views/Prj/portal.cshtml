@@ -177,7 +177,7 @@
                                                 bool canModify = false;
                                                 canModify = Model.prjCodeObj.owner == User.Identity.Name
                                                             || fitem.workNo == User.Identity.Name
-                                                            || Model.vPMList.Where(x => x.workNo == User.Identity.Name).Count() > 0;
+                                                            || Model.vPMList.Where(x => x.WorkNo == User.Identity.Name && x.Title=="PM").Count() > 0;
                                             }
 
                                             @if (canModify)
@@ -239,42 +239,32 @@
                         </th>
                         </thead>
                         <tbody>
-                            @foreach (vwEmployee emp in Model.vPMList)
+                            @foreach (vPrjPM emp in Model.vPMList)
                             {
                                 <tr>
                                     <td>
-                                        @{ 
-                                            prjPM pmUser = Model.PMList.Where(x => x.WorkNo == emp.workNo).FirstOrDefault();
-                                            string pmTitle = pmUser.Title;
-                                            string pmUserId = pmUser.id;
-                                        }
                                         @if (Model.prjCodeObj.owner == User.Identity.Name)
                                         {
                                             using (Html.BeginForm("DelPrjPM", "Prj", FormMethod.Post))
                                             {
-                                                string pmId = "";
-                                                try
-                                                {
-                                                    pmId = Model.PMList.Where(x => x.WorkNo == emp.workNo && x.pid == Model.prjCodeObj.id).FirstOrDefault().id;
 
-                                                }
-                                                catch (Exception ex)
-                                                {
-                                                }
-
-                                                <input type="hidden" name="hid" value="@pmId" />
+                                                <input type="hidden" name="hid" value="@emp.id" />
                                                 <input type="hidden" name="code" value="@Model.prjCodeObj.code" />
-                                                <input type="submit" value="刪除" onclick="return confirm('確定刪除?');" class="btn-sm btn-danger" />
+
+                                                if (emp.Title != "PM")
+                                                {
+                                                    <input type="submit" value="刪除" onclick="return confirm('確定刪除?');" class="btn-sm btn-danger" />
+                                                }
                                             }
 
-                                            <a href="@Url.Action("UpdatePrjPM", "Prj", new { id = pmUserId, code = Model.prjCodeObj.code })" class="btn-sm btn-info">編輯</a>
+                                            <a href="@Url.Action("UpdatePrjPM", "Prj", new { id = emp.id, code = Model.prjCodeObj.code })" class="btn-sm btn-info">編輯</a>
                                         }
                                     </td>
                                     <td>
-                                        @emp.workNo @emp.UserCName
+                                        @emp.WorkNo @emp.UserCName
                                     </td>
                                     <td>
-                                        @pmTitle
+                                        @emp.Title
                                     </td>
                                 </tr>
                                                 }

@@ -22,9 +22,9 @@ namespace eform.Controllers
         string getDayOffData()
         {
             DateTime today = DateTime.Today;
-
+            DateTime minDate = today.AddMonths(-2);
             List<FlowMain> fMainList = ctx.FlowMainList.Where(
-                x => x.billDate != null && x.billDate.Value.Year <= today.Year 
+                x => x.billDate != null && x.billDate.Value.Year == today.Year 
                 //&& x.billDate.Value.Month == today.Month
                 && x.flowStatus == 2
                 && x.defId == "DayOff").ToList<FlowMain>();
@@ -70,9 +70,10 @@ namespace eform.Controllers
         string getPublicOutList()
         {
             DateTime today = DateTime.Today;
+            DateTime minDate = today.AddMonths(-2);
 
             List<FlowMain> fMainList = ctx.FlowMainList.Where(
-                x => x.billDate != null && x.billDate.Value.Year <= today.Year 
+                x => x.billDate != null && x.billDate.Value.Year == today.Year 
                 && x.flowStatus == 2
                 && x.defId == "PublicOut").ToList<FlowMain>();
             List<string> billNoList = (from f in fMainList select f.id).ToList<string>();
@@ -111,9 +112,10 @@ namespace eform.Controllers
         string getGuestFormList()
         {
             DateTime today = DateTime.Today;
+            DateTime minDate = today.AddMonths(-2);
 
             List<FlowMain> fMainList = ctx.FlowMainList.Where(
-                x => x.billDate != null && x.billDate.Value.Year <= today.Year 
+                x => x.billDate != null && x.billDate.Value.Year == today.Year 
                 && x.flowStatus == 2
                 && x.defId == "GuestForm").ToList<FlowMain>();
             List<string> billNoList = (from f in fMainList select f.id).ToList<string>();
@@ -161,9 +163,10 @@ namespace eform.Controllers
         string getEventScheduleList(string eventType = "")
         {
             DateTime today = DateTime.Today;
+            DateTime minDate = today.AddMonths(-2);
 
             List<FlowMain> fMainList = ctx.FlowMainList.Where(
-                x => x.billDate != null && x.billDate.Value.Year <= today.Year
+                x => x.billDate != null && x.billDate.Value.Year == today.Year 
                 && x.flowStatus != 99
                 && x.defId == "EventSchedule").ToList<FlowMain>();
             List<string> billNoList = (from f in fMainList select f.id).ToList<string>();
@@ -297,7 +300,7 @@ namespace eform.Controllers
         }
 
 
-        public ActionResult Index(string selForm = "ALL")
+        public ActionResult Index(string selForm = "2")
         {
             var context = new ApplicationDbContext();
             List<news> newslist = (from item in context.newsList.ToList<news>() orderby item.createTime2 descending select item).ToList<news>();
@@ -312,7 +315,8 @@ namespace eform.Controllers
             myFormList.Add(new SelectListItem
             {
                 Text = "公司活動",
-                Value = "2"
+                Value = "2",
+                Selected = true
             });
             myFormList.Add(new SelectListItem
             {
@@ -338,8 +342,7 @@ namespace eform.Controllers
             myFormList.Insert(0, new SelectListItem
             {
                 Text = "全部",
-                Value = "ALL",
-                Selected = true
+                Value = "ALL"
             });
             ViewBag.myForms = myFormList;
 
