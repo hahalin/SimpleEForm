@@ -11,6 +11,32 @@ namespace eform.Models
         [Key]
         public string id { get; set; }
         public string prjId { get; set; }
+        public int seq { get; set; }
+        public string itemTxt { get; set; }
+        public DateTime? dtBegin { get; set; }
+        public DateTime? dtEnd { get; set; }
+    }
+
+    public class vwSchItemList
+    {
+        public vwSchItemList()
+        {
+            itemList = new List<vwScheduleItem>();
+        }
+
+        public prjCode prj { get; set; }
+
+        public List<vwScheduleItem> itemList { get; set; }
+    }
+
+    public class vwScheduleItem
+    {
+        public string id { get; set; }
+        public string prjId { get; set; }
+        public int seq { get; set; }
+        public string itemTxt { get; set; }
+        public DateTime? dtBegin { get; set; }
+        public DateTime? dtEnd { get; set; }
     }
 
     public class schTemp

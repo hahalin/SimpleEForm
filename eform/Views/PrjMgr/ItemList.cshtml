@@ -1,0 +1,65 @@
+﻿@model eform.Models.vwSchItemList
+
+@{
+    ViewBag.Title = "ItemList";
+    Layout = "~/Views/Shared/_PrjLayout.cshtml";
+
+}
+
+<h2>專案甘特圖工作項目設定</h2>
+
+<div class="row col-md-10">
+    <div class="box box-primary">
+        <div class="box-header">
+            <p>
+                @Html.ActionLink("Create New", "Create")
+            </p>
+        </div>
+        <div class="box-header">
+                <label>專案編號：</label>@Model.prj.code &nbsp; &nbsp; <label>專案名稱：</label>@Model.prj.nm
+        </div>
+        <table class="table table-bordered table-hover table-striped">
+            <tr>
+                <th>
+                    序號
+                </th>
+                <th>
+                    工作項目
+                </th>
+                <th>
+                    開始日期
+                </th>
+                <th>
+                    結束日期
+                </th>
+                <th></th>
+            </tr>
+
+            @foreach (var item in Model.itemList)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.prjId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.seq)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.itemTxt)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.dtBegin)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.dtEnd)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Edit", "Edit", new { id = item.id }) |
+                        @Html.ActionLink("Details", "Details", new { id = item.id }) |
+                        @Html.ActionLink("Delete", "Delete", new { id = item.id })
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>

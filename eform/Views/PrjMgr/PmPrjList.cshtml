@@ -1,0 +1,60 @@
+﻿@using eform.Models;
+@model IEnumerable<eform.Models.vwPrjCode>
+
+@{
+    ViewBag.Title = "myPrjs";
+    Layout = "~/Views/Shared/_PrjLayout.cshtml";
+}
+
+<div class="row col-md-10">
+    <div class="box box-warning">
+        <div class="box-header">
+            <h3 class="box-title">
+                專案甘特圖管理-選擇專案
+            </h3>
+        </div>
+        <div class="box-body">
+            <table id="gdprj" class="table table-bordered" style="height_:300px;overflow:auto;display:block;">
+                <thead>
+                    <tr>
+                        <th>專案名稱</th>
+                        <th>專案代碼</th>
+                        <th>專案經理</th>
+                        <th>生產交期</th>
+                        <th>建立日期</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (vwPrjCode prj in Model)
+                    {
+                        if (prj != null)
+                        {
+                            string sclass = "";
+                            //if (prj.code == Model.prjCode)
+                            //{
+                            //    sclass = "highlight";
+                            //}
+
+                            <tr class="@sclass">
+                                <td>@prj.nm</td>
+                                <td>@prj.code</td>
+                                <td>@prj.ownerENm</td>
+                                <td>@prj.contractDateStr</td>
+                                <td>@Convert.ToDateTime(prj.createDate).ToString("yyyy-MM-dd")</td>
+                                <td>
+                                    <a href="@Url.Action("ItemList","PrjMgr",new {prjId=prj.id})" class="btn btn-info">
+                                        <i class="fa fa-arrow-right"></i>
+                                    </a> 
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+
+</div>

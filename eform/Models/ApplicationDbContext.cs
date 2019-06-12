@@ -69,6 +69,8 @@ namespace eform.Models
         public DbSet<schTemp> schTempList { get; set; }
         public DbSet<schTempItem> schTempItemList { get; set; }
 
+        public DbSet<scheduleItem> scheduleItems{ get; set; }
+
         public List<vwSignType> signTypeList()
         {
             List<vwSignType> list = new List<vwSignType>();

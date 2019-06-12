@@ -9,7 +9,7 @@ using eform.Attributes;
 namespace eform.Controllers
 {
     [AdminAuthorize(Roles = "Admin")]
-    public class SchController : Controller
+    public sealed partial class SchController : Controller
     {
         ApplicationDbContext ctx;
         public SchController()

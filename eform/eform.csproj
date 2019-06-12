@@ -248,9 +248,11 @@
     <Compile Include="Controllers\NewsMgrController.cs" />
     <Compile Include="Controllers\PermController.cs" />
     <Compile Include="Controllers\PrjController.cs" />
+    <Compile Include="Controllers\PrjMgrController.cs" />
     <Compile Include="Controllers\RoleController.cs" />
     <Compile Include="Controllers\SalaryController.cs" />
     <Compile Include="Controllers\SchController.cs" />
+    <Compile Include="Controllers\SchItemController.cs" />
     <Compile Include="Controllers\StockMgrController.cs" />
     <Compile Include="CustomMigration\DefaultSeed.cs" />
     <Compile Include="CustomMigration\eFormDBInitializer.cs" />
@@ -470,6 +472,10 @@
     <Compile Include="Migrations\201906060833075_addSeq2SchTempItem.cs" />
     <Compile Include="Migrations\201906060833075_addSeq2SchTempItem.Designer.cs">
       <DependentUpon>201906060833075_addSeq2SchTempItem.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201906121614448_AddScheduleItem.cs" />
+    <Compile Include="Migrations\201906121614448_AddScheduleItem.Designer.cs">
+      <DependentUpon>201906121614448_AddScheduleItem.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -1524,11 +1530,14 @@
     <Content Include="Views\Sch\tempCreate.cshtml" />
     <Content Include="Views\Sch\tempItemList.cshtml" />
     <Content Include="Views\Sch\tempItemCreate.cshtml" />
+    <Content Include="Views\PrjMgr\PmPrjList.cshtml" />
+    <Content Include="Views\PrjMgr\ItemList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="upload\" />
     <Folder Include="Views\FormMgn\" />
+    <Folder Include="Views\SchMgr\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
@@ -1705,6 +1714,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201906060833075_addSeq2SchTempItem.resx">
       <DependentUpon>201906060833075_addSeq2SchTempItem.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201906121614448_AddScheduleItem.resx">
+      <DependentUpon>201906121614448_AddScheduleItem.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

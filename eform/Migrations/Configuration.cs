@@ -10,7 +10,7 @@ namespace eform.Migrations
     {
         public Configuration()
         {
-            AutomaticMigrationsEnabled = true;
+            AutomaticMigrationsEnabled = false;
 
             DefaultSeed.doMigrate(this);
         }
