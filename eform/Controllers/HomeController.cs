@@ -24,7 +24,7 @@ namespace eform.Controllers
             DateTime today = DateTime.Today;
             DateTime minDate = today.AddMonths(-2);
             List<FlowMain> fMainList = ctx.FlowMainList.Where(
-                x => x.billDate != null && x.billDate.Value.Year == today.Year 
+                x => x.billDate != null && x.billDate.Value.Year == today.Year
                 //&& x.billDate.Value.Month == today.Month
                 && x.flowStatus == 2
                 && x.defId == "DayOff").ToList<FlowMain>();
@@ -73,7 +73,7 @@ namespace eform.Controllers
             DateTime minDate = today.AddMonths(-2);
 
             List<FlowMain> fMainList = ctx.FlowMainList.Where(
-                x => x.billDate != null && x.billDate.Value.Year == today.Year 
+                x => x.billDate != null && x.billDate.Value.Year == today.Year
                 && x.flowStatus == 2
                 && x.defId == "PublicOut").ToList<FlowMain>();
             List<string> billNoList = (from f in fMainList select f.id).ToList<string>();
@@ -115,7 +115,7 @@ namespace eform.Controllers
             DateTime minDate = today.AddMonths(-2);
 
             List<FlowMain> fMainList = ctx.FlowMainList.Where(
-                x => x.billDate != null && x.billDate.Value.Year == today.Year 
+                x => x.billDate != null && x.billDate.Value.Year == today.Year
                 && x.flowStatus == 2
                 && x.defId == "GuestForm").ToList<FlowMain>();
             List<string> billNoList = (from f in fMainList select f.id).ToList<string>();
@@ -166,7 +166,7 @@ namespace eform.Controllers
             DateTime minDate = today.AddMonths(-2);
 
             List<FlowMain> fMainList = ctx.FlowMainList.Where(
-                x => x.billDate != null && x.billDate.Value.Year == today.Year 
+                x => x.billDate != null && x.billDate.Value.Year == today.Year
                 && x.flowStatus != 99
                 && x.defId == "EventSchedule").ToList<FlowMain>();
             List<string> billNoList = (from f in fMainList select f.id).ToList<string>();
@@ -228,11 +228,11 @@ namespace eform.Controllers
 
                     if (d.beginDate.Value.ToString("yyyyMMdd") == d.endDate.Value.ToString("yyyyMMdd"))
                     {
-                        obj.title = d.subject + "-" + user.UserCName + " " + strTime1 + "~" + strTime2;
+                        obj.title = d.subject + "-" + user.UserCName + " " + d.location + " " + strTime1 + "~" + strTime2;
                     }
                     else
                     {
-                        obj.title = d.subject + "-" + user.UserCName + " " + d.beginDate.Value.ToString("MM/dd") + " " + strTime1 + "~" + d.endDate.Value.ToString("MM/dd") + " " + strTime2;
+                        obj.title = d.subject + "-" + user.UserCName + " " + d.location + " " + d.beginDate.Value.ToString("MM/dd") + " " + strTime1 + "~" + d.endDate.Value.ToString("MM/dd") + " " + strTime2;
                     }
 
                     if (string.IsNullOrEmpty(d.colorTag))

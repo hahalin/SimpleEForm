@@ -363,16 +363,52 @@ namespace eform.Controllers
                     sb.Append("您好," + "<br/><br/>");
                     if (model.eventType == 1)
                     {
-                        sb.Append(sender.workNo + " " + sender.cName + " 送出業務拜訪行程：" + fmain.billNo + "<br/><br/>");
+                        sb.Append(sender.workNo + " " + sender.cName + " 送出業務拜訪行程" +"<br/>");
                     }
-                    else
+                    else if (model.eventType == 2)
                     {
-                        sb.Append(sender.workNo + " " + sender.cName + " 送出公司行程/活動：" + fmain.billNo + "<br/><br/>");
+                        sb.Append(sender.workNo + " " + sender.cName + " 送出公司行程/活動"+"<br/>");
                     }
+                    else if (model.eventType == 3)
+                    {
+                        sb.Append(sender.workNo + " " + sender.cName + " 送出會議室預約"+"<br/>");
+                    }
+                    sb.AppendFormat("單號:{0}<br/>", fmain.billNo);
                     sb.AppendFormat("<a href='{0}'>{1}</a><br/>",
                         Url.Action("Details", "FormMgr", new RouteValueDictionary(new { id = fmain.id }), HttpContext.Request.Url.Scheme, HttpContext.Request.Url.Authority),
                         "單據網址"
                     );
+
+                    sb.AppendFormat("申請人:{0}<br/>", sender.cName);
+                    sb.AppendFormat("申請日期:{0}<br/>", model.billDate.Value.ToString("yyyy-MM-dd"));
+
+                    if (model.eventType == 1)
+                    {
+                        sb.AppendFormat("活動種類:{0}<br/>", "業務拜訪行程");
+                    }
+                    else if (model.eventType == 2)
+                    {
+                        sb.AppendFormat("活動種類:{0}<br/>", "公司行程/活動");
+                    }
+                    else if (model.eventType == 3)
+                    {
+                        sb.AppendFormat("活動種類:{0}<br/>", "會議室預約");
+                    }
+
+                    sb.AppendFormat("標題:{0}<br/>", model.subject);
+                    sb.AppendFormat("地點:{0}<br/>", model.location );
+
+                    sb.AppendFormat("開始日期:{0} {1}:{2}<br/>", 
+                        model.beginDate.Value.ToString("yyyy-MM-dd"), 
+                        model.beginHH.ToString().PadLeft(2,'0'),
+                        model.beginMM.ToString().PadLeft(2,'0')
+                    );
+                    sb.AppendFormat("結束日期:{0} {1}:{2}<br/>", 
+                        model.endDate.Value.ToString("yyyy-MM-dd") ,
+                        model.endHH.ToString().PadLeft(2, '0'),
+                        model.endMM.ToString().PadLeft(2, '0')
+                    );
+
                     sb.Append("<br/>此信件為系統發出，請勿直接回信<br/>");
                     foreach (string signer in signerList)
                     {
