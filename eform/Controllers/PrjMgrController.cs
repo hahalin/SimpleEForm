@@ -78,6 +78,7 @@ namespace eform.Controllers
                 model.itemList.Add(new vwScheduleItem
                 {
                     prjId = item.prjId,
+                    id = item.id,
                     seq = item.seq,
                     itemTxt = item.itemTxt,
                     dtBegin = item.dtBegin,
@@ -88,6 +89,70 @@ namespace eform.Controllers
 
             return View(model);
         }
+
+        [HttpGet]
+        public ActionResult ImportTemplate(string prjId,string tId)
+        {
+            var items = ctx.schTempItemList.Where(x => x.pid == tId);
+            int maxSeq = 1;
+            try
+            { 
+                var vMaxSeq = ctx.scheduleItems.Where(x => x.prjId == prjId).Max(x => x.seq);
+                maxSeq = (int)vMaxSeq + 1;
+            }
+            catch(Exception exGetMaxSeq)
+            {
+                maxSeq = 1;
+            }
+
+
+            foreach (var i in items)
+            {
+                ctx.scheduleItems.Add(new scheduleItem
+                {
+                    id = Guid.NewGuid().ToString(),
+                    seq = maxSeq++,
+                    prjId=prjId,
+                    itemTxt=i.txt,
+                    dtBegin=null,
+                    dtEnd=null
+                });
+            }
+
+            ctx.SaveChanges();
+
+            return RedirectToAction("ItemList", new { prjId = prjId });
+        }
+
+        [HttpGet]
+        public ActionResult SelTemplate(string prjId)
+        {
+            var temps = ctx.schTempList.OrderBy(x => x.code).ToList<schTemp>();
+
+            ViewBag.prjId = prjId;
+
+            return View(temps);
+        }
+
+        [HttpGet]
+        public ActionResult EditSchItem(string prjId,string id)
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult EditSchItem(vwScheduleItem model)
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public ActionResult RemoveSchItem(string prjId,string itemId)
+        {
+            ctx.scheduleItems.Remove(ctx.scheduleItems.Where(x => x.id == itemId).FirstOrDefault());
+            ctx.SaveChanges();
+            return RedirectToAction("ItemList", new { prjId = prjId });
+        }
+
 
         public ActionResult Index()
         {

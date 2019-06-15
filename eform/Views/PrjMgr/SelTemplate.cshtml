@@ -1,0 +1,44 @@
+﻿@using eform.Models
+
+@model  IEnumerable<schTemp>
+
+@{
+    ViewBag.Title = "SelTemplate";
+    Layout = "~/Views/Shared/_PrjLayout.cshtml";
+    string prjId = ViewBag.prjId;
+}
+
+
+
+<div class="row col-md-6">
+    <div class="box box-info">
+        <div class="box-header">
+            <a href="@Url.Action("ItemList", new { prjId = prjId})" class="btn btn-info"><i class="fa fa-undo"></i>返回</a>
+            <h2>選擇匯入的模板代號</h2>            
+        </div>
+        <div class="box-body">
+            <table class="table table-responsive table-striped table-bordered">
+                <tr>
+                    <th></th>
+                    <th>
+                        模板分類編號
+                    </th>
+                </tr>
+
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            <a href="@Url.Action("ImportTemplate", new { prjId=prjId,tId=item.id})" class="btn btn-success"><i class="fa fa-arrow-circle-left"></i>選擇</a>
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.code)
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
+    </div>
+</div>
+
+
