@@ -309,5 +309,7 @@ namespace eform.Models
 
             return r;
         }
+
+        public System.Data.Entity.DbSet<eform.Models.vwScheduleItem> vwScheduleItems { get; set; }
     }
 }

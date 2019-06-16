@@ -91,6 +91,41 @@ namespace eform.Controllers
         }
 
         [HttpGet]
+        public ActionResult CreateSchItem(string prjId)
+        {
+            vwScheduleItem model = new vwScheduleItem
+            {
+                prjId = prjId
+            };
+            ViewBag.prjId = prjId;
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CreateSchItem(vwScheduleItem model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            ctx.scheduleItems.Add(new scheduleItem
+            {
+                id = Guid.NewGuid().ToString(),
+                seq = model.seq,
+                prjId=model.prjId,
+                itemTxt=model.itemTxt,
+                dtBegin=model.dtBegin,
+                dtEnd=model.dtEnd
+            });
+
+            ctx.SaveChanges();
+
+            return RedirectToAction("ItemList", new { prjId = model.prjId });
+
+        }
+        [HttpGet]
         public ActionResult ImportTemplate(string prjId,string tId)
         {
             var items = ctx.schTempItemList.Where(x => x.pid == tId);

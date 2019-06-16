@@ -15,9 +15,11 @@
 
         <div class="box-header">
             <p>
+                <a href="@Url.Action("PmPrjList","PrjMgr")" class="btn btn-default"><i class="fa fa-list-ul"></i>返回專案清單</a>
                 <a href="@Url.Action("CreateSchItem","PrjMgr",new {prjId=Model.prj.id})" class="btn btn-primary"><i class="fa fa-plus"></i>新增項目</a>
                 <a href="@Url.Action("SelTemplate","PrjMgr",new {prjId=Model.prj.id})" class="btn btn-info"><i class="fa fa-search-plus"></i>匯入模板項目</a>
             </p>
+            
         </div>
 
         <table class="table table-bordered table-hover table-striped">
@@ -48,10 +50,10 @@
                         @Html.DisplayFor(modelItem => item.itemTxt)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.dtBegin)
+                        @Html.DisplayFor(modelItem => item.dtBeginStr)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.dtEnd)
+                        @Html.DisplayFor(modelItem => item.dtEndStr)
                     </td>
                     <td>
                         <a href="@Url.Action("EditSchItem","PrjMgr",new {prjId=Model.prj.id,itemId=item.id})" class="btn btn-default"><i class="fa fa-pencil"></i>編輯</a>
@@ -69,6 +71,7 @@
         {
             if (confirm("確定刪除?"))
             {
+                $.blockUI({ message: '<h2>處理中...</h2>' });
                 return true;
             }
             return false;

@@ -1,0 +1,102 @@
+﻿@model eform.Models.vwScheduleItem
+
+@{
+    ViewBag.Title = "CreateSchItem";
+    Layout = "~/Views/Shared/_PrjLayout.cshtml";
+}
+
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap-datetimepicker.min.css" />
+
+<h2>建立專案甘特圖工作項目</h2>
+
+<div class="row">
+    <div class="col-md-10">
+        <div class="box box-success">
+            <div class="box-header">
+                <a href="@Url.Action("ItemList", new { prjId = Model.prjId })" class="btn btn-info"><i class="fa fa-undo"></i>返回</a>
+            </div>
+
+            <div class="box-body">
+
+                @using (Html.BeginForm())
+            {
+                    @Html.AntiForgeryToken()
+                    <div class="form-horizontal col-md-10">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.seq, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-8">
+                                @Html.HiddenFor(model => model.id, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.HiddenFor(model => model.prjId, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.EditorFor(model => model.seq, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.seq, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.itemTxt, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-8">
+                                @Html.EditorFor(model => model.itemTxt, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.itemTxt, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.dtBegin, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-3">
+                                <div class='input-group date' id='dtPkBegin'>
+                                    @Html.EditorFor(model => model.dtBegin, new { htmlAttributes = new { @class = "form-control", type = "text" } })
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                                @Html.ValidationMessageFor(model => model.dtBegin, "", new { @class = "text-danger" })
+                            </div>
+
+                            @Html.LabelFor(model => model.dtEnd, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-3">
+                                <div class='input-group date' id='dtPkEnd'>
+                                    @Html.EditorFor(model => model.dtEnd, new { htmlAttributes = new { @class = "form-control", type = "text" } })
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                                @Html.ValidationMessageFor(model => model.dtEnd, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-10">
+                                <input type="submit" value="儲存" class="btn btn-primary" />
+                            </div>
+                        </div>
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @*@Scripts.Render("~/bundles/jqueryval")*@
+
+    <script type="text/javascript" src="~/Scripts/moment-with-locales.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap-datetimepicker.min.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            var pickerOption = {
+                format: 'YYYY-MM-DD',
+                locale: 'zh-tw',
+                defaultDate: getLocalDateStr()
+            };
+            $('#dtPkBegin').datetimepicker(pickerOption);
+            $('#dtPkEnd').datetimepicker(pickerOption);
+        })
+
+    </script>
+}

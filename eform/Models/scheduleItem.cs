@@ -33,10 +33,35 @@ namespace eform.Models
     {
         public string id { get; set; }
         public string prjId { get; set; }
+        [Required()]
+        [Display(Name = "序號")]
         public int seq { get; set; }
+        [Required()]
+        [Display(Name = "工作項目")]
         public string itemTxt { get; set; }
+        [Required()]
+        [Display(Name ="開始日期")]
         public DateTime? dtBegin { get; set; }
+        [Required()]
+        [Display(Name = "結束日期")]
         public DateTime? dtEnd { get; set; }
+
+        [Display(Name = "開始日期")]
+        public string dtBeginStr
+        {
+            get
+            {
+                return dtBegin==null? "" : dtBegin.Value.ToString("yyyy-MM-dd");
+            }
+        }
+        [Display(Name = "開始日期")]
+        public string dtEndStr
+        {
+            get
+            {
+                return dtEnd == null ? "" : dtEnd.Value.ToString("yyyy-MM-dd");
+            }
+        }
     }
 
     public class schTemp

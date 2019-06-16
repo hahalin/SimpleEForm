@@ -1536,6 +1536,7 @@
     <Content Include="Views\PrjMgr\PmPrjList.cshtml" />
     <Content Include="Views\PrjMgr\ItemList.cshtml" />
     <Content Include="Views\PrjMgr\SelTemplate.cshtml" />
+    <Content Include="Views\PrjMgr\CreateSchItem.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
