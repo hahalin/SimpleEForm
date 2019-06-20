@@ -23,7 +23,7 @@ using System.Web.Routing;
 namespace eform.Controllers
 {
     [Authorize]
-    public class PrjMgrController : Controller
+    public sealed partial class PrjMgrController : Controller
     {
         prjRep rep;
         ApplicationDbContext ctx;
@@ -170,14 +170,33 @@ namespace eform.Controllers
         }
 
         [HttpGet]
-        public ActionResult EditSchItem(string prjId,string id)
+        public ActionResult EditSchItem(string prjId,string itemId)
         {
-            return View();
+            var item = ctx.scheduleItems.Where(x => x.id == itemId).FirstOrDefault();
+
+            var model = new vwScheduleItem
+            {
+                id=item.id,
+                prjId=item.prjId,
+                seq=item.seq,
+                itemTxt=item.itemTxt,
+                dtBegin=item.dtBegin,
+                dtEnd=item.dtEnd
+            };
+            return View(model);
         }
         [HttpPost]
         public ActionResult EditSchItem(vwScheduleItem model)
         {
-            return View();
+            var item = ctx.scheduleItems.Where(x => x.id == model.id).FirstOrDefault();
+
+            item.seq = model.seq;
+            item.itemTxt = model.itemTxt;
+            item.dtBegin = model.dtBegin;
+            item.dtEnd = model.dtEnd;
+
+            ctx.SaveChanges();
+            return RedirectToAction("ItemList", new { prjId = model.prjId });
         }
 
         [HttpGet]

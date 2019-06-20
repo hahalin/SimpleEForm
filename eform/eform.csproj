@@ -251,6 +251,7 @@
     <Compile Include="Controllers\NewsMgrController.cs" />
     <Compile Include="Controllers\PermController.cs" />
     <Compile Include="Controllers\PrjController.cs" />
+    <Compile Include="Controllers\PrjGanttController.cs" />
     <Compile Include="Controllers\PrjMgrController.cs" />
     <Compile Include="Controllers\RoleController.cs" />
     <Compile Include="Controllers\SalaryController.cs" />
@@ -1537,11 +1538,15 @@
     <Content Include="Views\PrjMgr\ItemList.cshtml" />
     <Content Include="Views\PrjMgr\SelTemplate.cshtml" />
     <Content Include="Views\PrjMgr\CreateSchItem.cshtml" />
+    <Content Include="Views\PrjMgr\EditSchItem.cshtml" />
+    <Content Include="Views\PrjMgr\TimeGrid.cshtml" />
+    <Content Include="Views\Shared\_PrjGanttLayout.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="upload\" />
     <Folder Include="Views\FormMgn\" />
+    <Folder Include="Views\PrjGantt\" />
     <Folder Include="Views\SchMgr\" />
   </ItemGroup>
   <ItemGroup>
