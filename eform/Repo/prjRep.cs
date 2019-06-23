@@ -10,7 +10,7 @@ using Dapper;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Configuration;
-
+using System.Web.Mvc;
 
 namespace eform.Repo
 {
@@ -68,15 +68,15 @@ namespace eform.Repo
 
             return JsonConvert.SerializeObject(r);
         }
-        public string prjCodeList(int status=1)
+        public string prjCodeList(int status = 1)
         {
             string sql = "select a.* from prjCodes a left join AspNetUsers b on a.owner=b.workNo ";
             //sql +=" where a.status=@status order by a.code asc";
-            if (status==1)
+            if (status == 1)
             {
                 sql += " where a.status=N'使用中' ";
             }
-            else if(status==0)
+            else if (status == 0)
             {
                 sql += " where a.status=N'關閉' ";
             }
@@ -192,7 +192,7 @@ namespace eform.Repo
             }
         }
 
-        public string createPrjCode(prjCode prjObj,string creator, JArray userList=null)
+        public string createPrjCode(prjCode prjObj, string creator, JArray userList = null)
         {
             string r = "";
             string sql = "";
@@ -271,7 +271,7 @@ namespace eform.Repo
                 return "專案編號不得空白";
             }
             sql = "select count(prjId) as cnt from prjs where prjId=@prjId and id != @id";
-            int icnt = (int)con.ExecuteScalar(sql, new { prjId = prjObj.prjId,id=prjObj.id });
+            int icnt = (int)con.ExecuteScalar(sql, new { prjId = prjObj.prjId, id = prjObj.id });
             if (icnt > 0)
             {
                 return "專案編號重複";
@@ -300,7 +300,7 @@ namespace eform.Repo
             try
             {
                 con.Execute(sql, paramList);
-                con.Execute("delete prjUsers where pid=@pid",new { pid = prjObj.id });
+                con.Execute("delete prjUsers where pid=@pid", new { pid = prjObj.id });
                 sql = "insert into prjUsers (id,pid,seq,title,workNo,perm) values ";
                 sql += "( @id,@pid,@seq,@title,@workNo,@perm)";
                 int iseq = 1;
@@ -348,14 +348,14 @@ namespace eform.Repo
             }
         }
 
-        public string updatePrjCode(prjCode prjCodeObj,string workNo)
+        public string updatePrjCode(prjCode prjCodeObj, string workNo)
         {
             string r = "";
             string sql = "";
 
             //if (prjCodeObj.owner != workNo && workNo.ToUpper().Contains("ADMIN")==false)
             //{
-                //return "專案代碼管理人才能修改此專案";
+            //return "專案代碼管理人才能修改此專案";
             //}
             if (string.IsNullOrEmpty(prjCodeObj.code))
             {
@@ -401,9 +401,9 @@ namespace eform.Repo
                     con.Execute("update prjCodes set creator=@creator,createDate=@createDate where id=@id",
                         new
                         {
-                            @id= prjCodeObj.id,
+                            @id = prjCodeObj.id,
                             @creator = workNo,
-                            @createDate=ctx.getLocalTiime()
+                            @createDate = ctx.getLocalTiime()
                         }
                     );
                 }
@@ -419,7 +419,7 @@ namespace eform.Repo
         public string getPrjList()
         {
             var prjs = this.ctx.prjCodeList.ToList<prjCode>();
-            List <dynamic> prjlist = new List<dynamic>();
+            List<dynamic> prjlist = new List<dynamic>();
             foreach (var prj in prjs)
             {
                 dynamic obj = new ExpandoObject();
@@ -448,8 +448,8 @@ namespace eform.Repo
             {
                 dynamic obj = new ExpandoObject();
                 obj.id = prj.code;
-                obj.text = prj.code+"-"+prj.nm;
-                obj.nm =prj.nm;
+                obj.text = prj.code + "-" + prj.nm;
+                obj.nm = prj.nm;
                 obj.owner = prj.owner;
                 obj.ownerStr = prj.ownerStr;
                 prjlist.Add(obj);
@@ -460,6 +460,27 @@ namespace eform.Repo
             prjlist.Insert(0, prjSelTitle);
 
             return JsonConvert.SerializeObject(prjlist);
+        }
+
+        public ValueTuple<List<SelectListItem>, List<SelectListItem>> getTimeSelection()
+        {
+            List<SelectListItem> beginHH = new List<SelectListItem>();
+            List<SelectListItem> beginMM = new List<SelectListItem>();
+            List<SelectListItem> endHH = new List<SelectListItem>();
+            List<SelectListItem> endMM = new List<SelectListItem>();
+
+            for (int i = 0; i <= 24; i++)
+            {
+                beginHH.Add(new SelectListItem { Text = i.ToString("0#"), Value = i.ToString("0#") });
+                endHH.Add(new SelectListItem { Text = i.ToString("0#"), Value = i.ToString("0#") });
+            }
+
+            beginMM.Add(new SelectListItem { Text = "00", Value = "00" });
+            endMM.Add(new SelectListItem { Text = "00", Value = "00" });
+            beginMM.Add(new SelectListItem { Text = "30", Value = "30" });
+            endMM.Add(new SelectListItem { Text = "30", Value = "30" });
+
+            return (beginHH,beginMM);
         }
     }
 }

@@ -503,6 +503,7 @@
     <Compile Include="Models\PrjEvent.cs" />
     <Compile Include="Models\PrjPortal.cs" />
     <Compile Include="Models\prjWork.cs" />
+    <Compile Include="Models\PrjGantt\fmGanttAssignUser.cs" />
     <Compile Include="Models\publicOut.cs" />
     <Compile Include="Models\ReqInHouse.cs" />
     <Compile Include="Models\ReqOverTime.cs" />

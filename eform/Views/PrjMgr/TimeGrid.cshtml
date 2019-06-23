@@ -1,7 +1,13 @@
-﻿
+﻿@using eform.Models.PrjGantt
+@model fmGanttAssignUser
 @{
     ViewBag.Title = "TimeGrid";
     Layout = "~/Views/Shared/_PrjGanttLayout.cshtml";
+
+
+    var beginHH = Model.hmList.Item1;
+    var beginMM = Model.hmList.Item2;
+
 }
 
 <link rel="stylesheet" type="text/css" href="https://fullcalendar.io/releases/core/4.2.0/main.min.css" />
@@ -9,7 +15,6 @@
 <link rel="stylesheet" type="text/css" href="https://fullcalendar.io/releases/resource-timeline/4.2.0/main.min.css" />
 
 <style>
-
     html, body {
         margin: 0;
         padding: 0;
@@ -18,18 +23,112 @@
     }
 
     #calendar {
-        max-width: 1024px;
+        margin-top: 50px;
+        max-width: 1440px;
+        /*max-height: 600px;*/
         margin: 5px auto;
     }
 </style>
 
-<h3>專案甘特圖管理</h3>
+<script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+<script src="~/Scripts/jquery.blockUI.js"></script>
+<script type="text/javascript">
+    $.blockUI({ message: '<h2>資料讀取中...</h2>' });
+</script>
 
-<section class="row col-md-10" style="background-color:white;">
-    <div class="col-md-12">
-        <div id='calendar'></div>
-    </div>
-</section>
+<div class="text-center">
+    <h3>專案甘特圖管理</h3>
+</div>
+
+
+<div>
+    <a class="btn btn-default" href="#">返回專案管理主頁</a>
+    <button class="btn btn-success" id="btnAddUser"><i class="fa fa-user-plus"></i> 指派人員</button>
+    <button class="btn btn-primary"><i class="fa fa-save"></i>儲存設定</button>
+</div>
+
+<div id='calendar'></div>
+
+<div id="winInput" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="border-bottom-width:0px;">
+                <h4 class="modal-title text-center" id="winTitle">指派人員</h4>
+            </div>
+            <div class="modal-body">
+                <div class="col-md-12" style="background-color:white;">
+                    <form id="fmInput" name="fmInput" class="form-horizontal" method="post" enctype="multipart/form-data" style="margin-top:10px;">
+                        <div class="form-horizontal col-md-10">
+                            <div class="form-group">
+                                <label class="control-label col-md-2">專案編號</label>
+                                <div class="col-md-4">
+                                    <input type="text" id="code" name="code" class="form-control" autocomplete="off" />
+                                </div>
+                                <label class="control-label col-md-2">專案名稱</label>
+                                <div class="col-md-4">
+                                    <input type="text" id="nm" name="nm" class="form-control" autocomplete="off" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2">工作項目</label>
+                                <div class="col-md-4">
+                                    <input type="text" id="code" name="code" class="form-control" autocomplete="off" />
+                                </div>
+                                <label class="control-label col-md-2">指派人員</label>
+                                <div class="col-md-4">
+                                    @Html.DropDownList("owner", new List<SelectListItem>(), new { htmlAttributes = new {id="owner",name="owner", @class = "form-control select2-input select2" }, style = "max-width:800px;width:100%;" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-md-2">開始時間</label>
+                                <div class="col-md-3">
+                                    <div class='input-group date' id='dt1'>
+                                        <input type="text" id="dtBegin" name="dtBegin" class="form-control" />
+                                        <span class="input-group-addon">
+                                            <span class="glyphicon glyphicon-calendar"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-1">
+                                    @*@Html.DropDownListFor(model => model.beginHH, (SelectList)ViewBag.beginHHList, new { @class = "form-control", style = "width:70px;" })*@
+                                    @Html.DropDownList("dtBeginHH", beginHH, new { @class = "form-control", style = "width:70px;" })
+                                </div>
+                                <label class="control-label col-md-1">時</label>
+                                <div class="col-md-1">
+                                    @*@Html.DropDownListFor(model => model.beginMM, (SelectList)ViewBag.beginMMList, new { @class = "form-control", style = "width:70px;" })*@
+                                    @Html.DropDownList("dtBeginMM", beginMM, new { @class = "form-control", style = "width:70px;" })
+
+                                </div>
+                                <label class="control-label col-md-1">分</label>
+                                @*@Html.ValidationMessageFor(model => model.dayOffForm.dtBegin, "", new { @class = "text-danger" })*@
+                            </div>
+
+                            @*<div class="form-group">
+                                    @Html.Label("專案經理", htmlAttributes: new { @class = "control-label col-md-2" })
+                                    <div class="col-md-4">
+                                        <input type="hidden" value="@User.Identity.Name" id="hUserId" name="hUserId" />
+                                        @Html.DropDownList("owner", new List<SelectListItem>(), new { htmlAttributes = new { @class = "form-control select2-input select2" }, style = "max-width:800px;width:100%;" })
+                                    </div>
+                                    <label class="control-label col-md-2">專案狀態</label>
+                                    <div class="col-md-4">
+                                        @Html.DropDownList("status", (IEnumerable<SelectListItem>)ViewBag.statusList, new { @class = "form-control" })
+                                    </div>
+                                </div>*@
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <div class="text-center col-md-12" style="margin-top:10px;">
+                        <button id="btnSave" type="button" class="btn btn-primary">儲存</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    </div>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</div>
+
 
 @section Scripts{
 
@@ -40,15 +139,47 @@
     <script src="https://fullcalendar.io/releases/interaction/4.2.0/main.min.js"></script>
 
     <script type="text/javascript">
+
+        function formatRepoSelection(repo) {
+            return repo.id + "-" + repo.text;
+        }
+
+        $(function () {
+            
+            var pickerOption = {
+                format: 'YYYY-MM-DD',
+                locale: 'zh-tw',
+                defaultDate: getLocalDateStr()
+            };
+            $('#dt1').datetimepicker(pickerOption);
+            $('#dt2').datetimepicker(pickerOption);
+
+            $('#btnAddUser').on('click', function () {
+                $('#winInput').modal('show');
+            })
+
+            var data = @Html.Raw((Model.userlist));
+
+            $("#owner").select2({
+                data: data,
+                placeholder: '指派人員'
+                ,templateSelection: formatRepoSelection
+            });
+
+
+            $.unblockUI();
+        })
+
         document.addEventListener('DOMContentLoaded', function () {
             var calendarEl = document.getElementById('calendar');
 
             var calendar = new FullCalendar.Calendar(calendarEl, {
+                height:550,
                 plugins: ['resourceTimeline', 'interaction'],
                 header: {
-                    left: 'today prev,next',
-                    center: 'title',
-                    right: 'resourceTimelineDay,resourceTimelineWeek'
+                    left: 'today,prev,next',
+                    center: '專案項目人員管理',
+                    right: 'resourceTimelineDay,resourceTimelineWeek,resourceTimelineMonth'
                 },
                 aspectRatio: 1.5,
                 defaultView: 'resourceTimelineDay',
@@ -76,25 +207,7 @@
                     { id: 'e', building: '460 Bryant', title: 'Auditorium E', occupancy: 40 },
                     { id: 'f', building: '460 Bryant', title: 'Auditorium F', occupancy: 40 },
                     { id: 'g', building: '564 Pacific', title: 'Auditorium G', occupancy: 40 },
-                    { id: 'h', building: '564 Pacific', title: 'Auditorium H', occupancy: 40 },
-                    { id: 'i', building: '564 Pacific', title: 'Auditorium I', occupancy: 40 },
-                    { id: 'j', building: '564 Pacific', title: 'Auditorium J', occupancy: 40 },
-                    { id: 'k', building: '564 Pacific', title: 'Auditorium K', occupancy: 40 },
-                    { id: 'l', building: '564 Pacific', title: 'Auditorium L', occupancy: 40 },
-                    { id: 'm', building: '564 Pacific', title: 'Auditorium M', occupancy: 40 },
-                    { id: 'n', building: '564 Pacific', title: 'Auditorium N', occupancy: 40 },
-                    { id: 'o', building: '564 Pacific', title: 'Auditorium O', occupancy: 40 },
-                    { id: 'p', building: '564 Pacific', title: 'Auditorium P', occupancy: 40 },
-                    { id: 'q', building: '564 Pacific', title: 'Auditorium Q', occupancy: 40 },
-                    { id: 'r', building: '564 Pacific', title: 'Auditorium R', occupancy: 40 },
-                    { id: 's', building: '564 Pacific', title: 'Auditorium S', occupancy: 40 },
-                    { id: 't', building: '564 Pacific', title: 'Auditorium T', occupancy: 40 },
-                    { id: 'u', building: '564 Pacific', title: 'Auditorium U', occupancy: 40 },
-                    { id: 'v', building: '564 Pacific', title: 'Auditorium V', occupancy: 40 },
-                    { id: 'w', building: '564 Pacific', title: 'Auditorium W', occupancy: 40 },
-                    { id: 'x', building: '564 Pacific', title: 'Auditorium X', occupancy: 40 },
-                    { id: 'y', building: '564 Pacific', title: 'Auditorium Y', occupancy: 40 },
-                    { id: 'z', building: '564 Pacific', title: 'Auditorium Z', occupancy: 40 }
+                    { id: 'h', building: '564 Pacific', title: 'Auditorium H', occupancy: 40 }
                 ]
             });
 

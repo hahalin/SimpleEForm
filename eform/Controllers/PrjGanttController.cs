@@ -22,12 +22,22 @@ using System.Web.Routing;
 
 namespace eform.Controllers
 {
+    [Authorize]
     public partial class PrjMgrController : Controller
     {
         // GET: PrjGantt
         public ActionResult TimeGrid()
         {
-            return View();
+
+            prjRep rep = new prjRep(User.Identity.Name);
+
+            var model = new Models.PrjGantt.fmGanttAssignUser
+            {
+                hmList = rep.getTimeSelection(),
+                userlist=ctx.getUserList()
+            };
+
+            return View(model);
         }
     }
 }
