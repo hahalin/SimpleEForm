@@ -140,9 +140,12 @@
 
     <script type="text/javascript">
 
+        var calendar;
+
         function formatRepoSelection(repo) {
             return repo.id + "-" + repo.text;
         }
+        
 
         $(function () {
             
@@ -173,8 +176,9 @@
         document.addEventListener('DOMContentLoaded', function () {
             var calendarEl = document.getElementById('calendar');
 
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-                height:550,
+             calendar = new FullCalendar.Calendar(calendarEl, {
+                height: 550,
+                editable: true,
                 plugins: ['resourceTimeline', 'interaction'],
                 header: {
                     left: 'today,prev,next',
@@ -183,34 +187,59 @@
                 },
                 aspectRatio: 1.5,
                 defaultView: 'resourceTimelineDay',
-                resourceAreaWidth: '40%',
+                resourceAreaWidth: '20%',
+                minTime: '08:00',
+                maxTime: '18:00',
                 resourceColumns: [
                     {
-                        group: true,
-                        labelText: 'Building',
-                        field: 'building'
-                    },
-                    {
-                        labelText: 'Room',
+                        //group: true,
+                        labelText: '工作指派',
                         field: 'title'
-                    },
-                    {
-                        labelText: 'Occupancy',
-                        field: 'occupancy'
                     }
+                    //,{
+                    //    labelText: '指派人員',
+                    //    field:'user'
+                    //}
+                    //,{
+                    //    labelText: '指派人員',
+                    //    field: 'user'
+                    //}
+                    //,{
+                    //    labelText: 'Occupancy',
+                    //    field: 'occupancy'
+                    //}
                 ],
                 resources: [
-                    { id: 'a', building: '460 Bryant', title: 'Auditorium A', occupancy: 40 },
-                    { id: 'b', building: '460 Bryant', title: 'Auditorium B', occupancy: 40 },
-                    { id: 'c', building: '460 Bryant', title: 'Auditorium C', occupancy: 40 },
-                    { id: 'd', building: '460 Bryant', title: 'Auditorium D', occupancy: 40 },
-                    { id: 'e', building: '460 Bryant', title: 'Auditorium E', occupancy: 40 },
-                    { id: 'f', building: '460 Bryant', title: 'Auditorium F', occupancy: 40 },
-                    { id: 'g', building: '564 Pacific', title: 'Auditorium G', occupancy: 40 },
-                    { id: 'h', building: '564 Pacific', title: 'Auditorium H', occupancy: 40 }
+                    { id: 'b', title: '460 Bryant', user: '全部' },
+                    { id: 'c', title: '460 Bryant', user: 'Auditorium C' },
+                    {
+                        id: 'a', title: '460 Bryant', user: 'Auditorium A',eventColor: 'green'
+                        ,
+                        children: [
+                            {
+                                id: 'a1',
+                                title:'user1'
+                            }
+                        ]
+
+                    },
+                    { id: 'd', title: '460 Bryant', user: 'Auditorium D' },
+                    { id: 'e', title: '460 Bryant', user: 'Auditorium E' },
+                    { id: 'f', title: '460 Bryant', user: 'Auditorium F' },
+                    { id: 'g', title: '564 Pacific', user: 'Auditorium G' },
+                    { id: 'h', title: '564 Pacific', user: 'Auditorium H' }
+                ],
+                events: [
+                    {
+                        resourceId: 'a', title: 'x', start: '2019-06-23 10:30', end: '2019-06-27 15:00'
+                    },
+                    {
+                        resourceId: 'a1', title: 'John', start: '2019-06-24 10:30', end: '2019-06-25 15:00'
+                    }
                 ]
             });
 
+            calendar.setOption('slotDuration', '00:30');
             calendar.render();
         });
 
