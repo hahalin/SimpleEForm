@@ -368,7 +368,7 @@ namespace eform.Repo
                 return "專案代碼重複";
             }
 
-            sql = "update prjCodes set code=@code,nm=@nm,owner=@owner,status=@status, ";
+            sql = "update prjCodes set nm=@nm,owner=@owner,status=@status, ";
             sql += " mmo1=@mmo1,mmo2=@mmo2,mmo3=@mmo3,mmo4=@mmo4,mmo5=@mmo5,";
             sql += " mmo6=@mmo6,mmo7=@mmo7,mmo8=@mmo8,mmo9=@mmo9,mmo10=@mmo10,contractDate=@contractDate";
             sql += " where id=@id";
@@ -376,7 +376,7 @@ namespace eform.Repo
             List<DynamicParameters> paramList = new List<DynamicParameters>();
             DynamicParameters param = new DynamicParameters();
             param.Add("@id", prjCodeObj.id);
-            param.Add("@code", prjCodeObj.code);
+            //param.Add("@code", prjCodeObj.code);
             param.Add("@nm", prjCodeObj.nm);
             param.Add("@owner", prjCodeObj.owner);
             param.Add("@status", prjCodeObj.status);

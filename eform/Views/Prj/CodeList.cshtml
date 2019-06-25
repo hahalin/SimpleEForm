@@ -72,6 +72,7 @@
                                             <input type="hidden" id="hid" name="hid" value="@Model.id" />
                                             <input type="hidden" id="hPMList" name="hPMList" value="@Model.hPMList" />
                                             <input type="text" id="code" name="code" class="form-control" autocomplete="off" />
+                                            <label id="lbCode" style="display:none;"></label>
                                         </div>
                                         <label class="control-label col-md-2">專案名稱</label>
                                         <div class="col-md-4">
@@ -258,7 +259,6 @@
             var prjCodeId = $(event.target).attr('prjCodeId');
             $.blockUI({ message: '<h2>資料讀取中...</h2>' });
             var param = { id: prjCodeId};
-
             $.ajax({
                 dataType: 'json',
                 data:param,
@@ -275,6 +275,8 @@
                     console.log(prjCode);
                     $('#hid').val(prjCode.id);
                     $('#code').val(prjCode.code);
+                    $('#lbCode').show().text(prjCode.code);
+                    $('#code').hide();
                     $('#nm').val(prjCode.nm);
                     $('#owner').val(prjCode.owner).trigger('change');
                     $('#creator').val(prjCode.creatorStr);
@@ -393,9 +395,12 @@
 
             $("#btn-add").click(function () {
                 document.getElementById("fmInput").reset();
-
+                $('#hid').val('');
+                $('#hPMList').val('');
                 $('#myTabs a[href="#tab1"]').tab('show')
                 $('#winTitle').text('新增專案代碼/工時代碼');
+                $('#code').show();
+                $('#lbCode').hide();
                 $('#owner').val("").trigger('change');
                 loadRow();
                 $('#winInput').modal('show');
