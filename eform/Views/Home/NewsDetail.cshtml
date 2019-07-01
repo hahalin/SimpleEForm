@@ -14,7 +14,15 @@
             </div>
             <div class="box-body">
                 @{
-                    string content = Model.content.Replace("\"", "");
+                    string content = "";
+                    try
+                    {
+                        content=Model.content.Replace("\"", "");
+                    }
+                    catch(Exception ex)
+                    {
+                        content = "";
+                    }
                 }
                 @Html.Raw(content)
                 <h4>上傳檔案清單:</h4>

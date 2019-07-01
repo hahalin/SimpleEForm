@@ -26,10 +26,12 @@ namespace eform.Controllers
     public partial class PrjMgrController : Controller
     {
         // GET: PrjGantt
-        public ActionResult TimeGrid()
+        public ActionResult TimeGrid(string prjId)
         {
 
             prjRep rep = new prjRep(User.Identity.Name);
+
+            prjCode prj = ctx.prjCodeList.Where(n => n.id == prjId).FirstOrDefault();
 
             var model = new Models.PrjGantt.fmGanttAssignUser
             {
@@ -37,7 +39,7 @@ namespace eform.Controllers
                 userlist=ctx.getUserList()
             };
 
-            return View(model);
+            return View((prj,model));
         }
     }
 }

@@ -1,12 +1,15 @@
-﻿@using eform.Models.PrjGantt
-@model fmGanttAssignUser
+﻿@using eform.Models
+@using eform.Models.PrjGantt
+@model  ValueTuple<prjCode, fmGanttAssignUser>
 @{
     ViewBag.Title = "TimeGrid";
     Layout = "~/Views/Shared/_PrjGanttLayout.cshtml";
 
+    var fmModel = Model.Item2;
+    var prjCode = Model.Item1;
 
-    var beginHH = Model.hmList.Item1;
-    var beginMM = Model.hmList.Item2;
+    var beginHH = fmModel.hmList.Item1;
+    var beginMM = fmModel.hmList.Item2;
 
 }
 
@@ -37,15 +40,19 @@
 </script>
 
 <div class="text-center">
-    <h3>專案甘特圖管理</h3>
+    <h3 class="text-primary" style="font-weight:bold;font-family:'標楷體';">專案工作項目甘特圖管理</h3>
 </div>
 
-
-<div>
-    <a class="btn btn-default" href="#">返回專案管理主頁</a>
+<div class="row text-center">
+    <a class="btn btn-default" href="@Url.Action("ItemList","PrjMgr",new {prjId=prjCode.id})"><i class="fa fa-list"></i>返回工作項目設定</a>
     <button class="btn btn-success" id="btnAddUser"><i class="fa fa-user-plus"></i> 指派人員</button>
     <button class="btn btn-primary"><i class="fa fa-save"></i>儲存設定</button>
 </div>
+<div class="row text-center" style="font-size:16px;margin-top:10px;">
+    <label>專案代碼：</label><span>@prjCode.code</span>
+    <label>專案名稱：</label><span>@prjCode.nm</span>
+</div>
+
 
 <div id='calendar'></div>
 
@@ -137,6 +144,8 @@
     <script src="https://fullcalendar.io/releases/resource-common/4.2.0/main.min.js"></script>
     <script src="https://fullcalendar.io/releases/resource-timeline/4.2.0/main.min.js"></script>
     <script src="https://fullcalendar.io/releases/interaction/4.2.0/main.min.js"></script>
+    <script src='https://fullcalendar.io/releases/locales-all.js'></script>
+
 
     <script type="text/javascript">
 
@@ -161,7 +170,7 @@
                 $('#winInput').modal('show');
             })
 
-            var data = @Html.Raw((Model.userlist));
+            var data = @Html.Raw((fmModel.userlist));
 
             $("#owner").select2({
                 data: data,
@@ -173,27 +182,57 @@
             $.unblockUI();
         })
 
+        var fooRes = [
+            { id: 'b', title: '460 專案名稱', user: '全部' },
+            { id: 'c', title: '460 專案名稱', user: 'Auditorium C' },
+            {
+                id: 'a', title: '460 專案名稱', user: 'Auditorium A', eventColor: 'green'
+                ,
+                children: [
+                    {
+                        id: 'a1',
+                        title: 'John'
+                    }
+                ]
+
+            },
+            { id: 'd', title: '460 專案名稱', user: 'Auditorium D' },
+            { id: 'e', title: '460 專案名稱', user: 'Auditorium E' },
+            { id: 'f', title: '460 專案名稱', user: 'Auditorium F' },
+            { id: 'g', title: '564 專案名稱', user: 'Auditorium G' },
+            { id: 'h', title: '564 專案名稱', user: 'Auditorium H' }
+        ];
+
         document.addEventListener('DOMContentLoaded', function () {
             var calendarEl = document.getElementById('calendar');
 
              calendar = new FullCalendar.Calendar(calendarEl, {
                 height: 550,
                 editable: true,
+                locale:'zh-tw',
                 plugins: ['resourceTimeline', 'interaction'],
                 header: {
-                    left: 'today,prev,next',
-                    center: '專案項目人員管理',
-                    right: 'resourceTimelineDay,resourceTimelineWeek,resourceTimelineMonth'
+                    left: 'prev,today,next,"  ",resourceTimelineMonth,resourceTimelineWeek,resourceTimelineDay',
+                    center: 'title',//專案項目人員管理
+                    //right: 'resourceTimelineDay,resourceTimelineWeek,resourceTimelineMonth'
+                    right: ''
+                },
+                buttonText: {
+                    today: '今日',
+                    month: '月',
+                    week: '周',
+                    day: '日',
+                    list: '清單'
                 },
                 aspectRatio: 1.5,
-                defaultView: 'resourceTimelineDay',
+                defaultView: 'resourceTimelineMonth',
                 resourceAreaWidth: '20%',
                 minTime: '08:00',
                 maxTime: '18:00',
                 resourceColumns: [
                     {
                         //group: true,
-                        labelText: '工作指派',
+                        labelText: '工作項目',
                         field: 'title'
                     }
                     //,{
@@ -209,26 +248,7 @@
                     //    field: 'occupancy'
                     //}
                 ],
-                resources: [
-                    { id: 'b', title: '460 專案名稱', user: '全部' },
-                    { id: 'c', title: '460 專案名稱', user: 'Auditorium C' },
-                    {
-                        id: 'a', title: '460 專案名稱', user: 'Auditorium A',eventColor: 'green'
-                        ,
-                        children: [
-                            {
-                                id: 'a1',
-                                title:'John'
-                            }
-                        ]
-
-                    },
-                    { id: 'd', title: '460 專案名稱', user: 'Auditorium D' },
-                    { id: 'e', title: '460 專案名稱', user: 'Auditorium E' },
-                    { id: 'f', title: '460 專案名稱', user: 'Auditorium F' },
-                    { id: 'g', title: '564 專案名稱', user: 'Auditorium G' },
-                    { id: 'h', title: '564 專案名稱', user: 'Auditorium H' }
-                ],
+                resources:[],
                 events: [
                     {
                         resourceId: 'a', title: '460', start: '2019-06-23 10:30', end: '2019-06-27 15:00'

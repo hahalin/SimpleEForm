@@ -272,7 +272,6 @@
                 success: function (r) {
                     var prjCode = r.prjCode;
                     document.getElementById("fmInput").reset();
-                    console.log(prjCode);
                     $('#hid').val(prjCode.id);
                     $('#code').val(prjCode.code);
                     $('#lbCode').show().text(prjCode.code);
@@ -300,6 +299,8 @@
 
                     loadRow();
                     $('#myTabs a[href="#tab1"]').tab('show');
+
+                    $('#btnSave').text("專案修改存檔停用中").removeClass("btn-primary").addClass("btn-danger");
 
                     $('#winInput').modal('show');
 
@@ -403,6 +404,7 @@
                 $('#lbCode').hide();
                 $('#owner').val("").trigger('change');
                 loadRow();
+                $('#btnSave').text("新增專案儲存").removeClass("btn-danger").addClass("btn-primary");
                 $('#winInput').modal('show');
             });
 
@@ -423,6 +425,12 @@
             });
 
             $("#btnSave").click(function () {
+
+                if ($('#hid').val() !== '')
+                {
+                    alert('專案修改存檔停用中');
+                    return false;
+                }
 
                 //var o = $('#diva').tabulator('getRows');
                 //var list = [];
