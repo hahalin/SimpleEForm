@@ -55,14 +55,14 @@
                         </span>
                     </a>
                     <ul class="treeview-menu">
-                        @if (permList.Where(x => x.mod == "PrjCreateCode").Count() > 0 || User.Identity.Name.ToUpper().Contains("ADMIN"))
+                        @*@if (permList.Where(x => x.mod == "PrjCreateCode").Count() > 0 || User.Identity.Name.ToUpper().Contains("ADMIN"))
                         {
                             <li class="">
                                 <a href="@Url.Action("CodeList","Prj")">
                                     <i class="fa fa-gear"></i><span>專案代碼管理</span>
                                 </a>
                             </li>
-                        }
+                        }*@
                         <li class="">
                             <a href="@Url.Action("PmPrjList","PrjMgr")">
                                 <i class="fa fa-table"></i><span>甘特圖項目設定</span>

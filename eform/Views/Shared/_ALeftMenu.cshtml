@@ -115,33 +115,33 @@
                         </li>
                         @if (permList.Where(x => x.mod == "ReportUpload").Count() > 0)
                         {
-                        <li>
-                            <a href="@Url.Action("All", "Salary", null)" hrefa="#">
-                                <i class="fa fa-key"></i>薪資查詢(管理權限)
-                            </a>
-                        </li>
+                            <li>
+                                <a href="@Url.Action("All", "Salary", null)" hrefa="#">
+                                    <i class="fa fa-key"></i>薪資查詢(管理權限)
+                                </a>
+                            </li>
                         }
                         @if (permList.Where(x => x.mod == "ReportSalary").Count() > 0)
                         {
-                        <li>
-                            <a href="@Url.Action("Upload", "Salary", null)" hrefa="#">
-                                <i class="fa fa-key"></i>薪資檔案上傳(管理權限)
-                            </a>
-                        </li>
-                        <li>
-                            <a href="@Url.Action("QueryReportA", "HrMgr", null)" hrefa="#">
-                                <i class="fa fa-key"></i>請假/加班單總表下載
-                            </a>
-                        </li>
+                            <li>
+                                <a href="@Url.Action("Upload", "Salary", null)" hrefa="#">
+                                    <i class="fa fa-key"></i>薪資檔案上傳(管理權限)
+                                </a>
+                            </li>
+                            <li>
+                                <a href="@Url.Action("QueryReportA", "HrMgr", null)" hrefa="#">
+                                    <i class="fa fa-key"></i>請假/加班單總表下載
+                                </a>
+                            </li>
                         }
                     </ul>
                 </li>
 
                 <!--專案管理區-->
                 <li>
-                        <a href="@Url.Action("Home","Prj")">
-                            <i class="fa fa-book"></i> <span>專案管理區</span>
-                        </a>
+                    <a href="@Url.Action("Home","Prj")">
+                        <i class="fa fa-book"></i> <span>專案管理區</span>
+                    </a>
                 </li>
 
                 <li class="treeview">
@@ -167,36 +167,36 @@
 
                 <!--庫存管理查詢-->
                 @*if (
-                    (permList.Where(x => x.mod == "StockInit").Count() > 0)
-                    || (permList.Where(x => x.mod == "StockQuery").Count() > 0)
-                 )
-                {
-                    <li class="treeview">
-                        <a href="#">
-                            <i class="fa fa-table"></i> <span>庫存管理/查詢</span> <i class="fa fa-angle-left pull-right"></i>
-                        </a>
-                        <ul class="treeview-menu">
-                            @if (permList.Where(x => x.mod == "StockInit").Count() > 0)
-                            {
+                        (permList.Where(x => x.mod == "StockInit").Count() > 0)
+                        || (permList.Where(x => x.mod == "StockQuery").Count() > 0)
+                     )
+                    {
+                        <li class="treeview">
+                            <a href="#">
+                                <i class="fa fa-table"></i> <span>庫存管理/查詢</span> <i class="fa fa-angle-left pull-right"></i>
+                            </a>
+                            <ul class="treeview-menu">
+                                @if (permList.Where(x => x.mod == "StockInit").Count() > 0)
+                                {
+                                    <li>
+                                        <a href="@Url.Action("UploadInit", "StockMgr")">
+                                            <i class="fa fa-upload"></i>初始庫存上傳
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="@Url.Action("UploadStockIn", "StockMgr")">
+                                            <i class="fa fa-upload"></i>進銷明細單上傳
+                                        </a>
+                                    </li>
+                                }
                                 <li>
-                                    <a href="@Url.Action("UploadInit", "StockMgr")">
-                                        <i class="fa fa-upload"></i>初始庫存上傳
+                                    <a href="@Url.Action("Query", "StockMgr")">
+                                        <i class="fa fa-search"></i>庫存查詢
                                     </a>
                                 </li>
-                                <li>
-                                    <a href="@Url.Action("UploadStockIn", "StockMgr")">
-                                        <i class="fa fa-upload"></i>進銷明細單上傳
-                                    </a>
-                                </li>
-                            }
-                            <li>
-                                <a href="@Url.Action("Query", "StockMgr")">
-                                    <i class="fa fa-search"></i>庫存查詢
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                }*@
+                            </ul>
+                        </li>
+                    }*@
                  <!--主管管理區-->
                 <li class="treeview">
                     <a href="#">
@@ -307,8 +307,14 @@
                                         </a>
                                     </li>
                                 </ul>
-                        </ul>
-                    </li>
+
+                                <li class="">
+                                    <a href="@Url.Action("CodeList","Prj")">
+                                        <i class="fa fa-gear"></i><span>專案代碼管理</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
                 }
 
 
