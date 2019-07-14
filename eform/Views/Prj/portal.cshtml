@@ -99,28 +99,28 @@
                                 <tbody>
                                     @foreach (vwPrjEvent evt in Model.vwEventList)
                                     {
-                                    <tr>
-                                        <td>
-                                            <a class="btn-sm btn-danger" href="@Url.Action("deleteEvent","Prj",new {id=evt.id,code=Model.prjCodeObj.code})" onclick="return confirm('確定刪除?');">
-                                                刪除
-                                            </a>
-                                        </td>
-                                        <td>
-                                            @evt.prjStr
-                                        </td>
-                                        <td>
-                                            @evt.billNo
-                                        </td>
-                                        <td>
-                                            @evt.sBeginDate ~ @evt.sEndDate
-                                        </td>
-                                        <td>
-                                            @evt.subject
-                                        </td>
-                                        <td>
-                                            @evt.sMemo
-                                        </td>
-                                    </tr>
+                                        <tr>
+                                            <td>
+                                                <a class="btn-sm btn-danger" href="@Url.Action("deleteEvent","Prj",new {id=evt.id,code=Model.prjCodeObj.code})" onclick="return confirm('確定刪除?');">
+                                                    刪除
+                                                </a>
+                                            </td>
+                                            <td>
+                                                @evt.prjStr
+                                            </td>
+                                            <td>
+                                                @evt.billNo
+                                            </td>
+                                            <td>
+                                                @evt.sBeginDate ~ @evt.sEndDate
+                                            </td>
+                                            <td>
+                                                @evt.subject
+                                            </td>
+                                            <td>
+                                                @evt.sMemo
+                                            </td>
+                                        </tr>
                                     }
 
 
@@ -167,51 +167,51 @@
                                 <tbody>
                                     @foreach (vwForumItem fitem in Model.forumList)
                                     {
-                                    <tr>
-                                        <td>
-                                            
-                                            <a href="@Url.Action("ReplyForumItem", "Prj", new { fitem.id,pid=fitem.id, fitem.prjId, code = Model.prjCodeObj.code })" class="btn btn-info">回覆</a>
-                                            <a href="@Url.Action("ReplyForumItem", "Prj", new { fitem.id,pid=fitem.id, fitem.prjId, code = Model.prjCodeObj.code, isPrivate = true })" class="btn btn-default">私訊</a>
-                                            
-                                            @{ 
-                                                bool canModify = false;
-                                                canModify = Model.prjCodeObj.owner == User.Identity.Name
-                                                            || fitem.workNo == User.Identity.Name
-                                                            || Model.vPMList.Where(x => x.WorkNo == User.Identity.Name && x.Title=="PM").Count() > 0;
-                                            }
+                                        <tr>
+                                            <td>
 
-                                            @if (canModify)
-                                            {
-                                                <br />
-                                                <a href="@Url.Action("DeleteForumItem","Prj",new {fitem.id,code=Model.prjCodeObj.code,page="portal"})" class="btn-sm btn-danger" onclick="return confirm('確定刪除?');">刪除</a>
+                                                <a href="@Url.Action("ReplyForumItem", "Prj", new { fitem.id,pid=fitem.id, fitem.prjId, code = Model.prjCodeObj.code })" class="btn btn-info">回覆</a>
+                                                <a href="@Url.Action("ReplyForumItem", "Prj", new { fitem.id,pid=fitem.id, fitem.prjId, code = Model.prjCodeObj.code, isPrivate = true })" class="btn btn-default">私訊</a>
 
-                                                <a href="@Url.Action("UpdateForumItem","Prj",new {fitem.id,prjId=fitem.prjId,code=Model.prjCodeObj.code,page="portal"})" class="btn-sm btn-warning">修改</a>
-                                            }
-                                        </td>
-                                        <td>
-                                            @fitem.seq
-                                        </td>
-                                        <td>
-                                            正:@fitem.othersA <br />
-                                            副:@fitem.othersB
-                                        </td>
-                                        <td>
-                                            @fitem.creator.UserCName
-                                        </td>
-                                        <td>
-                                            @fitem.billDate.ToString("yyyy-MM-dd HH:mm:ss")
-                                        </td>
-                                        <td>
-                                            <a href="@Url.Action("ForumDetail","Prj",new { id = fitem.id,code= Model.prjCodeObj.code })">@fitem.subject</a>
-                                        </td>
-                                        <td>
-                                            @fitem.replyCnt
-                                        </td>
-                                        <td>
-                                            @fitem.lastReplyDate
-                                        </td>
-                                    </tr>
-                                    }
+                                                @{
+                                                    bool canModify = false;
+                                                    canModify = Model.prjCodeObj.owner == User.Identity.Name
+                                                                || fitem.workNo == User.Identity.Name
+                                                                || Model.vPMList.Where(x => x.WorkNo == User.Identity.Name && x.Title == "PM").Count() > 0;
+                                                }
+
+                                                @if (canModify)
+                                                {
+                                                    <br />
+                                                    <a href="@Url.Action("DeleteForumItem","Prj",new {fitem.id,code=Model.prjCodeObj.code,page="portal"})" class="btn-sm btn-danger" onclick="return confirm('確定刪除?');">刪除</a>
+
+                                                    <a href="@Url.Action("UpdateForumItem","Prj",new {fitem.id,prjId=fitem.prjId,code=Model.prjCodeObj.code,page="portal"})" class="btn-sm btn-warning">修改</a>
+                                                }
+                                            </td>
+                                            <td>
+                                                @fitem.seq
+                                            </td>
+                                            <td>
+                                                正:@fitem.othersA <br />
+                                                副:@fitem.othersB
+                                            </td>
+                                            <td>
+                                                @fitem.creator.UserCName
+                                            </td>
+                                            <td>
+                                                @fitem.billDate.ToString("yyyy-MM-dd HH:mm:ss")
+                                            </td>
+                                            <td>
+                                                <a href="@Url.Action("ForumDetail","Prj",new { id = fitem.id,code= Model.prjCodeObj.code })">@fitem.subject</a>
+                                            </td>
+                                            <td>
+                                                @fitem.replyCnt
+                                            </td>
+                                            <td>
+                                                @fitem.lastReplyDate
+                                            </td>
+                                        </tr>
+                                                    }
                                 </tbody>
                             </table>
                         </div>
@@ -241,33 +241,36 @@
                         <tbody>
                             @foreach (vPrjPM emp in Model.vPMList)
                             {
-                                <tr>
-                                    <td>
-                                        @if (Model.prjCodeObj.owner == User.Identity.Name)
-                                        {
-                                            using (Html.BeginForm("DelPrjPM", "Prj", FormMethod.Post))
+                                if (emp.Title != "PM")
+                                {
+                                    <tr>
+                                        <td>
+                                            @if (Model.prjCodeObj.owner == User.Identity.Name)
                                             {
-
-                                                <input type="hidden" name="hid" value="@emp.id" />
-                                                <input type="hidden" name="code" value="@Model.prjCodeObj.code" />
-
-                                                if (emp.Title != "PM")
+                                                using (Html.BeginForm("DelPrjPM", "Prj", FormMethod.Post))
                                                 {
-                                                    <input type="submit" value="刪除" onclick="return confirm('確定刪除?');" class="btn-sm btn-danger" />
-                                                }
-                                            }
 
-                                            <a href="@Url.Action("UpdatePrjPM", "Prj", new { id = emp.id, code = Model.prjCodeObj.code })" class="btn-sm btn-info">編輯</a>
-                                        }
-                                    </td>
-                                    <td>
-                                        @emp.WorkNo @emp.UserCName
-                                    </td>
-                                    <td>
-                                        @emp.Title
-                                    </td>
-                                </tr>
+                                                    <input type="hidden" name="hid" value="@emp.id" />
+                                                    <input type="hidden" name="code" value="@Model.prjCodeObj.code" />
+
+                                                    if (emp.Title != "PM")
+                                                    {
+                                                        <input type="submit" value="刪除" onclick="return confirm('確定刪除?');" class="btn-sm btn-danger" />
+                                                    }
                                                 }
+
+                                                <a href="@Url.Action("UpdatePrjPM", "Prj", new { id = emp.id, code = Model.prjCodeObj.code })" class="btn-sm btn-info">編輯</a>
+                                            }
+                                        </td>
+                                        <td>
+                                            @emp.WorkNo @emp.UserCName
+                                        </td>
+                                        <td>
+                                            @emp.Title
+                                        </td>
+                                    </tr>
+                                }
+                            }
                         </tbody>
                     </table>
                 </div>

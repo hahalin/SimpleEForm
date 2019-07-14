@@ -619,7 +619,7 @@ namespace eform.Controllers
         {
             foreach (var pm in ctx.prjPMList)
             {
-                if (pm.id == hid)
+                if (pm.id == hid )
                 {
                     ctx.prjPMList.Remove(pm);
                     break;
@@ -719,13 +719,14 @@ namespace eform.Controllers
 
             foreach (var pm in model.PMList)
             {
-                prjUsers.Add(pm.WorkNo);
+               prjUsers.Add(pm.WorkNo);
             }
 
             if (prjUsers.Where(x => x == User.Identity.Name).Count() == 0 && (User.Identity.Name !="sadmin"))
             {
                 return View("AccessDenied");
             }
+
 
             if (model.prjCodeObj != null)
             {
@@ -748,11 +749,24 @@ namespace eform.Controllers
                 ForumItem fitem = ctx.prjForumItems.Where(x => x.id == id).FirstOrDefault();
                 code = ctx.prjCodeList.Where(x => x.id == fitem.prjId).FirstOrDefault().code;
             }
+
+            List<string> prjUsers = new List<string>();
+
+            var prjCodeObj = ctx.prjCodeList.OrderBy(x => x.code).FirstOrDefault();
+            prjUsers.Add(prjCodeObj.creator);
+            prjUsers.Add(prjCodeObj.owner);
+
+            foreach (var pm in ctx.prjPMList.Where(n=>n.pid==prjCodeObj.id && n.Title=="PM"))
+            {
+                prjUsers.Add(pm.WorkNo);
+            }
+
             vwForumDetail Model = new vwForumDetail(id, code);
             Model.currentUser = ctx.getCurrentUser(User.Identity.Name).workNo;
             ViewBag.code = code;
             ViewBag.id = id;
             ViewBag.mobile = mobile;
+            ViewBag.Pms = prjUsers;
             return View(Model);
         }
 
@@ -1627,7 +1641,7 @@ namespace eform.Controllers
                 }
                 foreach(prjPM pm in pmDBList)
                 {
-                    if(pmlist.Where(x=>x["pm"].ToString()==pm.WorkNo).Count()==0)
+                    if( (pmlist.Where(x=>x["pm"].ToString()==pm.WorkNo).Count()==0) && pm.Title=="PM")
                     {
                         ctx.prjPMList.Remove(ctx.prjPMList.Where(x => x.pid == prjObj.id && x.WorkNo == pm.WorkNo).FirstOrDefault());
                         ctx.SaveChanges();

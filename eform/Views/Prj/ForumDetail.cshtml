@@ -12,6 +12,10 @@
     {
         isMobile = false;
     }
+
+    bool isPm = false;
+    isPm = ((List<string>)ViewBag.Pms).Where(n => n == User.Identity.Name).Count() > 0;
+
 }
 
 <div class="row">
@@ -163,7 +167,7 @@
                         {
                             <tr>
                                 <td class="col-md-2">
-                                    @if (Model.prjCodeObj.owner == User.Identity.Name || fitem.workNo == User.Identity.Name)
+                                    @if (Model.prjCodeObj.owner == User.Identity.Name || fitem.workNo == User.Identity.Name || isPm)
                                     {
                                         <a href="@Url.Action("DeleteForumItem", "Prj", new { fitem.id, code = Model.code, page = "ForumDetail", pid = Model.Mitem.id,mobile=isMobile })" class="btn btn-danger" onclick="return confirm('確定刪除?');">刪除</a>
                                         <a href="@Url.Action("UpdateForumItem", "Prj", new { fitem.id,prjId=Model.prjCodeObj.id,code = Model.code, page = "ForumDetail", pid = Model.Mitem.id,mobile=isMobile })" class="btn btn-warning">編輯</a>
